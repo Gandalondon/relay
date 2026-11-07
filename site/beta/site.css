@@ -217,7 +217,7 @@ canvas.topo{display:none}
 .pgrid:first-child{margin-top:0}  /* no intro line above it: line up with the section title */
 .pgroup h3{font-size:var(--h3);line-height:var(--h3-lh);font-weight:600;color:var(--text-hi)}
 .pgroup ul{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
-.pgroup li{font:400 var(--body)/var(--body-lh) var(--font);color:var(--text)}  /* same as body text */
+.pgroup li{font:400 var(--body)/var(--body-lh) var(--font);color:var(--text);text-wrap:pretty}  /* same as body text */
 .prosebit{gap:20px}
 .prosebit a{color:var(--text-hi);font-weight:500}
 @media (max-width:900px){ .hsec{grid-template-columns:minmax(0,1fr);margin-top:88px} }
