@@ -475,6 +475,8 @@ const CRAFT_SPOTS = { m: "raider_cache", f: "med_crate" };  /* kinds with their 
 const CRAFT_WANT = ["where", "find", "need", "nearest", "closest", "get some", "get me", "looking for", "look for", "farm", "search", "loot", "any ", "spawn"];
 const CRAFTS = ((window.CRAFT || {}).items || []).map(([n, c, al]) => ({ n, c, al }));
 function findCraft(t) {
+  /* place names aren't items: Dam's "Scrap Yard" isn't asking for scrap (7 Nov) */
+  t = PLACES.reduce((s, p) => s.split(" " + p.n.toLowerCase().replace(/^the /, "") + " ").join(" "), t);
   let best = null, len = 0;
   for (const it of CRAFTS) for (const a of it.al) if (a.length > len && t.includes(" " + a + " ")) { best = it; len = a.length; best.said = a; }
   if (!best) return null;
@@ -849,9 +851,14 @@ function answerOn(raw, opts) {
   if (S.last && S.last.a && has(t, ["more detail", "more details", "tell me more", "say again", "say that again", "repeat", "not sure", "didn't catch", "didnt catch", " what ", "pardon", "explain"]) && t.trim().split(" ").length <= 6) {
     const a = Object.assign({}, S.last.a); a.say = a.full || a.say; return a;
   }
-  if (has(t, [" new raid", "just spawned", " spawned", "dropped in", "dropping in", " new run", "starting a run", "starting a raid", "loading in", "loaded in", "loaded into", "jumping in", "jumping back in", "going back in", "heading back in", "new match", "new game", "deploying", "queueing up", "queuing up"])) { S.place = null; S.lastMap = null; S.pending = null; S.minutesLeft = null; S.raidAt = Date.now(); S.avoid = []; S.exitSaid = null; S.helpAt = 0; S.guessTold = false; S.looseTold = false; save(); return { show: "New raid. Good luck.", say: "New raid. Good luck. I'll ask where you are when an answer needs it." }; }
-  if (has(t, [" i died", " died ", " dead ", " killed ", "got me ", " got downed", " i'm down ", " im down ", " wiped", " got wiped", "lost all my stuff", "lost all my gear", "lost all my loot", "lost all my kit", "lost everything", "lost my loadout", "back in the lobby", "back to the lobby", "back in speranza", "back to speranza", " bled out"]) && !findItem(t)) {  /* "dead flowers" is an item, not a death */ S.place = null; S.minutesLeft = null; S.raidAt = null; save(); return { show: "Unlucky. Your quest's still here.", say: "Unlucky. Your quest and step are still here when you drop back in.", ctx: S.quest ? S.quest + ", step " + ((S.step || 0) + 1) : "" }; }
-  if (has(t, ["extracted", " made it out", " got out ", "home safe", "made it home", "made it back", "got home", "safe and sound", "got away", "i'm out safe", "im out safe"])) { S.place = null; S.minutesLeft = null; S.raidAt = null; save(); return { show: "Nice. Raid cleared.", say: "Nice one. Raid cleared." }; }
+  if (has(t, [" new raid", "just spawned", " spawned", "dropped in", "dropping in", " new run", "starting a run", "starting a raid", "loading in", "loaded in", "loaded into", "jumping in", "jumping back in", "going back in", "heading back in", "new match", "new game", "deploying", "queueing up", "queuing up"])) { S.place = null; S.want = null; S.lastMap = null; S.pending = null; S.minutesLeft = null; S.raidAt = Date.now(); S.avoid = []; S.exitSaid = null; S.helpAt = 0; S.guessTold = false; S.looseTold = false; save(); return { show: "New raid. Good luck.", say: "New raid. Good luck. I'll ask where you are when an answer needs it." }; }
+  if (has(t, [" i died", " died ", " dead ", " killed ", "got me ", " got downed", " i'm down ", " im down ", " wiped", " got wiped", "lost all my stuff", "lost all my gear", "lost all my loot", "lost all my kit", "lost everything", "lost my loadout", "back in the lobby", "back to the lobby", "back in speranza", "back to speranza", " bled out"]) && !findItem(t)) {  /* "dead flowers" is an item, not a death */ S.place = null; S.want = null; S.minutesLeft = null; S.raidAt = null; save(); return { show: "Unlucky. Your quest's still here.", say: "Unlucky. Your quest and step are still here when you drop back in.", ctx: S.quest ? S.quest + ", step " + ((S.step || 0) + 1) : "" }; }
+  if (has(t, ["extracted", " made it out", " got out ", "home safe", "made it home", "made it back", "got home", "safe and sound", "got away", "i'm out safe", "im out safe"])) { S.place = null; S.want = null; S.minutesLeft = null; S.raidAt = null; save(); return { show: "Nice. Raid cleared.", say: "Nice one. Raid cleared." }; }
+  /* dropping what you're after: "never mind", "forget the Sentinel", "not looking for apricots any more" (7 Nov). Where you are stays */
+  if (has(t, ["never mind", "nevermind", "cancel that", "cancel it", "forget it", "forget that", "forget the ", "forget about", "not looking for", "no longer looking", "don't need it", "dont need it", "don't need that", "dont need that", "stop looking", "clear the route", "clear route", "clear that", "clear it"])) {
+    S.want = null; S.pending = null; S.exitSaid = null; S.avoid = []; save();
+    return { show: "Dropped it.", say: "Okay, dropped it. " + vary(["What do you need?", "What are you after?", "What's next?"]), map: S.place ? { you: S.place, stars: [] } : undefined };
+  }
   if (has(t, ["where were we", "recap"])) {
     const bits = ["You're on " + MAP.name + "."];
     const cq = QUESTS.find(q => q.n === S.quest);
@@ -872,11 +879,13 @@ function answerOn(raw, opts) {
   const setsLocation = placeMention && (/\b(i'm|i am|im|we're|we are)\s+(at|near|in|by|next to|outside|on|inside|beside|around|close to)\b/.test(t) || (/\b(at|near|by|next to|beside|outside|inside|around|close to|from)\b/.test(t) && !has(t, ["where", "how"])));  /* "nearest exit from the Village" (5 Nov) */
   const dirQ = !!findCompass(t) && (/\b(of me|of here|of my|to my|from me)\b/.test(t) || has(t, ["anything", "what's to", "whats to", "what is to", "is there", "any exit", "exit to", "exits to", "towards", "way out to", "out to the"]));
   const dirOnly = !placeMention && !dirQ && !has(t, ["step"]) && (iAm || /\b(from|in|on|around|near) the\b/.test(t)) ? findDir(t) : null;  /* "I'm in the south-east", "evac from the south east" */  /* "I'm in the south-east" */
-  if (setsLocation || dirOnly) {
+  if (!opts.noSet && (setsLocation || dirOnly)) {
     const w = setsLocation ? { n: placeMention.n, y: placeMention.y, x: placeMention.x } : dirOnly;
     if (!S.place || S.place.n !== w.n) { S.avoid = []; S.exitSaid = null; S.hatchTold = false; }  /* somewhere new: every exit is back on the table */
     S.place = w; S.placeAt = Date.now(); S.raidAt = S.raidAt || Date.now(); save();
-    if (!lootSaid && !has(t, ["extract", "exit", " out ", "leave", "evac", "escape", "step", "where", "hatch", ...ENEMY_WORDS])) {  /* " out " as a word: "south" contains "out" */
+    if (!lootSaid && !findCraft(t) && !has(t, ["extract", "exit", " out ", "leave", "evac", "escape", "step", "where", "hatch", ...ENEMY_WORDS])) {  /* " out " as a word: "south" contains "out" */
+      /* "I'm over by the Dam now": still after the same thing, so answer it from here (7 Nov) */
+      if (S.want && !findCraft(t)) { const b = answer(S.want, { noSet: true }); if (b && !b.fallback && !(b.map && b.map.pick)) { b.say = "Got it. " + b.say; return b; } }
       
       return { show: "Got it. " + w.n.charAt(0).toUpperCase() + w.n.slice(1) + ".", say: "Got it, " + w.n + ". " + vary(["What do you need?", "What are you after?", "What's next?"]), map: { you: w.rough ? Object.assign({ guess: true }, w) : w, stars: [] } };  /* a place on its own isn't asking for the way out (5 Nov, Tony's test) */
     }
@@ -1531,17 +1540,23 @@ function pinHere(pt) {
   S.place = { n: nb ? nb.n : "your pin", y: pt.y, x: pt.x, pinned: true }; S.placeAt = Date.now(); S.raidAt = S.raidAt || Date.now();
   if (listening) { cancelledAt = Date.now(); stopListening(); }
   if (document.body.classList.contains("speaking")) stopSpeaking();
-  let q = S.pending ? S.pending.q : S.last && S.last.q; S.pending = null; save();
-  /* if the last thing said was itself a location ("I'm at the Village"), re-asking it would put you back there:
-     the pin wins, and like a spoken location it asks what you need, rather than assuming the way out (5 Nov) */
-  if (q && findWhere(norm(q))) q = null;
-  const a = q ? answer(q) : null;
+  let q = S.pending ? S.pending.q : S.want; S.pending = null; save();
+  /* noSet: a place in the ask ("I'm at the Scrap Yard, where's a Sentinel?") doesn't move you back there; the pin wins.
+     No target yet: like a spoken location, it asks what you need (5 Nov) */
+  const a = q ? answer(q, { noSet: true }) : null;
   if (!a || a.map && a.map.pick) { deliver(q || "pin", { show: "Got it" + (nb ? ", " + nb.n.replace(/^the /, "") : "") + ".", say: "Got it. What do you need?", map: { you: S.place, stars: [] } }); return; }
   a.say = "Got it. " + a.say; deliver(q, a);
 }
+/* what you're after (a Sentinel, apricots, the way out) is kept apart from what you last said, so a new pin or
+   "I'm over here now" re-answers it from there, even when the ask also named a place (7 Nov, Tony's test) */
+function remember(q, a) {
+  S.last = { q, a };
+  if (q && q !== MAP_ASK && q !== "pin" && a.map && a.map.stars && a.map.stars.length && !a.fallback) S.want = q;
+  save();
+}
 function deliver(q, a) {
   const go = () => { if (a.after) a.after(); if (a.follow === false) { convoUntil = 0; endFollow(); return; } convoUntil = Date.now() + CONVO_MS; setTimeout(() => listen({ auto: true }), 350); };
-  S.last = { q, a }; save();
+  remember(q, a);
   renderAnswer(q, a);
   speak(a.say, go);
 }
@@ -1557,7 +1572,7 @@ async function handle(q) {
   if (a.fallback) { const b = await aiAnswer(q); if (b) a = b; }
   const go = () => { if (a.after) a.after(); if (a.follow === false) { convoUntil = 0; endFollow(); return; } convoUntil = Date.now() + CONVO_MS; setTimeout(() => listen({ auto: true }), 350); };
   if (a.keepLast && S.last) { renderAnswer(S.last.q, S.last.a); speak(a.say, go); return; }
-  S.last = { q, a }; save();
+  remember(q, a);
   renderAnswer(q, a);
   speak(a.say, go);
 }

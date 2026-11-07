@@ -33,10 +33,23 @@ const singular = w => /ies$/.test(w) ? w.slice(0, -3) + "y" : /[^s]s$/.test(w) ?
 const say = n => n.toLowerCase().replace(/\(.*?\)/g, " ").replace(/\bmk\. ?/g, "mark ").replace(/[’]/g, "'").replace(/[^a-z0-9' ]/g, " ").replace(/\s+/g, " ").trim();
 const raw = fs.readFileSync(path.join(SRC, 'items.txt'), 'utf8').split('\n').filter(l => l && !l.startsWith('#')).join('').split(';');
 const items = [], taken = new Map();
+/* what players actually say (7 Nov, Tony's test: "scrap metal" isn't an item). Kept short: only words that clearly mean one item */
+const SLANG = {
+  "Metal Parts": ["scrap", "scrap metal", "metal scrap", "metal", "bits of metal", "metal bits"],
+  "Rubber Parts": ["rubber"],
+  "Plastic Parts": ["plastic", "plastic bits"],
+  "Electrical Components": ["electronics", "electrical bits", "electricals"],
+  "Mechanical Components": ["mechanical bits", "mechanicals"],
+  "Simple Gun Parts": ["gun parts", "gun bits"],
+  "Chemicals": ["chems"],
+  "Fabric": ["cloth"],
+  "Wires": ["cables"]
+};
 for (const r of raw) {
   const [n, code] = r.split('~'); if (HAS_SPOTS.has(n)) continue;
   const base = say(n), words = base.split(' '), last = words.at(-1);
   const al = [...new Set([base, [...words.slice(0, -1), plural(last)].join(' '), [...words.slice(0, -1), singular(last)].join(' ')])];
+  al.push(...(SLANG[n] || []));
   const mine = al.filter(a => !taken.has(a)); mine.forEach(a => taken.set(a, n));
   items.push([n, code.slice(1), mine]);
 }
