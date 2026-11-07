@@ -1,0 +1,26 @@
+name: Site size check
+# Fails the push if any site file is over 5 MB or the site is over 50 MB (CLAUDE.md rule 3)
+on:
+  push:
+    paths: ["site/**"]
+  pull_request:
+    paths: ["site/**"]
+jobs:
+  size:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check file and folder sizes
+        run: |
+          big=$(find site -type f -size +5M)
+          if [ -n "$big" ]; then
+            echo "::error::Files over 5 MB in site/ (compress them or move them to marketing/):"
+            ls -lh $big
+            exit 1
+          fi
+          total=$(du -sm site | cut -f1)
+          echo "site/ is ${total} MB"
+          if [ "$total" -gt 50 ]; then
+            echo "::error::site/ is ${total} MB, over the 50 MB limit"
+            exit 1
+          fi
