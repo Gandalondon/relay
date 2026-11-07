@@ -33,6 +33,7 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 - Everyday item names (scrap, scrap metal, rubber, plastic, electronics, gun parts, chems, cloth, cables) in `tools/items/genitems.js` SLANG; place names never read as items (Dam's Scrap Yard).
 - Clear route: fourth map button (route icon, slash up to the right), only while a route shows. Same as saying never mind: drops the target, keeps your location. X unchanged: home, fresh start.
 - Known miss: "how do I get to the Scrap Yard" with no location set falls back.
+- Next session, captures (Tony, 7 Nov late; visuals not updated yet): swap maps across the screens (site homepage phones, Play screenshots, portfolio) so they aren't all the same Blue Gate Village crop, and avoid two yellow loot-zone outlines in one screen. Scenes live in `tools/captures/scenes.js`. Recaptures will also show the new clear route button wherever a route is drawn.
 
 ## Next (pick one)
 1. Tony on the Pixel: map buttons, location-only reply, About links open the browser, "show me the Dam map", Hey Relay with game audio.
