@@ -1,0 +1,743 @@
+{
+ "read": "7 Nov 2026",
+ "sources": {
+  "allthings": "https://allthings.how/arc-raiders/map/named-places/ (categories as the in-game map marks them)",
+  "leprestore": "https://leprestore.com/guides/arc-raiders/map-loot-extraction/"
+ },
+ "places": [
+  {
+   "map": "Pendola Pass",
+   "place": "Almatera Station",
+   "allthings": [
+    "Commercial"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Pendola Pass",
+   "place": "Cielo Sereno Observatory",
+   "allthings": [
+    "Exodus",
+    "Technological"
+   ],
+   "leprestore": [
+    "Exodus",
+    "Technological"
+   ]
+  },
+  {
+   "map": "Pendola Pass",
+   "place": "Commissary Supermarket",
+   "allthings": [
+    "Commercial",
+    "Medical"
+   ],
+   "leprestore": [
+    "Commercial",
+    "Medical"
+   ]
+  },
+  {
+   "map": "Pendola Pass",
+   "place": "Deep-Space Telescope",
+   "allthings": [
+    "Exodus"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Pendola Pass",
+   "place": "Fallen Emperor",
+   "allthings": [
+    "ARC"
+   ],
+   "leprestore": [
+    "ARC"
+   ]
+  },
+  {
+   "map": "Pendola Pass",
+   "place": "Frozen River",
+   "allthings": [
+    "Nature"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Pendola Pass",
+   "place": "Loading Platforms",
+   "allthings": [
+    "Exodus",
+    "Industrial"
+   ],
+   "leprestore": [
+    "Industrial",
+    "Exodus"
+   ]
+  },
+  {
+   "map": "Pendola Pass",
+   "place": "Old Hamlet",
+   "allthings": [
+    "Old World"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Pendola Pass",
+   "place": "Old Town",
+   "allthings": [
+    "Old World",
+    "Residential"
+   ],
+   "leprestore": [
+    "Old World",
+    "Residential"
+   ]
+  },
+  {
+   "map": "Pendola Pass",
+   "place": "Railroad Junction",
+   "allthings": [
+    "Electrical",
+    "Mechanical"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Pendola Pass",
+   "place": "Railyard",
+   "allthings": [
+    "Industrial",
+    "Mechanical"
+   ],
+   "leprestore": [
+    "Industrial",
+    "Mechanical"
+   ]
+  },
+  {
+   "map": "Pendola Pass",
+   "place": "Researcher Lodgings",
+   "allthings": [
+    "Residential"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Dam",
+   "place": "Control Tower",
+   "allthings": [
+    "Security",
+    "Technological"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Dam",
+   "place": "Controlled Access Zone",
+   "allthings": [
+    "ARC",
+    "Mechanical"
+   ],
+   "leprestore": [
+    "ARC",
+    "Mechanical"
+   ]
+  },
+  {
+   "map": "Dam",
+   "place": "Electrical Substation",
+   "allthings": [
+    "Electrical"
+   ],
+   "leprestore": [
+    "Electrical"
+   ]
+  },
+  {
+   "map": "Dam",
+   "place": "Hydroponic Dome Complex",
+   "allthings": [
+    "Industrial",
+    "Nature",
+    "Security"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Dam",
+   "place": "Old Battleground",
+   "allthings": [
+    "ARC"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Dam",
+   "place": "Power Generation Complex",
+   "allthings": [
+    "Electrical",
+    "Industrial"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Dam",
+   "place": "Primary Facility",
+   "allthings": [
+    "Industrial",
+    "Mechanical"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Dam",
+   "place": "Research & Administration",
+   "allthings": [
+    "Commercial",
+    "Technological"
+   ],
+   "leprestore": [
+    "Medical"
+   ]
+  },
+  {
+   "map": "Dam",
+   "place": "Scrap Yard",
+   "allthings": [
+    "Industrial",
+    "Mechanical"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Dam",
+   "place": "Testing Annex",
+   "allthings": [
+    "Commercial",
+    "Medical"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Dam",
+   "place": "Water Treatment Control",
+   "allthings": [
+    "Industrial",
+    "Mechanical"
+   ],
+   "leprestore": [
+    "Industrial"
+   ]
+  },
+  {
+   "map": "Buried City",
+   "place": "Galleria",
+   "allthings": [
+    "Commercial"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Buried City",
+   "place": "Grandioso Apartments",
+   "allthings": [
+    "Residential"
+   ],
+   "leprestore": [
+    "Residential"
+   ]
+  },
+  {
+   "map": "Buried City",
+   "place": "Hospital",
+   "allthings": [
+    "Medical"
+   ],
+   "leprestore": [
+    "Medical"
+   ]
+  },
+  {
+   "map": "Buried City",
+   "place": "Library",
+   "allthings": [
+    "Commercial",
+    "Old World"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Buried City",
+   "place": "Marano Park",
+   "allthings": [
+    "Nature"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Buried City",
+   "place": "Parking Garage",
+   "allthings": [
+    "Mechanical"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Buried City",
+   "place": "Piazza Arbusto",
+   "allthings": [
+    "Commercial",
+    "Medical"
+   ],
+   "leprestore": [
+    "Commercial",
+    "Medical"
+   ]
+  },
+  {
+   "map": "Buried City",
+   "place": "Plaza Rosa",
+   "allthings": [
+    "Commercial",
+    "Medical"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Buried City",
+   "place": "Red Tower",
+   "allthings": [
+    "Residential"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Buried City",
+   "place": "Research",
+   "allthings": [
+    "Medical",
+    "Technological"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Buried City",
+   "place": "Santa Maria Houses",
+   "allthings": [
+    "Old World",
+    "Residential"
+   ],
+   "leprestore": [
+    "Residential"
+   ]
+  },
+  {
+   "map": "Buried City",
+   "place": "Space Travel",
+   "allthings": [
+    "Commercial",
+    "Technological"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Buried City",
+   "place": "Town Hall",
+   "allthings": [
+    "Old World"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Spaceport",
+   "place": "Arrival Building",
+   "allthings": [
+    "Commercial",
+    "Technological"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Spaceport",
+   "place": "Container Storage",
+   "allthings": [
+    "Industrial",
+    "Mechanical"
+   ],
+   "leprestore": [
+    "Industrial"
+   ]
+  },
+  {
+   "map": "Spaceport",
+   "place": "Control Tower A6",
+   "allthings": [
+    "Commercial",
+    "Technological"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Spaceport",
+   "place": "Departure Building",
+   "allthings": [
+    "Commercial",
+    "Technological"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Spaceport",
+   "place": "Fuel Control",
+   "allthings": [
+    "Electrical",
+    "Mechanical"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Spaceport",
+   "place": "Launch Towers",
+   "allthings": [
+    "Security",
+    "Technological"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Spaceport",
+   "place": "North Trench Tower",
+   "allthings": [
+    "Technological"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Spaceport",
+   "place": "Rocket Assembly",
+   "allthings": [
+    "Exodus",
+    "Industrial"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Spaceport",
+   "place": "Shipping Warehouse",
+   "allthings": [
+    "Industrial",
+    "Mechanical"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Spaceport",
+   "place": "South Trench Tower",
+   "allthings": [
+    "Technological"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Spaceport",
+   "place": "Vehicle Maintenance",
+   "allthings": [
+    "Industrial",
+    "Mechanical"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Blue Gate",
+   "place": "Adorned Wreckage",
+   "allthings": [
+    "Industrial",
+    "Mechanical"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Blue Gate",
+   "place": "Ancient Fort",
+   "allthings": [
+    "Old World",
+    "Technological"
+   ],
+   "leprestore": [
+    "Old World",
+    "Technological"
+   ]
+  },
+  {
+   "map": "Blue Gate",
+   "place": "Barren Clearing",
+   "allthings": [
+    "ARC"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Blue Gate",
+   "place": "Checkpoint",
+   "allthings": [
+    "Mechanical"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Blue Gate",
+   "place": "Maintenance Wing",
+   "allthings": [
+    "Electrical",
+    "Mechanical"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Blue Gate",
+   "place": "Olive Grove",
+   "allthings": [
+    "Nature"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Blue Gate",
+   "place": "Pilgrim's Peak",
+   "allthings": [
+    "Electrical",
+    "Technological"
+   ],
+   "leprestore": [
+    "Electrical",
+    "Technological"
+   ]
+  },
+  {
+   "map": "Blue Gate",
+   "place": "Raider's Refuge",
+   "allthings": [
+    "Residential"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Blue Gate",
+   "place": "Reinforced Reception",
+   "allthings": [
+    "Security",
+    "Technological"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Blue Gate",
+   "place": "Ruined Homestead",
+   "allthings": [
+    "Old World",
+    "Residential"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Blue Gate",
+   "place": "Security Wing",
+   "allthings": [
+    "Security",
+    "Technological"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Blue Gate",
+   "place": "Traffic Tunnel",
+   "allthings": [
+    "Mechanical"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Blue Gate",
+   "place": "Trapper's Glade",
+   "allthings": [
+    "Nature"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Blue Gate",
+   "place": "Village",
+   "allthings": [
+    "Commercial",
+    "Residential"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Blue Gate",
+   "place": "Warehouse Complex",
+   "allthings": [
+    "Industrial"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Stella Montis",
+   "place": "Assembly Workshops",
+   "allthings": [
+    "Technological"
+   ],
+   "leprestore": [
+    "Technological"
+   ]
+  },
+  {
+   "map": "Stella Montis",
+   "place": "Business Center",
+   "allthings": [
+    "Commercial",
+    "Exodus"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Stella Montis",
+   "place": "Communications",
+   "allthings": [
+    "Electrical",
+    "Technological"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Stella Montis",
+   "place": "Eastern Tunnel",
+   "allthings": [
+    "Electrical",
+    "Old World"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Stella Montis",
+   "place": "Lobby Metro",
+   "allthings": [
+    "Industrial",
+    "Technological"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Stella Montis",
+   "place": "Western Tunnel",
+   "allthings": [
+    "Electrical"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Riven Tides",
+   "place": "Azzurro Beach",
+   "allthings": [
+    "Residential"
+   ],
+   "leprestore": [
+    "Nature"
+   ]
+  },
+  {
+   "map": "Riven Tides",
+   "place": "Customs House",
+   "allthings": [
+    "Electrical",
+    "Industrial"
+   ],
+   "leprestore": [
+    "Electrical",
+    "Industrial"
+   ]
+  },
+  {
+   "map": "Riven Tides",
+   "place": "Dried Riverbed",
+   "allthings": [
+    "Nature"
+   ],
+   "leprestore": [
+    "Nature"
+   ]
+  },
+  {
+   "map": "Riven Tides",
+   "place": "Hotel Panorama Azzurro",
+   "allthings": [
+    "Commercial",
+    "Residential"
+   ],
+   "leprestore": [
+    "Commercial",
+    "Residential"
+   ]
+  },
+  {
+   "map": "Riven Tides",
+   "place": "Port Authority Building",
+   "allthings": [
+    "Exodus",
+    "Technological"
+   ],
+   "leprestore": [
+    "Exodus",
+    "Technological"
+   ]
+  },
+  {
+   "map": "Riven Tides",
+   "place": "Stacking Yard",
+   "allthings": [
+    "Exodus",
+    "Industrial"
+   ],
+   "leprestore": [
+    "Exodus",
+    "Industrial"
+   ]
+  },
+  {
+   "map": "Riven Tides",
+   "place": "Weighing Checkpoint",
+   "allthings": [
+    "Industrial",
+    "Mechanical"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Riven Tides",
+   "place": "Wreckage",
+   "allthings": [
+    "ARC"
+   ],
+   "leprestore": null
+  },
+  {
+   "map": "Stella Montis",
+   "place": "Medical Research",
+   "allthings": null,
+   "leprestore": [
+    "Medical"
+   ]
+  },
+  {
+   "map": "Stella Montis",
+   "place": "Cultural Archives",
+   "allthings": null,
+   "leprestore": [
+    "Old World",
+    "Commercial"
+   ]
+  }
+ ]
+}

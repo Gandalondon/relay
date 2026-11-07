@@ -9,5 +9,5 @@ module.exports = [
   { set: HTR, say: "I'm upstairs now", want: { advance: true } },
   { set: HTR, say: "I read the instructions wrong, what's this step", want: { same: true } },
   { set: HTR, say: "tick that off", want: { advance: true } },
-  { set: HTR, say: "where do I find a pop trigger", want: { fallback: true } }
+  { set: HTR, say: "where do I find a pop trigger", want: { show: "Pop trigger: from Pops" } }  /* an ARC part, not the ARC: now a crafting item (7 Nov) */
 ];

@@ -268,6 +268,7 @@ body.session .cog,body.listening .cog,body.speaking .cog,body.follow .cog{displa
 <script src="data-riven-tides.js"></script>
 <script src="data-pendola-pass.js"></script>
 <script src="data-loot.js"></script>
+<script src="data-items.js"></script>
 <script src="data-zones.js"></script>
 <script>
 const $ = id => document.getElementById(id);
@@ -464,6 +465,60 @@ function itemAnswer(it) {
   }
   const names = it.spots ? "the Village and the Abandoned Housing Project" : (it.areas || []).slice(0, 3).join(", ").replace(/, ([^,]*)$/, " or $1");
   return { show: it.n + ": " + (it.spots ? "Village, Housing Project." : (it.areas || []).slice(0, 2).join(", ") + "."), say: it.n + ". Try " + names + "." + (it.loose ? " No fixed spot, it's a search." : it.spots || !it.note ? "" : " " + it.note) + " Tell me where you are and I'll find the nearest.", map: { you: null, stars: pts }, ctx: "Soul's Offering item" };
+}
+
+/* crafting items by name (7 Nov): "where do I find wires?". MetaForge says which kinds of loot each item drops from
+   (Electrical, Medical...); allthings.how says which named places carry those kinds. Relay points to the nearest such place.
+   Built by tools/items/genitems.js into data-items.js. */
+const CRAFT_CAT = { a: "ARC", b: "electrical", c: "mechanical", d: "nature", e: "residential", f: "medical", g: "commercial", h: "Old World", i: "technological", j: "security", k: "Exodus", l: "industrial", m: "raider" };
+const CRAFT_SPOTS = { m: "raider_cache", f: "med_crate" };  /* kinds with their own MetaForge containers: raider caches, med crates */
+const CRAFT_WANT = ["where", "find", "need", "nearest", "closest", "get some", "get me", "looking for", "look for", "farm", "search", "loot", "any ", "spawn"];
+const CRAFTS = ((window.CRAFT || {}).items || []).map(([n, c, al]) => ({ n, c, al }));
+function findCraft(t) {
+  let best = null, len = 0;
+  for (const it of CRAFTS) for (const a of it.al) if (a.length > len && t.includes(" " + a + " ")) { best = it; len = a.length; best.said = a; }
+  if (!best) return null;
+  /* a single word like "radio" or "oil" only counts as asking for it when it's the whole ask, or with a find word */
+  const rest = t.replace(" " + best.said + " ", " ").trim().split(" ").filter(w => w && !/^(the|a|an|some|i|me|for|of|to|is|are|do|can|please|any)$/.test(w));
+  return rest.length <= 1 || has(t, CRAFT_WANT) ? best : null;
+}
+const craftCats = c => andList([...c].map(k => CRAFT_CAT[k]));
+function craftTargets(id, c) {
+  const pl = (((window.CRAFT || {}).places || {})[id] || []).filter(([n, k]) => [...k].some(x => c.includes(x)));
+  const known = id === MAP.id ? AREAS : [];
+  const out = pl.map(([n]) => known.find(a => a.n === n)).filter(Boolean);
+  for (const k of Object.keys(CRAFT_SPOTS)) if (c.includes(k)) out.push(...lootPts(id, CRAFT_SPOTS[k]).filter(p => !p.lock).map(p => Object.assign(p, { n: k === "m" ? "a raider cache" : "a med crate", spot: true })));
+  return out;
+}
+function craftAnswer(it, raw, psNow) {
+  const N = it.n, arcOnly = it.c === "a";
+  /* spoken: "Rubber parts turn up in..." (lower case but ARC and MK, plural verb for plural names) */
+  const low1 = N.split(" ").map((w, i) => /^(ARC|MK\.?|[IV]+|TV)$/.test(w) ? w : i ? w.toLowerCase() : w).join(" "), lowN = low1.charAt(0).toLowerCase() + low1.slice(1);
+  const turn = /[^s]s$|ies$|^Olives$/.test(N.split(" ").at(-1)) ? " turn up in " : " turns up in ";
+  if (arcOnly) {
+    const low = N.toLowerCase(), big = ALL_ARC().find(k => new RegExp("\\b" + k + "\\b").test(low));
+    if (big) return null;  /* "Rocketeer Driver": the ARC finder points to the nearest Rocketeer */
+    const small = Object.keys(SMALL_ARC).find(k => new RegExp("\\b" + k + "\\b").test(low));
+    if (small) return { show: low1 + ": from " + SMALL_ARC[small] + ".", say: low1 + ". Salvage it from " + SMALL_ARC[small].toLowerCase() + ". They roam the whole map, so I don't track them." };
+  }
+  const pts = craftTargets(MAP.id, it.c);
+  const kinds = craftCats(it.c), arcTip = it.c.includes("a") ? " Salvage it from ARC you destroy." : "";
+  if (!pts.length) {
+    const on = Object.keys(MAP_NAMES).filter(id => id !== MAP.id && ready(id) && (((window.CRAFT || {}).places || {})[id] || []).some(([n, k]) => [...k].some(x => it.c.includes(x)))).map(id => MAP_NAMES[id]);
+    if (arcOnly) return { show: low1 + ": from ARC.", say: low1 + ". Salvage it from ARC you destroy." };
+    return { show: low1 + ": no " + kinds + " spots here.", say: low1 + turn + kinds + " loot. I have no spots like that on " + MAP.name + (on.length ? ". Try " + andList(on.slice(0, 3)) + "." : ".") + arcTip };
+  }
+  if (psNow === "stale") return askStill(raw);
+  if (psNow !== "fresh") {
+    const named = [...new Set(pts.filter(p => !p.spot).map(p => p.n))], q = askWhere(raw);
+    q.show = low1 + ": where are you?";
+    q.say = low1 + turn + kinds + " loot." + (named.length ? " On " + MAP.name + " that's " + (named.length > 3 ? named.slice(0, 3).join(", ") + " and more" : andList(named)) + "." : "") + arcTip + " Where are you? I'll find the nearest.";
+    q.map = { you: null, stars: pts.filter(p => !p.spot).length ? pts.filter(p => !p.spot) : [], pick: true };
+    return q;
+  }
+  const b = near(S.place, pts), dir = compass(S.place, b), close = dist(S.place, b) < 80 && !S.place.rough;
+  if (close) return { show: low1 + ": search here.", say: "You're right by " + b.n + ". It's " + kinds + " loot, so search there for " + lowN + "." + arcTip, map: { you: S.place, stars: [b] } };
+  return { show: low1 + ": " + (b.spot ? b.n.replace(/^a /, "") : b.n) + ", " + dir + ".", say: low1 + turn + kinds + " loot. Nearest is " + b.n + ", " + (S.place.rough ? "" : far(S.place, b)) + dir + " of you." + arcTip, map: { you: S.place, stars: [b] } };
 }
 
 /* =================== state =================== */
@@ -915,7 +970,9 @@ function answerOn(raw, opts) {
   const loot = !wantsExit && lootSaid;  /* place names first: "Car Park" is a place, not a car */
   if (loot) return lootAnswer(loot, raw, psNow);
   const item = findItem(t);
-  if (item && !wantsExit) return itemAnswer(item);
+  if (item && !wantsExit && !(MAP.id !== "blue-gate" && findCraft(t))) return itemAnswer(item);  /* event items off Blue Gate: the crafting answer below knows every map */
+  const craft = !wantsExit && findCraft(t);
+  if (craft) { const c = craftAnswer(craft, raw, psNow); if (c) return c; }
   const ta = arcIn(t);
   const enemy = ENEMY_WORDS.find(k => new RegExp("\\b" + k + "\\b").test(ta));
   if (!enemy && !item) {

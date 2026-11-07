@@ -213,5 +213,15 @@ module.exports = [
   { set: NONE, say: "on a balanced harvest", want: { quest: "A Balanced Harvest", step: 1 } },
   { set: { quest: "Straight Record", step: 2 }, say: "done", want: { advance: true } },
   { set: NONE, say: "starting straight record", want: { map: "dam", show: "Victory Ridge" } },
-  { set: { map: "dam", place: "Control Tower" }, say: "I'm having trouble, nearest exit", want: { map: "dam", exitName: "Water Treatment Elevator" } }
+  { set: { map: "dam", place: "Control Tower" }, say: "I'm having trouble, nearest exit", want: { map: "dam", exitName: "Water Treatment Elevator" } },
+  /* crafting items by name (7 Nov) */
+  { set: { map: "blue-gate", place: "Village" }, say: "where do I find wires", want: { show: "Wires: Reinforced Reception" } },
+  { set: { map: "dam" }, say: "I need rubber parts", want: { show: "Rubber parts: where are you?" } },
+  { set: { map: "buried-city", place: "Library" }, say: "nearest antiseptic", want: { show: "Antiseptic: med crate" } },
+  { set: { map: "spaceport", place: "Launch Towers" }, say: "where can I get exodus modules", want: { show: "Exodus modules: Rocket Assembly" } },
+  { set: { map: "stella-montis", place: "Lobby" }, say: "any batteries near me", want: { show: "Battery: Lobby Metro" } },
+  { set: { map: "dam", place: "Control Tower" }, say: "where do I get a wasp driver", want: { show: "Wasp driver: from Wasps" } },
+  { set: { map: "dam", place: "Control Tower" }, say: "rocketeer driver", want: { enemy: true } },
+  { set: { map: "riven-tides", place: "Wharf" }, say: "expired respirator", want: { show: "Expired respirator: med crate" } },
+  { set: { map: "dam", place: "Control Tower" }, say: "turn the radio down", want: { fallback: true } }
 ];
