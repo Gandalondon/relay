@@ -28,6 +28,12 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 - Map buttons always amber, icons never change: map (whole map, tap again for back to the answer), filled locate dot (set location), route.
 - Settings: cream headings 600 18/24, rows 500 18/24, 48 px between sections. About is one line, four rows that open the site (feedback, how it works, privacy, credits and legal) with an arrow_outward icon, one line of credits, then the version.
 
+## 7 Nov evening: Tony's raid test fixes (committed, not pushed)
+- A new pin or spoken location re-answers what you were after (S.want) from there, even when the ask named a place. Was inconsistent: dropped the target when the ask included a place.
+- Everyday item names (scrap, scrap metal, rubber, plastic, electronics, gun parts, chems, cloth, cables) in `tools/items/genitems.js` SLANG; place names never read as items (Dam's Scrap Yard).
+- Clear route: fourth map button (route icon, slash up to the right), only while a route shows. Same as saying never mind: drops the target, keeps your location. X unchanged: home, fresh start.
+- Known miss: "how do I get to the Scrap Yard" with no location set falls back.
+
 ## Next (pick one)
 1. Tony on the Pixel: map buttons, location-only reply, About links open the browser, "show me the Dam map", Hey Relay with game audio.
 2. Done 6 Nov: distances on all seven maps. Scales fitted from allthings.how place pages (`tools/places/dist/*.json`, `node tools/places/scale.js`), typical error 1 to 10%; `tests/maps.js` checks them. Dam's central complex is the roughest (multi-level, published figures disagree). Fixed MetaForge's "Hiltop hatch" to Hilltop Hatch.
