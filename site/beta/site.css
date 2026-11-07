@@ -215,16 +215,14 @@ canvas.topo{display:none}
 .hnote{max-width:34em}
 .pgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:40px 48px;margin-top:40px}
 .pgrid:first-child{margin-top:0}  /* no intro line above it: line up with the section title */
-.hsec.say{grid-template-columns:max-content minmax(0,1fr);column-gap:0}  /* phrase grid sized to its words and centred in the space after the title, so the gap on its left matches the gap on its right (7 Nov) */
-.say .pgrid{grid-template-columns:repeat(2,minmax(0,max-content));column-gap:64px;justify-self:center;margin-inline:64px}
 .pcol{display:flex;flex-direction:column;gap:40px;min-width:0}  /* each column stacks on its own, so a short group doesn't leave a gap under it (7 Nov) */
 .pgroup h3{font-size:var(--h3);line-height:var(--h3-lh);font-weight:600;color:var(--text-hi)}
 .pgroup ul{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
 .pgroup li{font:400 var(--body)/var(--body-lh) var(--font);color:var(--text);text-wrap:pretty}  /* same as body text */
 .prosebit{gap:20px}
 .prosebit a{color:var(--text-hi);font-weight:500}
-@media (max-width:900px){ .hsec,.hsec.say{grid-template-columns:minmax(0,1fr);margin-top:88px;row-gap:32px} .say .pgrid{margin-inline:0;justify-self:stretch;grid-template-columns:repeat(2,minmax(0,1fr))} }
-@media (max-width:600px){ .pcol{display:contents} .pgrid,.say .pgrid{grid-template-columns:minmax(0,1fr);gap:32px} .how{grid-template-columns:40px minmax(0,1fr);gap:16px} .how .ico{width:40px;height:40px} .how .ic{width:22px;height:22px} .how h3{margin-top:5px} }
+@media (max-width:900px){ .hsec{grid-template-columns:minmax(0,1fr);margin-top:88px} }
+@media (max-width:600px){ .pcol{display:contents} .pgrid{grid-template-columns:minmax(0,1fr);gap:32px} .how{grid-template-columns:40px minmax(0,1fr);gap:16px} .how .ico{width:40px;height:40px} .how .ic{width:22px;height:22px} .how h3{margin-top:5px} }
 /* phones: the header shows the mark only, so "How it works" and "Get the app" both fit (5 Nov). The name stays for screen readers. */
 @media (max-width:600px){ .hdr .logo .name{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;padding:0} }
 @media (max-width:900px){ .hdr .wrap{height:72px} }
