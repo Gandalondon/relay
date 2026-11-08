@@ -22,9 +22,10 @@ html,body{width:100%;height:100%;background:var(--ch);color:var(--cream);font-fa
 .lock svg{width:var(--mk);height:var(--mk);overflow:hidden}
 .lock path{fill:none;stroke:var(--amber);stroke-width:10}
 .lock b{font:700 calc(var(--mk)*.9)/1 IT;letter-spacing:-.01em}
+.legal{position:absolute;left:var(--g);right:var(--g);bottom:calc(var(--g)*.5);font:500 var(--lg)/1.35 IT;color:rgba(238,232,220,.6);letter-spacing:.01em;text-wrap:pretty}
 .url{position:absolute;font:500 var(--url)/1 IT;color:var(--cream);letter-spacing:.01em}
 /* 16:9 */
-.h{--g:96px;--tag:26px;--ph:900px;--cap:46px;--big:220px;--mk:120px;--url:44px}
+.h{--lg:20px;--g:96px;--tag:26px;--ph:900px;--cap:46px;--big:220px;--mk:120px;--url:44px}
 .h .phone{height:var(--ph);top:90px;left:calc(25% - var(--ph)*.2309)}
 .h .cap{left:50%;right:var(--g);top:50%;transform:translateY(-50%)}
 .h .big{left:var(--g);top:50%;transform:translateY(-50%)}
@@ -32,7 +33,7 @@ html,body{width:100%;height:100%;background:var(--ch);color:var(--cream);font-fa
 .h .url{left:var(--g);top:calc(50% + var(--mk)*.6)}
 .h .solo .phone{left:calc(50% - var(--ph)*.2309)}
 /* 9:16 */
-.v{--g:72px;--tag:30px;--ph:1240px;--cap:52px;--big:210px;--mk:130px;--url:48px}
+.v{--lg:26px;--g:72px;--tag:30px;--ph:1240px;--cap:52px;--big:210px;--mk:130px;--url:48px}
 .v .phone{height:var(--ph);top:150px;left:calc(50% - var(--ph)*.2309)}
 .v .cap{left:var(--g);right:var(--g);top:1480px}
 .v .big{left:var(--g);bottom:300px}
@@ -56,5 +57,5 @@ const SC={
  w1:runbg+words(1), w2:runbg+words(2), w3:runbg+words(3),
  end:runbg+'<div class="lock">'+LOGO+'<b>Relay</b></div><div class="url">getarcrelay.app</div>',
 };
-st.innerHTML=SC[S];
+st.innerHTML=SC[S]+'<div class="legal">Unofficial companion app. Not affiliated with or endorsed by Embark Studios. ARC Raiders is a trademark of Embark Studios. Maps by MetaForge.</div>';
 </script></body></html>
