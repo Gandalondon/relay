@@ -26,7 +26,7 @@ def build(VER, f, name, W, H):
         run(["-framerate", "30", "-i", os.path.join(FR, "%s-type-%s" % (f, sc), "%05d.jpg"), "-vf", "settb=1/30,format=yuv420p"] + ENC + [o]); return o, TL[sc]
     def game(tag, start, d, over, grey=False, fadeout=0):  # a window of the game clip under a clear-background overlay
         o = os.path.join(OUT, "b-%s-%s.mp4" % (f, tag))
-        vf = "[0:v]%s%s[g];[g][1:v]overlay=shortest=0:eof_action=repeat,trim=duration=%.3f,format=yuv420p" % (fit, ",hue=s=0" if grey else "", d)
+        vf = "[0:v]%s%s[g];[g][1:v]overlay=shortest=0:eof_action=repeat,trim=duration=%.3f,format=yuv420p" % (fit, ",hue=s='max(0,1-t/0.2)'" if grey else "", d)  # colour drains in 0.2 s with the overlay
         if fadeout: vf += ",fade=t=out:st=%.3f:d=%.3f:color=0x1C1E22" % (d - fadeout, fadeout)
         run(["-ss", "%.3f" % start, "-t", "%.3f" % d, "-i", GAME, "-framerate", "30", "-loop", "1" if over == "legal" else "0",
              "-i", os.path.join(FR, "%s-type-%s" % (f, over), "%05d.png"), "-filter_complex", vf, "-an"] + ENC + [o])
@@ -60,5 +60,5 @@ def build(VER, f, name, W, H):
     print("wrote", dst, "%.1f s" % total, {k: round(v, 2) for k, v in at.items()})
 
 for VER in os.environ.get("VER", "b1,b2").split(","):
-    for f, name, (W, H) in (("h", "16x9", (1920, 1080)), ("v", "9x16", (1080, 1920))):
+    for f, name, (W, H) in [x for x in (("h", "16x9", (1920, 1080)), ("v", "9x16", (1080, 1920))) if x[0] in os.environ.get("FMT", "h,v")]:
         build(VER, f, name, W, H)

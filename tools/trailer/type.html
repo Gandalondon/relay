@@ -57,6 +57,24 @@ const flatPhone=()=>'<div class="ph flat" id="ph" style="--pw:var(--endph)"><div
 const ANSWER=()=>sp(T.maya.words.map(w=>w[0]).join(' ')).replace('<span>90</span> <span>metres</span> <span>west.</span>','<span>90</span>&nbsp;<span>metres</span>&nbsp;<span>west.</span>');
 const AFG=()=>sp('Ask. Find. Get out.').replace(/<\/span> <span>/g,'</span><br><span>').replace('<br><span>out.','&nbsp;<span>out.');
 let TOP=0;
+/* optical left edges (Tony, 8 Nov): the legal line and the address start where the big words' first letter starts.
+   inkL(text, font) = how far the first letter's ink sits right of where the text box starts */
+const CV2=document.createElement('canvas').getContext('2d');
+const INK={};  /* measured by drawing the letter and finding its first inked column (the browser's glyph metrics were unreliable) */
+const inkL=(txt,font)=>{const k=txt[0]+'|'+font; if(k in INK) return INK[k];
+  const c=document.createElement('canvas'); c.width=c.height=600; const x=c.getContext('2d'); x.font=font; x.textBaseline='top'; x.fillStyle='#000'; x.fillText(txt[0],100,100);
+  const d=x.getImageData(0,0,600,600).data; let m=600; for(let i=3;i<d.length;i+=4) if(d[i]>110){const col=((i-3)/4)%600; if(col<m) m=col;}
+  return INK[k]=m-100;};
+function alignLeft(scene){
+  const tg=parseFloat(getComputedStyle(st).getPropertyValue('--tg')), big=parseFloat(getComputedStyle(st).getPropertyValue('--big'));
+  const t=st.querySelector('.t'), size=t?parseFloat(getComputedStyle(t).fontSize):big;
+  /* the block's leftmost ink: the first letter of every line (Village and the sit further left than I'm) */
+  let starts=['I','V','t','R'];   /* the question's line starts, for scenes with no big words */
+  if(t){ starts=[]; let top=null; t.querySelectorAll('span').forEach(w=>{const y=Math.round(w.getBoundingClientRect().top); if(y!==top){starts.push(w.textContent.trim()[0]); top=y;}}); }
+  const x=tg+Math.min(...starts.map(c=>inkL(c,'700 '+size+'px IT')));
+  const lg=st.querySelector('.legal'); if(lg){const fs=getComputedStyle(lg).fontSize; lg.style.left=(x-inkL(LEGAL,'500 '+fs+' IT'))+'px';}
+  return x;
+}
 function fitType(){
   const blocks=[sp(T.ask.words.map(w=>w[0]).join(' ')),ANSWER(),AFG()], maxH=F=='h'?H-240:H*.62;
   for(let px=F=='h'?300:240;px>=60;px-=2){
@@ -89,6 +107,7 @@ function build(scene){ if(built==scene) return; built=scene;
     if(t.classList.contains('hey')){t.style.top='50%';t.style.transform=F=='h'?'translateY(-52%)':'translateY(-60%)';} else t.style.top=(scene=='afg2'&&F=='v'?200:TOP)+'px'; });  /* 9:16 B2: words up top, the phone under them */
   if(scene=='phone'){ const el=document.getElementById('ph'); el.style.setProperty('--pw',getComputedStyle(st).getPropertyValue('--bigph')); }
   if(scene=='end') layLock();
+  window.INKX=alignLeft(scene);
 }
 function show(el,list,t0,t){el.querySelectorAll('span').forEach((s,i)=>s.classList.toggle('on',t>=t0+list[i][1]));}
 function place(p,a){const el=document.getElementById('ph'),pw=parseFloat(getComputedStyle(el).getPropertyValue('--pw')),ph=pw*844/390;
@@ -109,17 +128,20 @@ function layLock(){
   LK={centre:(W-mk)/2, left:x0};
 }
 /* scene lengths (s). phone: two beats of the music (72 bpm), hard cut in on the drop and out on the beat */
-window.TL={hey:2.2, ask:3.3, phone:1.66, answer:3.3, afg:2.3, afg2:5.0, legal:1/30, end:4.4, V:{hey:.25, ask:.25, maya:.2, afg:.15, url:1.25, url2:2.0}};
+window.TL={hey:2.2, ask:3.3, phone:1.66, answer:3.3, afg:2.3, afg2:5.0, legal:1/30, end:4.4, V:{hey:.25, ask:.25, maya:.2, afg:-.07, url:1.25, url2:1.7}};  /* afg -0.07: Ask is heard as the overlay finishes fading in (0.2 s) */
 window.setT=function(scene,t){
   build(scene); const V=TL.V, ts=st.querySelectorAll('.t');
   if(scene=='hey') show(ts[0],T.hey.words,V.hey,t);
   if(scene=='ask') show(ts[0],T.ask.words,V.ask,t);
-  if(scene=='afg'||scene=='afg2') ts[0].querySelectorAll('span').forEach(s=>s.classList.add('on'));  /* all at once, with the overlay (Tony, 8 Nov) */
+  if(scene=='afg') ts[0].querySelectorAll('span').forEach(s=>s.classList.add('on'));  /* B1: all at once, with the overlay */
+  if(scene=='afg2'){ const w=T.afg.words; show(ts[0],[w[0],w[1],w[2],[w[3][0],w[2][1]]],V.afg,t);  /* Ask. / Find. / Get out. as three beats */ st.querySelector('.scrim').style.opacity=clamp(t/.2,0,1); }  /* B2: word by word with Maya, punchy */
   if(scene=='afg2'){ /* B2 end frame: the phone straight on at the right, then the address under the words; 0.2 s fades */
     const ph=document.getElementById('ph'), pw=parseFloat(getComputedStyle(ph).getPropertyValue('--pw')), phH=pw*844/390, u=document.getElementById('url2'), tb=ts[0].getBoundingClientRect();
     if(F=='h'){ ph.style.left=(W-150-pw)+'px'; ph.style.top=((H-phH)/2-30)+'px'; } else { ph.style.left=((W-pw)/2)+'px'; ph.style.top=(H-phH-200)+'px'; }
-    ph.style.opacity=clamp((t-1.0)/.2,0,1);
-    u.style.left=tb.left+'px'; u.style.top=(tb.bottom+parseFloat(getComputedStyle(st).getPropertyValue('--url2'))*.6)+'px'; u.style.opacity=clamp((t-V.url2)/.2,0,1); }
+    const OUT=V.afg+T.afg.words[3][1];   /* the final "out": the phone and the address arrive with it */
+    ph.style.opacity=clamp((t-OUT)/.2,0,1);
+    const us=parseFloat(getComputedStyle(st).getPropertyValue('--url2'));
+    u.style.left=(INKX-inkL('getarcrelay.app','700 '+us+'px IT'))+'px'; u.style.top=(tb.bottom+us*.6)+'px'; u.style.opacity=clamp((t-OUT)/.2,0,1); }
   if(scene=='answer') show(ts[0],T.maya.words,V.maya,t);
   if(scene=='phone'){ /* nearly flat and big, cropped by the frame: the answer's headline and the map, a slow push in */
     const pw=parseFloat(getComputedStyle(st).getPropertyValue('--bigph')), k=t/TL.phone;

@@ -5,7 +5,7 @@ const ROOT=path.resolve(__dirname,'..','..');
 const PAGE=process.env.PAGE||'anim', SCENES=(process.env.SCENES||'home,talk').split(','), ALPHA=(process.env.ALPHA||'').split(',');  /* ALPHA scenes: PNG on a clear background */
 const srv=http.createServer((q,r)=>{const f=path.join(ROOT,decodeURIComponent(q.url.split('?')[0]));fs.readFile(f,(e,d)=>{if(e){r.writeHead(404);return r.end();}r.writeHead(200,{'Content-Type':f.endsWith('.html')?'text/html':f.endsWith('.json')?'application/json':f.endsWith('.png')?'image/png':'font/woff2'});r.end(d);});}).listen(0);
 (async()=>{const port=srv.address().port;const b=await chromium.launch({executablePath:process.env.CHROME||undefined});
-for(const [f,w,h] of [['h',1920,1080],['v',1080,1920]]){const p=await b.newPage({viewport:{width:w,height:h}});
+for(const [f,w,h] of [['h',1920,1080],['v',1080,1920]].filter(x=>(process.env.FMT||'h,v').split(',').includes(x[0]))){  /* FMT=h: 16:9 only */const p=await b.newPage({viewport:{width:w,height:h}});
  for(const al of [0,1]){ if(al&&!SCENES.some(x=>ALPHA.includes(x)))continue;
  await p.goto(`http://localhost:${port}/tools/trailer/${PAGE}.html?f=${f}`+(al?'&alpha=1':''));await p.waitForFunction(()=>document.body.dataset.ready);await p.evaluate(()=>document.fonts.ready);
  const TL=await p.evaluate(()=>window.TL); fs.writeFileSync(path.join(__dirname,'frames',PAGE+'-timeline.json'),JSON.stringify(TL));
