@@ -1,0 +1,22 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:IT;font-weight:700;src:url(../../www/fonts/inter-tight-700.woff2)}
+/* 8 Nov: alternatives to the phone shot in trailer B, for Tony to pick from. ?o=b|c|d */
+*{margin:0;box-sizing:border-box}html,body{width:1920px;height:1080px;background:#1C1E22;color:#EEE8DC;font-family:IT;overflow:hidden}
+.ph{position:absolute;width:var(--pw);aspect-ratio:390/844;border-radius:calc(var(--pw)*.1467);background:#34363C;padding:calc(var(--pw)*.0333)}
+.ph .scr{width:100%;height:100%;border-radius:calc(var(--pw)*.1133);overflow:hidden}
+.ph img,.bleed img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.t{position:absolute;left:150px;font:700 214px/.98 IT;letter-spacing:-.02em}
+.bleed{position:absolute;inset:0;overflow:hidden}
+.bleed img{position:absolute;width:2938px;height:auto;left:-170px;top:-3036px;object-fit:fill}  /* the map only: its buttons sit past the right edge */
+.shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(28,30,34,.92) 0%,rgba(28,30,34,.7) 45%,rgba(28,30,34,.1) 100%)}
+.lab{position:absolute;right:40px;top:30px;font:700 40px IT;color:#F2B33D}
+</style></head><body><div id="o"></div>
+<script>
+const o=new URLSearchParams(location.search).get('o'), el=document.getElementById('o');
+const phone=(pw,x,y,img)=>`<div class="ph" style="--pw:${pw}px;left:${x}px;top:${y}px"><div class="scr"><img src="${img||'phone-answer.png'}"></div></div>`;
+const ans='<div class="t" style="top:206px">Nearest<br>Rocketeer.<br>90&nbsp;metres&nbsp;west.</div>';
+if(o=='b') el.innerHTML=phone(440,740,60)+'<div class="lab">B  whole phone, flat, centred</div>';
+if(o=='c') el.innerHTML=ans.replace('style="top:206px"','style="top:290px;font-size:150px"')+phone(440,1330,60)+'<div class="lab">C  answer and phone together</div>';
+if(o=='d') el.innerHTML='<div class="bleed"><img src="phone-answer.png"></div><div class="shade"></div>'+ans+'<div class="lab">D  app map behind the answer</div>';
+document.body.dataset.ready=1;
+</script></body></html>

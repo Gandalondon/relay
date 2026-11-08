@@ -1,14 +1,15 @@
 """Version B, type-led (8 Nov): out/relay-trailer-b-<16x9|9x16>.mp4.
 Run:  PAGE=type SCENES=hey,ask,phone,answer,afg,legal,end ALPHA=afg,legal node tools/trailer/render_anim.js
 then: GAME=tools/trailer/game/<clip>.mp4 python3 tools/trailer/make_b.py
-Order: Hey Relay (Ben, big type) / game: the map with the waypoint / Ben's question in big type / hard cut to the phone,
-nearly flat and cropped, two beats on the music's drop / Relay's answer (Maya) in the same big type / game: running /
-Ask. Find. Get out. over the game / the folio lockup with the address, said by Maya. The legal line is on every frame.
+Order (Tony, 8 Nov): Hey Relay (Ben, big type) / Ben's question / hard cut to the phone, nearly flat and cropped, two
+beats on the music's drop / Relay's answer (Maya), same size and place as the question / game, one take: the map, the
+cursor moves and drops a pin, then running / Ask. Find. Get out. over the same run / the folio lockup with the address,
+said by Maya. The legal line is on every frame.
 Game clip windows (seconds into GAME) are in CUTS; the 9:16 version crops the middle of the 16:9 footage."""
 import os, json, subprocess
 R = os.path.dirname(os.path.abspath(__file__)); FR = os.path.join(R, "frames"); OUT = os.path.join(R, "out"); A = os.path.join(R, "audio")
 GAME = os.environ.get("GAME", os.path.join(R, "game", "test-buried-city.mp4"))
-CUTS = {"map": (0.0, 3.0), "run": (9.0, 2.3), "afg": (20.0, None)}   # start, length (None: the afg scene's length)
+CUTS = {"game": (0.5, 5.5)}   # test clip: map 0.5 s, cursor pans, waypoint drops ~3.1 s, running from 3.75 s; afg carries on from the end
 TL = json.load(open(os.path.join(FR, "type-timeline.json")))
 ENC = ["-r", "30", "-c:v", "libx264", "-crf", "18", "-preset", "veryfast", "-pix_fmt", "yuv420p"]
 def run(a): subprocess.run(["ffmpeg", "-y", "-loglevel", "error"] + a, check=True)
@@ -26,9 +27,9 @@ for f, name, (W, H) in (("h", "16x9", (1920, 1080)), ("v", "9x16", (1080, 1920))
              "-filter_complex", "[0:v]%s[g];[g][1:v]overlay=shortest=0:eof_action=repeat,trim=duration=%.3f,format=yuv420p" % (fit, d), "-an"] + ENC + [o])
         return o, d
     parts, at, t = [], {}, 0.0
-    seq = [("hey", clip("hey")), ("map", game("map", CUTS["map"][0], CUTS["map"][1], "legal")), ("ask", clip("ask")),
-           ("phone", clip("phone")), ("answer", clip("answer")), ("run", game("run", CUTS["run"][0], CUTS["run"][1], "legal")),
-           ("afg", game("afg", CUTS["afg"][0], TL["afg"], "afg")), ("end", clip("end"))]
+    g0, gd = CUTS["game"]
+    seq = [("hey", clip("hey")), ("ask", clip("ask")), ("phone", clip("phone")), ("answer", clip("answer")),
+           ("game", game("game", g0, gd, "legal")), ("afg", game("afg", g0 + gd, TL["afg"], "afg")), ("end", clip("end"))]
     for k, (p, d) in seq: at[k] = t; t += d
     total = t
     lst = os.path.join(OUT, "b.txt"); open(lst, "w").write("".join("file '%s'\n" % p for _, (p, _) in seq))
