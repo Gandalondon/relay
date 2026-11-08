@@ -21,14 +21,22 @@ for f, name in (("h", "16x9"), ("v", "9x16")):
     a_len = 6.2
     ask, ask_len = words("ben", 0, 0.4)
     ans, ans_len = words("maya", 0.25, 0.8)
-    seq = [("ask" + s, d) for s, d in ask] + [("answer" + s, d) for s, d in ans] + \
-          [("pin", 2.5), ("w1", 0.45), ("w2", 0.45), ("w3", 0.9)] + [("end-%d" % k, 0.05) for k in range(12)] + [("end-12", 2.8)]
-    lst = os.path.join(OUT, "b.txt")
-    with open(lst, "w") as L:
-        for s, d in seq: L.write("file '%s'\nduration %.3f\n" % (p(s), max(d, 1 / 30)))
-        L.write("file '%s'\n" % p(seq[-1][0]))
+    seq_ask = [("ask" + s, d) for s, d in ask]
+    seq_rest = [("answer" + s, d) for s, d in ans] + [("pin", 2.5), ("w1", 0.4), ("w2", 0.4), ("w3", 0.8)] + \
+               [("end-%d" % k, 0.05) for k in range(12)] + [("end-12", 2.8)]
+    def part(seq, name_):
+        lst = os.path.join(OUT, name_ + ".txt")
+        with open(lst, "w") as L:
+            for s, d in seq: L.write("file '%s'\nduration %.3f\n" % (p(s), max(d, 1 / 30)))
+            L.write("file '%s'\n" % p(seq[-1][0]))
+        out = os.path.join(OUT, name_ + ".mp4"); run(["-f", "concat", "-safe", "0", "-i", lst, "-vf", "fps=30,format=yuv420p"] + ENC + [out]); os.remove(lst)
+        return out, sum(d for _, d in seq)
+    B1, l1 = part(seq_ask, "b1"); B2, l2 = part(seq_rest, "b2")
+    XF = 0.2  # the app fades .2 s between listening and the answer
     B = os.path.join(OUT, "b.mp4")
-    run(["-f", "concat", "-safe", "0", "-i", lst, "-vf", "fps=30,format=yuv420p"] + ENC + [B])
+    run(["-i", B1, "-i", B2, "-filter_complex", "[0][1]xfade=transition=fade:duration=%s:offset=%.3f,format=yuv420p[o]" % (XF, l1 - XF), "-map", "[o]"] + ENC + [B])
+    os.remove(B1); os.remove(B2)
+    seq = [(None, l1 + l2 - XF)]; ask_len = l1 - XF
     total = a_len + sum(d for _, d in seq)
     cat = os.path.join(OUT, "c.txt"); open(cat, "w").write("file '%s'\nfile '%s'\n" % (A, B))
     V = os.path.join(OUT, "v.mp4"); run(["-f", "concat", "-safe", "0", "-i", cat, "-c", "copy", V])
@@ -38,5 +46,5 @@ for f, name in (("h", "16x9"), ("v", "9x16")):
          "[1]adelay=%d|%d[b];[2]adelay=%d|%d[m];[b][m]amix=inputs=2:normalize=0,apad,atrim=0:%.2f[a]" % (ben, ben, maya, maya, total),
          "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-shortest", tmp])
     os.replace(tmp, dst)
-    for x in (A, B, V, lst, cat): os.remove(x)
+    for x in (A, B, V, cat): os.remove(x)
     print("wrote", dst, "%.1f s" % total)
