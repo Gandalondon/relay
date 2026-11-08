@@ -79,7 +79,7 @@ body.listening .close{color:var(--amber)}
 .mapnote{position:absolute;left:12px;bottom:12px;z-index:500;background:rgba(28,30,34,.88);padding:4px 8px;border-radius:8px;font-size:14px;line-height:20px;color:var(--bone)}
 .leaflet-container{background:var(--panel);font-family:var(--body)}
 .leaflet-control-attribution{background:rgba(28,30,34,.8)!important;color:var(--bone)!important;font-size:12px;line-height:18px;padding:0 8px!important;border-radius:8px 0 0 0}
-.leaflet-control-attribution a{color:var(--bone)!important}
+.leaflet-control-attribution a{color:var(--bone)!important;display:inline-block;padding:4px 0;margin:-4px 0}  /* a 26 px tap area, same look (8 Nov) */
 /* bottom of the screen: a yellow mic to talk (big on home, small on answers). The yellow soundwave appears only on the listening screen. */
 .dock{flex:none;height:calc(104px + env(safe-area-inset-bottom,0px));  /* the same height on every screen, so the mic never moves */padding-bottom:env(safe-area-inset-bottom,0px);display:flex;align-items:center;justify-content:center}
 /* the talk button (option C, 29 Oct): yellow circle with a dark mic. Listening: waveform icon and a soft halo that breathes.
@@ -194,7 +194,7 @@ body.session .cog,body.listening .cog,body.speaking .cog,body.follow .cog{displa
 </style>
 </head>
 <body>
-<div class="app">
+<div class="app" role="main"><h1 class="sr">Relay</h1>
   <div class="top">
     <button class="word" id="word" type="button" aria-live="polite"></button>
     <button class="close cog" id="cog" type="button" aria-label="Settings"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M421-80q-14 0-25-9t-13-23l-15-94q-19-7-40-19t-37-25l-86 40q-14 6-28 1.5T155-226L97-330q-8-13-4.5-27t15.5-23l80-59q-2-9-2.5-20.5T185-480q0-9 .5-20.5T188-521l-80-59q-12-9-15.5-23t4.5-27l58-104q8-13 22-17.5t28 1.5l86 40q16-13 37-25t40-18l15-95q2-14 13-23t25-9h118q14 0 25 9t13 23l15 94q19 7 40.5 18.5T669-710l86-40q14-6 27.5-1.5T804-734l59 104q8 13 4.5 27.5T852-580l-80 57q2 10 2.5 21.5t.5 21.5q0 10-.5 21t-2.5 21l80 58q12 8 15.5 22.5T863-330l-58 104q-8 13-22 17.5t-28-1.5l-86-40q-16 13-36.5 25.5T592-206l-15 94q-2 14-13 23t-25 9H421Zm59-270q54 0 92-38t38-92q0-54-38-92t-92-38q-54 0-92 38t-38 92q0 54 38 92t92 38Z"/></svg></button>
@@ -1398,7 +1398,7 @@ function renderAnswer(q, a) {
   } else if (a.map && (a.map.stars.length || a.map.you || a.map.pick)) { S.lastMap = { id: MAP.id, m: a.map }; save(); }
   const hasMap = a.map && (a.map.stars.length || a.map.you || a.map.pick);
   setWord(a.show || a.text || "", true, hasMap); setSub(""); setCtx(a.ctx || ""); $("ctx").classList.toggle("keep", !!hasMap);
-  $("stage").innerHTML = hasMap ? '<div class="mapwrap"><div class="map" id="map" role="img" aria-label="' + esc(mapLabel(a.map)) + '"></div><div class="mapctl"><button type="button" id="full" aria-label="Whole map">' + IC.whole + '</button><button type="button" id="setloc" aria-label="Set location" aria-pressed="false">' + IC.pin + '</button>' + (a.map.you && a.map.stars.length >= 1 ? '<button type="button" id="route" aria-label="Show route">' + IC.route + '</button><button type="button" id="unroute" aria-label="Clear route">' + IC.routeOff + '</button>' : '') + '</div><div class="maphint" id="maphint" hidden>Tap the map to set your location</div><div class="mapnote" id="mapnote" hidden></div><button type="button" class="pinok" id="pinok" hidden>I\'m here</button></div>' : "";
+  $("stage").innerHTML = hasMap ? '<div class="mapwrap"><p class="sr">' + esc(mapLabel(a.map)) + '</p><div class="map" id="map"></div><div class="mapctl"><button type="button" id="full" aria-label="Whole map">' + IC.whole + '</button><button type="button" id="setloc" aria-label="Set location" aria-pressed="false">' + IC.pin + '</button>' + (a.map.you && a.map.stars.length >= 1 ? '<button type="button" id="route" aria-label="Show route">' + IC.route + '</button><button type="button" id="unroute" aria-label="Clear route">' + IC.routeOff + '</button>' : '') + '</div><div class="maphint" id="maphint" hidden>Tap the map to set your location</div><div class="mapnote" id="mapnote" hidden></div><button type="button" class="pinok" id="pinok" hidden>I\'m here</button></div>' : "";
   if (hasMap) requestAnimationFrame(() => drawMap(a.map));
   else if (a.maps) $("stage").innerHTML = mapPicker(a.maps, true);
 }
@@ -1427,7 +1427,7 @@ function drawMap(m) {
   if (!window.L) { $("mapnote").hidden = false; $("mapnote").textContent = "Map couldn't load."; return; }
   const [a, b, c, d] = MAP.transform;
   const crs = L.extend({}, L.CRS.Simple, { transformation: new L.Transformation(a, b, c, d) });
-  lmap = L.map("map", { crs, zoomControl: false, attributionControl: true, minZoom: 0, maxZoom: 7, zoomSnap: 0, zoomDelta: 0.5, wheelPxPerZoomLevel: 90, bounceAtZoomLimits: false, inertia: true, maxBounds: MAP.maxBounds, maxBoundsViscosity: 0.8 });
+  lmap = L.map("map", { crs, keyboard: false, zoomControl: false, attributionControl: true, minZoom: 0, maxZoom: 7, zoomSnap: 0, zoomDelta: 0.5, wheelPxPerZoomLevel: 90, bounceAtZoomLimits: false, inertia: true, maxBounds: MAP.maxBounds, maxBoundsViscosity: 0.8 });
   lmap.attributionControl.setPrefix(false);
   /* no zooming out past the map: at the furthest-out zoom the map area still fills the whole tile (no empty bands) (4 Nov) */
   lmap.setMinZoom(lmap.getBoundsZoom(L.latLngBounds(MAP.maxBounds), true));

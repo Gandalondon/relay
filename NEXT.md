@@ -62,6 +62,8 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 
 - Listening (8 Nov, Tony's raid): a place said on its own or before the ask is where you are ("hospital", "Buried City hospital", "beach bar, nearest exit"); a destination only after where/how/go to. `tests/heldout3.js` (26 phrases, written first) scored 6/26 cold, 26/26 after; all other sets unchanged. Known edge: "nearest Bastion to the Hospital" moves you to the Hospital (right answer, but your location changes).
 
+- Accessibility (8 Nov, axe-core on the app and every /beta page): site pages clean. App: main landmark and a hidden Relay heading; the map is no longer a picture with a link inside (its description is a hidden line beside it, the map container doesn't take keyboard focus); the MetaForge credit link has a 26 px tap area. Left on purpose: page zoom is off (user-scalable=no) because the map does its own pinch zoom.
+
 ## Next (pick one)
 1. Tony on the Pixel: map buttons, location-only reply, About links open the browser, "show me the Dam map", Hey Relay with game audio.
 2. Done 6 Nov: distances on all seven maps. Scales fitted from allthings.how place pages (`tools/places/dist/*.json`, `node tools/places/scale.js`), typical error 1 to 10%; `tests/maps.js` checks them. Dam's central complex is the roughest (multi-level, published figures disagree). Fixed MetaForge's "Hiltop hatch" to Hilltop Hatch.
