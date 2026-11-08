@@ -7,3 +7,6 @@ archivo900.ttf
 android/app/relay-test.keystore
 android/app/libs/*.aar
 .DS_Store
+tools/trailer/frames/
+tools/trailer/out/
+tools/trailer/game/
