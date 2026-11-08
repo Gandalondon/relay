@@ -706,6 +706,7 @@ const lootPts = (id, k) => { const p = ((window.MAP_LOOT || {})[id] || {})[k] ||
 const NEAREST = ["nearest", "closest", "which way", "quickest", "how do i get", "way out", "get out", "where can i", "where do i", "where should i"];
 const LISTING = [" all ", "list", "how many", "what are the"];
 
+const GO_TO = ["get to", "get over to", "take me to", "go to", "head to", "heading to", "way to", "route to", "directions to", "path to", "guide me to", "lead me to", "bring me to", "get me to", "how far", "navigate to"];  /* directions to a place (8 Nov) */
 function askWhere(raw) {
   S.pending = { q: raw, asks: S.pending ? S.pending.asks : 0 }; save();
   /* short: the hint is on screen; spoken in full only the first time in a while */
@@ -1003,7 +1004,12 @@ function answerOn(raw, opts) {
     return { show: pts.length + " " + E + " spawns, marked.", say: "There are " + pts.length + " " + enemy + " spawn points on " + MAP.name + ". They're marked on the map. Tell me where you are and I'll find the nearest.", map: { you: null, stars: pts } };
   }
 
-  if (placeMention && has(t, ["where"])) {
+  /* "how do I get to the Scrap Yard", "take me to the Village" (8 Nov): directions to a place. No location yet: ask where you are
+     and keep the ask, so a pin or a spoken place answers it (the place stays marked meanwhile). "Where's X" still works without one. */
+  const goTo = placeMention && has(t, GO_TO);
+  if (goTo && psNow === "stale") return askStill(raw);
+  if (goTo && psNow === "none") { const q = askWhere(raw); q.map.stars = [placeMention]; return q; }
+  if (placeMention && (goTo || has(t, ["where"]))) {
     const P1 = placeMention.n.charAt(0).toUpperCase() + placeMention.n.slice(1);
     const dir = psNow === "fresh" ? compass(S.place, placeMention) : "";
     const away = dir && !S.place.rough ? far(S.place, placeMention) : "";

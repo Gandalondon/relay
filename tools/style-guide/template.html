@@ -244,6 +244,7 @@ ul.plain li{margin:6px 0}
     <div>{{I:whole}}<b>zoom_out_map</b>Map button: whole map, then back to the answer</div>
     <div>{{I:pin}}<b>my_location</b>Set location (the locate dot)</div>
     <div>{{I:route}}<b>route</b>Show route</div>
+    <div>{{SVG:routeOff}}<b>route, slashed</b>Clear route: drops the target, keeps your location (custom, 7 Nov)</div>
     <div>{{I:shaft}}<b>mode_fan</b>Airshaft badge on the map</div>
     <div>{{I:hatch}}<b>download</b>Raider Hatch badge on the map</div>
   </div>
@@ -297,11 +298,11 @@ ahead.</div><span class="x">{{I:close}}</span></div><div class="fill"></div><div
 
   <h3 class="g-h3">Map controls</h3>
   <div class="board">
-    <div class="ex"><div class="stack"><div class="mbtn">{{I:map}}</div><div class="mbtn">{{I:pin}}</div><div class="mbtn">{{I:route}}</div></div><small>Default. Full map, Set location, Show route.</small></div>
+    <div class="ex"><div class="stack"><div class="mbtn">{{I:map}}</div><div class="mbtn">{{I:pin}}</div><div class="mbtn">{{I:route}}</div><div class="mbtn">{{SVG:routeOff}}</div></div><small>With a route. Full map, Set location, Show route, Clear route.</small></div>
     <div class="ex"><div class="stack"><div class="mbtn">{{I:map}}</div><div class="mbtn on">{{I:pin}}</div></div><small>Choosing a location: Set location reverses. No route yet, so no route button.</small></div>
   </div>
   <table class="rules">
-    <tr><th>Order</th><td>Full map, Set location, then Show route underneath only when there's a you-to-destination line. The first two never move; no empty slot is kept for the third.</td></tr>
+    <tr><th>Order</th><td>Full map, Set location, then Show route and Clear route underneath only when there's a you-to-destination line. The first two never move; no empty slots are kept for the others. Clear route does what saying “Never mind” does: drops what you're after, keeps where you are. The X stays the way home and a fresh start (7 Nov).</td></tr>
     <tr><th>Place</th><td>Top right of the map, 12 px in, 8 px apart.</td></tr>
     <tr><th>Colour</th><td>Amber with an ink icon by default: it's the action colour and reads over any terrain.</td></tr>
   </table>

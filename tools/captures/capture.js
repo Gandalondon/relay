@@ -16,7 +16,7 @@ const SCENES = require('./scenes.js');
     const p = await ctx.newPage();
     p.on('pageerror', e => console.log('  error', s.id, e.message));
     await p.route(/^https?:/, r => {
-      const u = r.request().url(), m = u.match(/maps\/([a-z-]+)\/[^/]+\/(\d+\/\d+\/\d+\.webp)$/);
+      const u = r.request().url(), m = u.match(/maps\/([a-z-]+)\/.+?\/(\d+\/\d+[\/_]\d+\.webp)$/)  /* Stella Montis tiles are {z}/{x}_{y} (8 Nov) */;
       const f = m && path.join(HERE, 'tiles', m[1], m[2]);
       if (f && fs.existsSync(f)) return r.fulfill({ path: f, contentType: 'image/webp' });
       if (m) missing.add(u);

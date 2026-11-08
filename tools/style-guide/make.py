@@ -22,6 +22,13 @@ for k, f in (("map", "map"), ("pin", "my_location"), ("whole", "zoom_out_map"), 
     icons[k] = re.search(r'<path d="([^"]+)"', open(os.path.join(R, "icons", f + ".svg")).read()).group(1)
 t = t.replace("{{FONTS}}", faces)
 t = re.sub(r"\{\{I:(\w+)\}\}", lambda m: '<svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="%s"/></svg>' % icons[m.group(1)], t)
+# clear route (7 Nov): a whole masked SVG, so it is taken from the app as is; each copy gets its own mask id
+routeoff = re.search(r"routeOff: '(<svg.*?</svg>)'", app, flags=re.S).group(1)
+n = [0]
+def ro(_):
+    n[0] += 1
+    return routeoff.replace("rtoff", "rtoff%d" % n[0])
+t = re.sub(r"\{\{SVG:routeOff\}\}", ro, t)
 assert "{{" not in t
 os.makedirs(os.path.join(ROOT, "src/docs"), exist_ok=True)
 open(os.path.join(ROOT, "src/docs/style-guide.html"), "w").write(t)

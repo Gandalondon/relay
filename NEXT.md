@@ -32,8 +32,14 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 - A new pin or spoken location re-answers what you were after (S.want) from there, even when the ask named a place. Was inconsistent: dropped the target when the ask included a place.
 - Everyday item names (scrap, scrap metal, rubber, plastic, electronics, gun parts, chems, cloth, cables) in `tools/items/genitems.js` SLANG; place names never read as items (Dam's Scrap Yard).
 - Clear route: fourth map button (route icon, slash up to the right), only while a route shows. Same as saying never mind: drops the target, keeps your location. X unchanged: home, fresh start.
-- Known miss: "how do I get to the Scrap Yard" with no location set falls back.
+- Fixed 8 Nov: "how do I get to the Scrap Yard" (also take me to, head to, how far is...) gives way and distance; with no location it asks where you are, keeps the place marked, then answers. Tests 187/187.
 - Next session, captures (Tony, 7 Nov late; visuals not updated yet): swap maps across the screens (site homepage phones, Play screenshots, portfolio) so they aren't all the same Blue Gate Village crop, and avoid two yellow loot-zone outlines in one screen. Scenes live in `tools/captures/scenes.js`. Recaptures will also show the new clear route button wherever a route is drawn.
+
+## 8 Nov (committed, not pushed)
+- Done: homepage intro and meta say Arc Raiders; clear route icon in the style guide (icons, map controls) and a How it works item, Change your mind, plus "Never mind" in Things to say; Scrap Yard fix (above); Play all-countries note in the release checklist.
+- Recaptures half done: new scenes in `tools/captures/scenes.js`, one map per screen and at most one yellow zone (find Dam Scrap Yard, exit Buried City Church Ruins, loot and whole Riven Tides Wharf, quest Stella Montis Snap and Salvage step 2, moss Pendola Pass, cache Spaceport). capture.js now matches Stella Montis x_y tiles. Still needed: the missing tiles for those maps, fetched through Chrome on Tony's Mac, then capture.js, publish.py and the Play render. The homepage alt texts already describe the new screens, so don't push site/ until the new webps are in.
+- Copy doc not yet synced (the Drive connector here can't edit Docs; do it through Chrome): homepage Arc Raiders, How it works Find the nearest anything wording, Change your mind item, Things to say (drop Find me some moss, add Where do I find wires?, I need rubber parts, Never mind), speed order Normal, Fast or Faster.
+- Found: "I'm at the Beach Bar" on Riven Tides resolves to Azzurro Beach. Not fixed.
 
 ## Next (pick one)
 1. Tony on the Pixel: map buttons, location-only reply, About links open the browser, "show me the Dam map", Hey Relay with game audio.
@@ -58,6 +64,7 @@ Open testing plan (6 Nov, for when Tony says we're ready; not yet):
    - [ ] Tony decides: MetaForge credit on the holding page too (it shows no maps; every /beta page already credits them). Copy goes through the Google Doc first.
    - [x] Swap prepared 7 Nov, not live: commit c399dd5 does the move (full site to the root, holding page to `tools/hero/`, /beta/* redirects so app and Play links keep working, noindex gone, robots allow, sitemap). It went live by mistake and was undone the same day; to go live, revert the undo commit. Already in /beta: final canonical and og tags, feedback as an email link, privacy fixes. v3/v4 tests deleted.
    - [ ] Before it goes live: the four homepage phone screens are still placeholders (Listening, nearest Bastion, nearest exit, quest step); "Get the app" is an unlinked label until open testing (then "Test the app").
+   - [ ] Play Console countries: release to all countries (every one Google Play offers, about 178), not just the UK. Sniff went out UK only by mistake (Tony, 8 Nov). Check Production > Countries / regions before rollout, and the same for the open testing track.
    - [ ] Play Console: store listing (Tony), privacy policy URL getarcrelay.app/privacy after go-live (/beta/privacy redirects there), data safety form (no data collected, no account), content rating, closed test track first.
    - [ ] Fresh held-out set (tests/heldout3.js) from Tony's raid notes, scored cold before any fixes.
 

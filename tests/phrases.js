@@ -223,5 +223,9 @@ module.exports = [
   { set: { map: "dam", place: "Control Tower" }, say: "where do I get a wasp driver", want: { show: "Wasp driver: from Wasps" } },
   { set: { map: "dam", place: "Control Tower" }, say: "rocketeer driver", want: { enemy: true } },
   { set: { map: "riven-tides", place: "Wharf" }, say: "expired respirator", want: { show: "Expired respirator: med crate" } },
-  { set: { map: "dam", place: "Control Tower" }, say: "turn the radio down", want: { fallback: true } }
+  { set: { map: "dam", place: "Control Tower" }, say: "turn the radio down", want: { fallback: true } },
+  /* directions to a place (8 Nov): with no location, ask where, then answer from there */
+  { set: { map: "dam" }, say: ["how do I get to the Scrap Yard", "I'm at the Control Tower"], want: { show: "Scrap Yard, south" } },
+  { set: { map: "dam", place: "Control Tower" }, say: "take me to the Scrap Yard", want: { show: "Scrap Yard, south" } },
+  { set: { map: "blue-gate", place: "Village" }, say: "how far is the Olive Grove", want: { show: "Olive Grove, south" } }
 ];

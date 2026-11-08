@@ -6,7 +6,7 @@ const CASES = require(process.env.SET ? "./" + process.env.SET + ".js" : "./phra
 const page_ = process.argv[2] || path.join(__dirname, "../www/index.html");
 
 (async () => {
-  const b = await chromium.launch(); const p = await b.newPage();
+  const b = await chromium.launch(process.env.CHROME ? { executablePath: process.env.CHROME } : {}); const p = await b.newPage();
   await p.route(/^https?:/, r => r.abort());
   await p.goto("file://" + page_); await p.waitForTimeout(300);
   let pass = 0; const fails = [];
