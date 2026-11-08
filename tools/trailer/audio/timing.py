@@ -1,10 +1,13 @@
 """Estimates when each word is spoken (from the loudness of the wav), for the word-by-word captions. Writes timing.json.
-The lines live here; run say.py for each first:  python3 timing.py"""
+The lines live here; run say.py for each first:  python3 timing.py
+Takes (8 Nov), each checked with an offline Whisper (base.en) so a line is heard as written:
+  hey  Ben (6)  "Hey Relay!" speed 1.0  (the old take was heard as "a"; shorter readings and faster speeds blur the Hey)
+  ask  Ben (6)  speed 1.3    maya  Maya (3) "Nearest Rocketeer. 90 metres west." speed 1.3    url  Maya (3) "Get Arc Relay dot app." speed 1.15"""
 import soundfile as sf, numpy as np, json, re, os
 H = os.path.dirname(os.path.abspath(__file__))
 LINES = {"ben": "Hey Relay, I’m at the Village. Where’s the nearest Rocketeer?",
          "hey": "Hey Relay.", "afg": "Ask. Find. Get out.", "url": "Get Arc Relay dot app.", "ask": "I’m at the Village. Where’s the nearest Rocketeer?",
-         "maya": "The nearest rocketeer spawn is about 90 metres west of you."}
+         "maya": "Nearest Rocketeer. 90 metres west."}
 def timing(wav, text):
     a, sr = sf.read(wav)
     if a.ndim > 1: a = a.mean(1)
@@ -33,6 +36,6 @@ def timing(wav, text):
         for w, l in zip(ph, L): out.append([w, round(x, 2)]); x += (a1 - a0) * l / tot
     return {"dur": round(len(a) / sr, 2), "words": out}
 R = {k: timing(os.path.join(H, k + ".wav"), v) for k, v in LINES.items()}
-R["hey"]["words"] = [["Hey", 0.2], ["Relay.", 0.5]]  # two short words: the loudness split misplaces them, so set by ear
+R["hey"]["words"] = [["Hey", 0.38], ["Relay.", 0.66]]  # two short words: the loudness split misplaces them, so set by ear
 json.dump(R, open(os.path.join(H, "timing.json"), "w"), indent=0)
 print(open(os.path.join(H, "timing.json")).read())
