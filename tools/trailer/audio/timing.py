@@ -36,6 +36,6 @@ def timing(wav, text):
         for w, l in zip(ph, L): out.append([w, round(x, 2)]); x += (a1 - a0) * l / tot
     return {"dur": round(len(a) / sr, 2), "words": out}
 R = {k: timing(os.path.join(H, k + ".wav"), v) for k, v in LINES.items()}
-R["hey"]["words"] = [["Hey", 0.38], ["Relay.", 0.66]]  # two short words: the loudness split misplaces them, so set by ear
+R["hey"]["words"] = [["Hey", 0.35], ["Relay.", 0.64]]  # two short words: the loudness split misplaces them, so set by ear
 json.dump(R, open(os.path.join(H, "timing.json"), "w"), indent=0)
 print(open(os.path.join(H, "timing.json")).read())
