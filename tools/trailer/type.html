@@ -160,7 +160,11 @@ window.setT=function(scene,t){
   if(scene=='afg2'||scene=='afg3'){ const A=TL.AF; show(ts[0],[['Ask.',A.ask],['Find.',A.find],['Get',A.out],['out.',A.out]],0,t);  /* Ask. / Find. / Get out. with a beat between */ const sc=st.querySelector('.scrim'); if(sc) sc.style.opacity=clamp(t/.2,0,1); }  /* B2 and C: word by word with Maya, punchy */
   if(scene=='afg2'||scene=='afg3'){ /* B2 and C end frame: the phone straight on at the right, then the address under the words; 0.2 s fades */
     const ph=document.getElementById('ph'), pw=parseFloat(getComputedStyle(ph).getPropertyValue('--pw')), phH=pw*844/390;
-    if(F=='h'&&scene=='afg3'){ ph.style.setProperty('--pw',PH3+'px'); const w=PH3, h=w*844/390; ph.style.left='0px'; ph.style.top='0px'; place({x:W-150-PH3X, y:H/2-30, s:1}, ONR); }
+    if(F=='h'&&scene=='afg3'){ ph.style.setProperty('--pw',PH3+'px'); const w=PH3, h=w*844/390; ph.style.left='0px'; ph.style.top='0px'; place({x:W-150-PH3X, y:H/2-30, s:1}, ONR);
+      /* centred between the ink of Get out.'s full stop and the frame's right edge (Tony, 8 Nov evening) */
+      const sp=[...st.querySelectorAll('.t span')].pop(), sr=sp.getBoundingClientRect(), fs=getComputedStyle(sp).fontSize, c=document.createElement('canvas').getContext('2d');
+      c.font='700 '+fs+' IT'; c.letterSpacing=getComputedStyle(sp).letterSpacing; const mm=c.measureText('out.'), dot=sr.left+mm.actualBoundingBoxRight;
+      const pr=ph.getBoundingClientRect(); place({x:W-150-PH3X+((dot+W)/2-(pr.left+pr.right)/2), y:H/2-30, s:1}, ONR); window.DOTX=[dot,pr.left,pr.right]; }
     else if(F=='h'){ ph.style.left=(W-150-pw)+'px'; ph.style.top=((H-phH)/2-30)+'px'; } else { ph.style.left=((W-pw)/2)+'px'; ph.style.top=(H-phH-200)+'px'; }
     ph.style.opacity=t>=TL.AF.ask?1:0;   /* the phone snaps in with Ask. */
    }  /* the address snaps in as Maya says it */
