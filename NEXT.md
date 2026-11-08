@@ -55,6 +55,10 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 - Tests 194/194 (7 new from this raid).
 - Not fixable from here: speech mishearing with game audio. Idea: a test-build-only "Heard: ..." line so Tony can see what Relay heard.
 
+## 8 Nov
+- Site header: RELAY back beside the mark on every /beta page, folio lockup proportions (see the style guide, Site patterns). Mark only under 390 px.
+- Trailer end lockup with the address: `tools/trailer/lockup.html` (folio lockup, getarcrelay.app under it as wide as RELAY, gap 0.32 of the cap height; Tony approved 8 Nov). Goes into trailer B's end scene.
+
 ## Next (pick one)
 1. Tony on the Pixel: map buttons, location-only reply, About links open the browser, "show me the Dam map", Hey Relay with game audio.
 2. Done 6 Nov: distances on all seven maps. Scales fitted from allthings.how place pages (`tools/places/dist/*.json`, `node tools/places/scale.js`), typical error 1 to 10%; `tests/maps.js` checks them. Dam's central complex is the roughest (multi-level, published figures disagree). Fixed MetaForge's "Hiltop hatch" to Hilltop Hatch.

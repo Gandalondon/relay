@@ -51,9 +51,8 @@ p{margin:0;text-wrap:pretty}
 .btn.soon,.btn.soon:hover{background:var(--amber);cursor:default}  /* amber like every button, but not a link until open testing (7 Nov) */
 .btn.sm{height:44px;padding:0 20px;font-size:16px}
 
-/* header (5 Nov): a solid charcoal bar fixed to the top on every page, mark only (the name stays for screen readers). It never changes colour. */
+/* header: a solid charcoal bar fixed to the top on every page, the full lockup (mark and RELAY, back 8 Nov). It never changes colour. */
 .hdr{position:fixed;inset:0 0 auto;z-index:20;background:var(--bg);padding-top:env(safe-area-inset-top,0px)}
-.hdr .logo .name{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;padding:0}
 .hdr .btn.sm{height:40px;padding:0 20px;font-size:16px}
 @media (max-width:600px){ .hdr .btn.sm{height:36px;padding:0 16px} }
 /* the header runs to the page's outer margins, wider than the content column: logo far left, Get the app far right */
@@ -64,8 +63,16 @@ p{margin:0;text-wrap:pretty}
 .logo path{fill:none;stroke:var(--amber);stroke-width:10}
 .logo .name .arc{font-weight:400;color:var(--text-hi)}
 .logo .name .rl{color:var(--amber)}
-.logo .name{display:block;white-space:nowrap;padding-left:12px;font:700 24px/1 var(--font);letter-spacing:var(--tr-caps);text-transform:uppercase}
-@media (max-width:420px){ .logo svg{width:28px;height:28px} .logo .name{font-size:20px;padding-left:10px} }
+/* folio lockup proportions (8 Nov): the drawn lines fill 65 of the mark's 72 units, so with V the visible mark,
+   caps are 0.58 V tall (font 0.866 V), centred on the lines, and the gap is 0.52 V. RELAY is never smaller than the header links. */
+.logo{--mk:32px}
+.logo svg{width:var(--mk);height:var(--mk);transform:translateY(calc(var(--mk) * -3.5 / 72))}
+.logo .name{display:block;white-space:nowrap;padding-left:calc(var(--mk) * (.52 * 65 - 7) / 72);font:700 calc(var(--mk) * .866 * 65 / 72)/1 var(--font);letter-spacing:var(--tr-caps);text-transform:uppercase}
+@media (max-width:600px){ .logo{--mk:22px} }
+/* narrow phones: RELAY stays at 16 px (the links' size, never smaller); gaps tighten so Coming soon keeps to the gutter */
+@media (max-width:400px){ .logo{--mk:20.5px} .hright{gap:16px} .hdr .wrap{gap:12px} .hdr .btn.sm{padding:0 14px} }
+/* under 390 px the full lockup and both links no longer fit inside the gutters: mark only, as before 8 Nov (the name stays for screen readers) */
+@media (max-width:389px){ .logo{--mk:28px} .hdr .logo .name{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);padding:0} }
 
 /* contours: decorative terrain in the hero and footer, one colour, one line weight */
 canvas.topo{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
@@ -223,8 +230,6 @@ canvas.topo{display:none}
 .prosebit a{color:var(--text-hi);font-weight:500}
 @media (max-width:900px){ .hsec{grid-template-columns:minmax(0,1fr);margin-top:88px} }
 @media (max-width:600px){ .pcol{display:contents} .pgrid{grid-template-columns:minmax(0,1fr);gap:32px} .how{grid-template-columns:40px minmax(0,1fr);gap:16px} .how .ico{width:40px;height:40px} .how .ic{width:22px;height:22px} .how h3{margin-top:5px} }
-/* phones: the header shows the mark only, so "How it works" and "Get the app" both fit (5 Nov). The name stays for screen readers. */
-@media (max-width:600px){ .hdr .logo .name{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;padding:0} }
 @media (max-width:900px){ .hdr .wrap{height:72px} }
 
 /* share page (8 Nov, draft): same two-half grid as How it works */

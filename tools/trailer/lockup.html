@@ -1,0 +1,29 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:IT;font-weight:700;src:url(../../site/fonts/inter-tight-700.woff2)}
+/* Relay end lockup with the address (8 Nov). Measured from the folio lockup Tony sent: caps 0.58 of the mark's height,
+   centred on it, gap 0.52 of the mark, RELAY 2.55 marks wide. The address goes under the name, left-aligned, as wide as
+   RELAY (Sniff's rule), its top 0.32 of the cap height under the baseline (opened from 0.18, Tony 8 Nov). ?mk= sets the mark size in px. */
+html,body{margin:0;background:#1C1E22}
+svg{position:absolute;overflow:hidden}path{fill:none;stroke:#F2B33D;stroke-width:10}
+.w{position:absolute;font-family:IT;font-weight:700;color:#EEE8DC;white-space:nowrap;line-height:1}
+</style></head><body>
+<svg id="mk" viewBox="0 0 72 72"><path d="M -10 12 H 14 A 46 46 0 0 1 60 58 V 82"/><path d="M -10 28 H 14 A 30 30 0 0 1 44 58 V 82"/><path d="M -10 44 H 14 A 14 14 0 0 1 28 58 V 82"/></svg>
+<div class="w" id="nm">RELAY</div><div class="w" id="url">getarcrelay.app</div>
+<script>
+const q=new URLSearchParams(location.search), MK=+(q.get('mk')||200), W=innerWidth, H=innerHeight;
+(async()=>{await document.fonts.ready;
+ const c=document.createElement('canvas').getContext('2d');
+ const M=(t,px,ls)=>{c.font='700 '+px+'px IT';c.letterSpacing=(ls||0)+'px';const m=c.measureText(t);return {w:m.actualBoundingBoxLeft+m.actualBoundingBoxRight,l:m.actualBoundingBoxLeft,a:m.actualBoundingBoxAscent,d:m.actualBoundingBoxDescent,fa:m.fontBoundingBoxAscent,fd:m.fontBoundingBoxDescent};};
+ const mk=MK, cap=mk*.58, ns=cap/(M('RELAY',100).a/100);
+ /* tracking so the ink of RELAY is 2.55 marks wide (4 gaps between 5 letters) */
+ const ls=(mk*2.55-M('RELAY',ns).w)/4, nw=mk*2.55;
+ let us=100; us=us*nw/M('getarcrelay.app',us).w; const U=M('getarcrelay.app',us);
+ const capTop=(mk-cap)/2, base=capTop+cap, uTop=base+cap*.32, totalH=Math.max(mk,uTop+U.a+U.d);
+ const gap=mk*.52, totalW=mk+gap+nw, x0=Math.round((W-totalW)/2), y0=Math.round((H-totalH)/2), tx=x0+mk+gap;
+ /* the drawn lines fill 65 of the mark's 72 units (x 0 to 65, y 7 to 72), so mk is the visible size */
+ const box=mk*72/65; Object.assign(document.getElementById('mk').style,{left:x0+'px',top:(y0-box*7/72)+'px',width:box+'px',height:box+'px'});
+ const put=(el,px,lsp,inkTop,m)=>{el.style.fontSize=px+'px';el.style.letterSpacing=lsp+'px';const half=(px-(m.fa+m.fd))/2;
+   el.style.left=(tx+m.l)+'px'; el.style.top=(y0+inkTop-(half+m.fa-m.a))+'px';};
+ const N=M('RELAY',ns,ls); put(document.getElementById('nm'),ns,ls,capTop,N); put(document.getElementById('url'),us,0,uTop,U);
+ window.LS=ls/ns; document.body.dataset.ready=1;})();
+</script></body></html>
