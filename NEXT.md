@@ -79,7 +79,8 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
   and the right edge, drifting from half to full angle, then the end card (folio lockup, getarcrelay.app said at Normal speed, Google's
   badge `tools/trailer/google-play-badge.png` at Sniff's size). Every block shares one cap-top line; the end words are centred on the phone.
 - Legal: no MetaForge credit (no maps shown). End card line kept to one line: Embark disclaimer plus Google's trademark sentence.
-- Music: Jonas Blakewood synthwave at 12%, drop on Maya's answer. The Mountain is in audio/ (`MUSIC=mountain MDROP=16.0`), not used.
+- Music: Jonas Blakewood synthwave at 12%, drop on Maya's answer.
+- Tidy (8 Nov evening): old trailer A pipeline (anim, frame, make.py, render.js), unused phone shot, Ben's old line and The Mountain track removed. No gameplay footage needed any more. site/beta/media now holds the final cuts and a new poster (Share page).
 - E (mic opening, app-exact halo) still builds with VER=e. Voices need the Supertonic model in /home/claude/voices (sherpa-onnx tts-models release).
 - Next: Relay YouTube brand channel under Tony's Google account (alongside Get Sniff), upload the trailer.
 
