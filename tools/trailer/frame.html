@@ -28,9 +28,14 @@ html,body{width:100%;height:100%;background:var(--ch);color:var(--cream);font-fa
 .mark{position:absolute;overflow:hidden}
 .mark path{fill:none;stroke:var(--amber);stroke-width:10}
 .lock{position:absolute}
+.lock.c{left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:calc(var(--mk)*.16)}
+.lock.c svg{width:var(--mk);height:var(--mk);overflow:hidden;flex:none}
+.lock.c path{fill:none;stroke:var(--amber);stroke-width:10}
+.v .lock.c{flex-direction:column;gap:calc(var(--mk)*.2)}
+.v .lock.c .t{align-items:center}
 .lock .t{display:flex;flex-direction:column;align-items:flex-start}
 .lock b{font:700 calc(var(--mk)*.78)/.86 IT;letter-spacing:-.02em}
-.lock i{font:700 calc(var(--mk)*.193)/1 IT;font-style:normal;letter-spacing:0;margin-top:calc(var(--mk)*.07)}
+.lock i{font:700 calc(var(--mk)*.193)/1 IT;font-style:normal;letter-spacing:0;margin-top:calc(var(--mk)*.15)}
 .lock .t.off{visibility:hidden}
 .legal{position:absolute;left:var(--g);right:var(--g);bottom:calc(var(--g)*.5);font:500 var(--lg)/1.35 IT;color:var(--cream);letter-spacing:.01em;text-wrap:pretty;text-shadow:0 1px 3px rgba(21,23,28,.85),0 0 12px rgba(21,23,28,.5)}
 /* 16:9: phone in the left half, words from the middle line */
@@ -64,7 +69,7 @@ const SC={
  answer:phone('phone-answer.png')+say(MAYA),
  pin:game('Game footage: pin and run','Placeholder for Tony’s PS5 clip. Pin where Relay showed, close the map, run.'),
  w1:runbg+words(1), w2:runbg+words(2), w3:runbg+words(3),
- end:runbg+words(3).replace('class="big"','class="big ghost"')+logo(P).replace('<svg','<svg class="mark"')+'<div class="lock"><div class="t'+(P<1?' off':'')+'"><b>Relay</b><i>getarcrelay.app</i></div></div>',
+ end:'<div class="lock c">'+logo(P)+'<div class="t'+(P<1?' off':'')+'"><b>Relay</b><i>getarcrelay.app</i></div></div>',
 };
 st.innerHTML=SC[S]+'<div class="legal">Unofficial companion app. Not affiliated with or endorsed by Embark Studios. ARC Raiders is a trademark of Embark Studios. Maps by MetaForge.</div>';
 /* URL exactly as wide as the wordmark, as on Sniff's tote lockup */

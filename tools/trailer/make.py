@@ -39,11 +39,11 @@ for f, name in (("h", "16x9"), ("v", "9x16")):
     ben = int((talk_at + TL["B0"]) * 1000); maya = int((talk_at + TL["Y0"]) * 1000)
     tmp = os.path.join(OUT, "tmp-" + name + ".mp4"); dst = os.path.join(OUT, "relay-trailer-" + name + ".mp4")
     b0, b1 = ben / 1000, ben / 1000 + T["ben"]["dur"]; m0, m1 = maya / 1000, maya / 1000 + T["maya"]["dur"]
-    duck = "if(between(t,%.2f,%.2f)+between(t,%.2f,%.2f),0.28,0.55)" % (b0 - .2, b1 + .2, m0 - .2, m1 + .2)
+    duck = "0.3"  # one steady level under everything; the voices sit on top (Tony, 8 Nov)
     run(["-i", V, "-i", os.path.join(R, "audio/ben.wav"), "-i", os.path.join(R, "audio/maya.wav"),
          "-ss", "%.2f" % mstart, "-t", "%.2f" % (total + 1), "-i", os.path.join(R, "audio", MUSIC), "-filter_complex",
          "[3]aresample=48000,volume='%s':eval=frame,afade=t=in:st=0:d=1.2,afade=t=out:st=%.2f:d=1.8[mu];"
-         "[1]aresample=48000,adelay=%d|%d,volume=1.6[b];[2]aresample=48000,adelay=%d|%d,volume=1.6[m];[b][m][mu]amix=inputs=3:normalize=0,alimiter=limit=0.95,apad,atrim=0:%.2f[a]"
+         "[1]aresample=48000,adelay=%d|%d,volume=1.8[b];[2]aresample=48000,adelay=%d|%d,volume=1.8[m];[b][m][mu]amix=inputs=3:normalize=0,alimiter=limit=0.95,apad,atrim=0:%.2f[a]"
          % (duck, total - 1.8, ben, ben, maya, maya, total),
          "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-shortest", tmp])
     os.replace(tmp, dst)
