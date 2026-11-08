@@ -1,61 +1,73 @@
 <!doctype html><html><head><meta charset="utf-8"><style>
 @font-face{font-family:IT;font-weight:500;src:url(../../www/fonts/inter-tight-500.woff2)}
+@font-face{font-family:IT;font-weight:600;src:url(../../www/fonts/inter-tight-600.woff2)}
 @font-face{font-family:IT;font-weight:700;src:url(../../www/fonts/inter-tight-700.woff2)}
+/* Relay trailer frames (8 Nov, v2): the site's 3D phone, big spoken lines in quotes word by word, hard-cut Ask. Find. Get out., Sniff-style lockup */
 :root{--ch:#1C1E22;--panel:#26282D;--cream:#EEE8DC;--amber:#F2B33D}
 *{margin:0;box-sizing:border-box}
 html,body{width:100%;height:100%;background:var(--ch);color:var(--cream);font-family:IT,sans-serif;overflow:hidden}
 .stage{position:absolute;inset:0}
-/* game footage stand-in: reads as footage, labelled so nobody mistakes it */
 .game{position:absolute;inset:0;background:radial-gradient(120% 90% at 30% 35%,#4a4f48 0%,#2c302d 45%,#17191b 100%)}
 .game::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.025) 0 2px,transparent 2px 42px)}
-.game .tag{position:absolute;left:var(--g);top:var(--g);font:500 var(--tag)/1.3 IT;color:rgba(238,232,220,.55);letter-spacing:.01em;max-width:60%}
+.game .tag{position:absolute;left:var(--g);top:var(--g);font:500 var(--tag)/1.3 IT;color:rgba(238,232,220,.55);max-width:60%}
 .game .tag b{display:block;font-weight:700;color:rgba(238,232,220,.8)}
-.scrim{position:absolute;inset:0;background:linear-gradient(90deg,rgba(28,30,34,.78) 0%,rgba(28,30,34,.35) 55%,rgba(28,30,34,0) 100%)}
+.scrim{position:absolute;inset:0;background:linear-gradient(90deg,rgba(28,30,34,.8) 0%,rgba(28,30,34,.35) 55%,rgba(28,30,34,0) 100%)}
 .v .scrim{background:linear-gradient(0deg,rgba(28,30,34,.85) 0%,rgba(28,30,34,.4) 55%,rgba(28,30,34,0) 100%)}
-.phone{position:absolute;border-radius:calc(var(--ph)*.06);overflow:hidden;box-shadow:0 0 0 2px var(--panel),0 30px 80px rgba(0,0,0,.45)}
-.phone img{display:block;height:100%;width:auto}
-.cap{position:absolute;font:500 var(--cap)/1.3 IT;letter-spacing:.01em;text-wrap:pretty}
-.cap small{display:block;font:500 calc(var(--cap)*.6)/1 IT;color:var(--amber);margin-bottom:.6em;letter-spacing:.04em;text-transform:uppercase}
+/* the site's 3D phone: a stack of slabs behind the screen, turned a little */
+.pwrap{position:absolute;perspective:2400px}
+.phone{position:relative;width:var(--pw);aspect-ratio:390/844;border-radius:calc(var(--pw)*.1467);transform-style:preserve-3d;transform:rotateY(var(--ry)) rotateX(4deg);--d:calc(var(--pw)*.1)}
+.phone .slab{position:absolute;inset:0;border-radius:inherit;background:#222429;transform:translateZ(calc(var(--k)*var(--d)/-12))}
+.phone .slab.rim{background:linear-gradient(140deg,#3F4249,#2A2C32 45%,#222429);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.phone .scr{position:absolute;inset:calc(var(--pw)*.0333);border-radius:calc(var(--pw)*.1133);overflow:hidden;transform:translateZ(.5px);background:var(--ch)}
+.phone .scr img{display:block;width:100%;height:100%;object-fit:cover;object-position:top}
+.say{position:absolute;font:700 var(--sz)/1.04 IT;letter-spacing:-.01em;text-wrap:balance;text-indent:-.42em}  /* the opening quote hangs outside the text edge */
+.say span{opacity:0}.say span.on{opacity:1}
 .big{position:absolute;font:700 var(--big)/.98 IT;letter-spacing:-.01em}
-.big div{opacity:0}.big div.on{opacity:1}
-.lock{position:absolute;display:flex;align-items:center;gap:calc(var(--mk)*.3)}
-.lock svg{width:var(--mk);height:var(--mk);overflow:hidden}
+.lock{position:absolute;display:flex;align-items:center;gap:calc(var(--mk)*.16)}
+.lock svg{width:var(--mk);height:var(--mk);overflow:hidden;flex:none}
 .lock path{fill:none;stroke:var(--amber);stroke-width:10}
-.lock b{font:700 calc(var(--mk)*.9)/1 IT;letter-spacing:-.01em}
+.lock .t{display:flex;flex-direction:column;align-items:flex-start}
+.lock b{font:700 calc(var(--mk)*.78)/.86 IT;letter-spacing:-.02em}
+.lock i{font:700 calc(var(--mk)*.193)/1 IT;font-style:normal;letter-spacing:0;margin-top:calc(var(--mk)*.07)}
+.lock .t.off{visibility:hidden}
 .legal{position:absolute;left:var(--g);right:var(--g);bottom:calc(var(--g)*.5);font:500 var(--lg)/1.35 IT;color:rgba(238,232,220,.6);letter-spacing:.01em;text-wrap:pretty}
-.url{position:absolute;font:500 var(--url)/1 IT;color:var(--cream);letter-spacing:.01em}
-/* 16:9 */
-.h{--lg:20px;--g:96px;--tag:26px;--ph:900px;--cap:46px;--big:220px;--mk:120px;--url:44px}
-.h .phone{height:var(--ph);top:90px;left:calc(25% - var(--ph)*.2309)}
-.h .cap{left:50%;right:var(--g);top:50%;transform:translateY(-50%)}
+/* 16:9: phone in the left half, words from the middle line */
+.h{--g:96px;--tag:26px;--lg:20px;--pw:430px;--ry:14deg;--sz:84px;--big:220px;--mk:300px}
+.h .pwrap{left:calc(25% - var(--pw)/2);top:calc(50% - var(--pw)*1.082 - 20px)}
+.h .say{left:50%;right:var(--g);top:50%;transform:translateY(-55%)}
+.h .solo .pwrap{left:calc(50% - var(--pw)/2)}
 .h .big{left:var(--g);top:50%;transform:translateY(-50%)}
-.h .lock{left:var(--g);top:calc(50% - var(--mk)*.75)}
-.h .url{left:var(--g);top:calc(50% + var(--mk)*.6)}
-.h .solo .phone{left:calc(50% - var(--ph)*.2309)}
-/* 9:16 */
-.v{--lg:26px;--g:72px;--tag:30px;--ph:1240px;--cap:52px;--big:210px;--mk:130px;--url:48px}
-.v .phone{height:var(--ph);top:150px;left:calc(50% - var(--ph)*.2309)}
-.v .cap{left:var(--g);right:var(--g);top:1480px}
+.h .lock{left:50%;top:50%;transform:translate(-50%,-50%)}
+/* 9:16: words on top, phone under */
+.v{--g:72px;--tag:30px;--lg:26px;--pw:480px;--ry:12deg;--sz:84px;--big:220px;--mk:250px}
+.v .pwrap{left:calc(50% - var(--pw)/2);top:700px}
+.v .solo .pwrap{top:calc(50% - var(--pw)*1.082 - 30px)}
+.v .say{left:var(--g);right:var(--g);top:200px}
 .v .big{left:var(--g);bottom:300px}
-.v .lock{left:var(--g);bottom:340px}
-.v .url{left:var(--g);bottom:230px}
+.v .lock{left:50%;top:50%;transform:translate(-50%,-50%);flex-direction:column;gap:calc(var(--mk)*.2)}
+.v .lock .t{align-items:center}
 </style></head><body><div class="stage" id="st"></div>
 <script>
-const q=new URLSearchParams(location.search), F=q.get('f'), S=q.get('s'), st=document.getElementById('st');
+const q=new URLSearchParams(location.search), F=q.get('f'), S=q.get('s'), N=+(q.get('n')||0), P=+(q.get('p')||1), st=document.getElementById('st');
 st.classList.add(F);
-const LOGO='<svg viewBox="0 0 72 72"><path d="M -10 12 H 14 A 46 46 0 0 1 60 58 V 82"/><path d="M -10 28 H 14 A 30 30 0 0 1 44 58 V 82"/><path d="M -10 44 H 14 A 14 14 0 0 1 28 58 V 82"/></svg>';
+const ARCS=['M -10 12 H 14 A 46 46 0 0 1 60 58 V 82','M -10 28 H 14 A 30 30 0 0 1 44 58 V 82','M -10 44 H 14 A 14 14 0 0 1 28 58 V 82'];
+const logo=p=>'<svg viewBox="0 0 72 72">'+ARCS.map((d,i)=>'<path d="'+d+'" pathLength="1" stroke-dasharray="1" stroke-dashoffset="'+Math.max(0,Math.min(1,1-(p*1.6-i*.3)))+'"/>').join('')+'</svg>';
 const game=(t,s)=>'<div class="game"><div class="tag"><b>'+t+'</b>'+s+'</div></div>';
-const phone=(img,cap,who)=>'<div class="phone"><img src="'+img+'"></div>'+(cap?'<div class="cap"><small>'+who+'</small>'+cap+'</div>':'');
-const words=n=>'<div class="big">'+['Ask.','Find.','Get out.'].map((w,i)=>'<div class="'+(i<n?'on':'')+'">'+w+'</div>').join('')+'</div>';
+const phone=img=>'<div class="pwrap"><div class="phone">'+Array.from({length:12},(_,k)=>'<i class="slab'+(k==0?' rim':'')+'" style="--k:'+(12-k)+'"></i>').join('')+'<div class="scr"><img src="'+img+'"></div></div></div>';
+const say=t=>{const W=t.split(' ');return '<div class="say">“'+W.map((w,i)=>'<span class="'+(i<N?'on':'')+'">'+w+(i==W.length-1?'”':'')+'</span>').join(' ')+'</div>';};
+const words=n=>'<div class="big">'+['Ask.','Find.','Get out.'].slice(0,n).map(w=>'<div>'+w+'</div>').join('')+'</div>';
 const runbg=game('Game footage: running to the pin','Placeholder for Tony’s PS5 clip')+'<div class="scrim"></div>';
+const BEN='Hey Relay, I’m at the Village. Where’s the nearest Rocketeer?', MAYA='The nearest rocketeer spawn is about 90&nbsp;metres west of you.';
 const SC={
  home:'<div class="solo">'+phone('phone-home.png')+'</div>',
  load:game('Game footage: loading in','Placeholder for Tony’s PS5 clip. Then open the map.'),
- ask:phone('phone-listening.png','Hey Relay, I’m at the Village. Where’s the nearest Rocketeer?','You'),
- answer:phone('phone-answer.png','The nearest rocketeer spawn is about 90&nbsp;metres west of you.','Relay'),
+ ask:phone('phone-listening.png')+say(BEN),
+ answer:phone('phone-answer.png')+say(MAYA),
  pin:game('Game footage: pin and run','Placeholder for Tony’s PS5 clip. Pin where Relay showed, close the map, run.'),
  w1:runbg+words(1), w2:runbg+words(2), w3:runbg+words(3),
- end:runbg+'<div class="lock">'+LOGO+'<b>Relay</b></div><div class="url">getarcrelay.app</div>',
+ end:'<div class="lock">'+logo(P)+'<div class="t'+(P<1?' off':'')+'"><b>Relay</b><i>getarcrelay.app</i></div></div>',
 };
 st.innerHTML=SC[S]+'<div class="legal">Unofficial companion app. Not affiliated with or endorsed by Embark Studios. ARC Raiders is a trademark of Embark Studios. Maps by MetaForge.</div>';
+/* URL exactly as wide as the wordmark, as on Sniff's tote lockup */
+document.fonts.ready.then(()=>{const b=document.querySelector('.lock b'),i=document.querySelector('.lock i');if(b&&i){const r=b.getBoundingClientRect().width/i.getBoundingClientRect().width;i.style.fontSize=(parseFloat(getComputedStyle(i).fontSize)*r)+'px';}document.body.dataset.ready=1;});
 </script></body></html>

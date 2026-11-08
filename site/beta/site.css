@@ -239,3 +239,4 @@ canvas.topo{display:none}
 .how p a,.hnote a{color:var(--amber)}
 .hnote.small{font-size:var(--small);line-height:var(--small-lh);color:var(--text-meta)}
 .hnote{text-wrap:pretty}
+.how .ic.ic-star{transform:scale(1.18)}  /* Material's star sits small in its box; sized up to match the other icons by eye */
