@@ -87,7 +87,7 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 ## 8 Nov evening: YouTube and Share page (pushed)
 - Relay YouTube channel (@getarcrelay): banner removed (picture and name only, like Sniff; art kept in marketing/youtube). Both trailers unlisted: 16:9 "Relay: Arc Raiders Voice Guide (Trailer)" youtu.be/EQyYAiuklks, Short "Ask. Find. Get out. Relay for Arc Raiders #Shorts" youtube.com/shorts/HdJfW9Q3bIM.
 - 16:9 end card: the Play badge's bottom edge sits on the legal line's baseline (type.html does it for future builds).
-- /beta/share: both videos embedded via youtube-nocookie with a hairline (the one exception to no borders), downloads from site/beta/media, linked from every /beta footer. Privacy has a line on the embeds; copy Doc still to sync (that line, plus the Share page).
+- /beta/share: no YouTube embeds (Sniff's pattern, 8 Nov 21:22): one still of the 16:9 trailer (`media/relay-trailer-cover.jpg`, the Ask. Find. Get out. frame at 8.5 s) with a hairline and a centred amber play button that opens youtu.be/EQyYAiuklks in a new tab. Both downloads sit in the caption under it. Nothing loads from YouTube, so the privacy YouTube line is gone and the policy is back to 4 Nov. Linked from every /beta footer.
 
 ## Next (pick one)
 1. Tony on the Pixel: map buttons, location-only reply, About links open the browser, "show me the Dam map", Hey Relay with game audio.
