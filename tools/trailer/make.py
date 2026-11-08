@@ -23,7 +23,11 @@ for f, name in (("h", "16x9"), ("v", "9x16")):
          "[0]settb=1/30,fps=30[h];[1]settb=1/30,fps=30[l];[2]settb=1/30,fps=30[k];[h][l]xfade=transition=fade:duration=%s:offset=%.3f[x];[x][k]xfade=transition=fade:duration=%s:offset=%.3f,fade=t=in:st=0:d=0.4,format=yuv420p[o]"
          % (X1, TL["home"] - X1, X2, TL["home"] - X1 + LOAD - X2), "-map", "[o]"] + ENC + [A])
     talk_at = TL["home"] - X1 + LOAD - X2; a_len = talk_at + TL["talk"]
-    seq = [("pin", 2.5), ("w1", 0.4), ("w2", 0.4), ("w3", 0.8)] + [("end-%d" % k, 0.05) for k in range(12)] + [("end-12", 2.8)]
+    # music: Jonas Blakewood "Synthwave Retro Wave" (Pixabay, free licence). Its drop (7.93 s) lands as the talk scene starts;
+    # Ask. Find. Get out. fall on its beats (bar 2.22 s, beat 0.555 s), Ask on the bar at 20.02 s.
+    MUSIC, MDROP, BEAT, ASK_AT = "music-jonasblakewood-synthwave-retro-wave-618632.mp3", 7.93, 0.555, 20.02
+    mstart = MDROP - talk_at; pin = (ASK_AT - mstart) - a_len
+    seq = [("pin", pin), ("w1", BEAT), ("w2", BEAT), ("w3", BEAT * 2)] + [("end-%d" % k, 0.05) for k in range(12)] + [("end-12", 2.8)]
     lst = os.path.join(OUT, "b.txt")
     with open(lst, "w") as L:
         for s, d in seq: L.write("file '%s'\nduration %.3f\n" % (p(s), d))
@@ -34,8 +38,13 @@ for f, name in (("h", "16x9"), ("v", "9x16")):
     V = os.path.join(OUT, "v.mp4"); run(["-f", "concat", "-safe", "0", "-i", cat, "-c", "copy", V])
     ben = int((talk_at + TL["B0"]) * 1000); maya = int((talk_at + TL["Y0"]) * 1000)
     tmp = os.path.join(OUT, "tmp-" + name + ".mp4"); dst = os.path.join(OUT, "relay-trailer-" + name + ".mp4")
-    run(["-i", V, "-i", os.path.join(R, "audio/ben.wav"), "-i", os.path.join(R, "audio/maya.wav"), "-filter_complex",
-         "[1]adelay=%d|%d[b];[2]adelay=%d|%d[m];[b][m]amix=inputs=2:normalize=0,apad,atrim=0:%.2f[a]" % (ben, ben, maya, maya, total),
+    b0, b1 = ben / 1000, ben / 1000 + T["ben"]["dur"]; m0, m1 = maya / 1000, maya / 1000 + T["maya"]["dur"]
+    duck = "if(between(t,%.2f,%.2f)+between(t,%.2f,%.2f),0.28,0.55)" % (b0 - .2, b1 + .2, m0 - .2, m1 + .2)
+    run(["-i", V, "-i", os.path.join(R, "audio/ben.wav"), "-i", os.path.join(R, "audio/maya.wav"),
+         "-ss", "%.2f" % mstart, "-t", "%.2f" % (total + 1), "-i", os.path.join(R, "audio", MUSIC), "-filter_complex",
+         "[3]aresample=48000,volume='%s':eval=frame,afade=t=in:st=0:d=1.2,afade=t=out:st=%.2f:d=1.8[mu];"
+         "[1]aresample=48000,adelay=%d|%d,volume=1.6[b];[2]aresample=48000,adelay=%d|%d,volume=1.6[m];[b][m][mu]amix=inputs=3:normalize=0,alimiter=limit=0.95,apad,atrim=0:%.2f[a]"
+         % (duck, total - 1.8, ben, ben, maya, maya, total),
          "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-shortest", tmp])
     os.replace(tmp, dst)
     for x in (A, B, V, cat, HM, TK): os.remove(x)
