@@ -2,7 +2,7 @@
 The lines live here; run say.py for each first:  python3 timing.py
 Takes (8 Nov), each checked with an offline Whisper (base.en) so a line is heard as written:
   hey  Owen (7)  "Hey Relay!" speed 1.0  (Tony switched the asker from Ben to Owen, 8 Nov: more natural)
-  ask  Owen (7)  "Where’s the nearest Rocketeer?" speed 1.3  (placeholder: two lines on screen, copy to follow)    maya  Maya (3) "Nearest Rocketeer. North, by Checkpoint." speed 1.3 (Tony, 8 Nov evening: a landmark, as the app answers; the real answer from Olive Grove on Blue Gate)    url  Maya (3) "Get Arc Relay dot app." speed 1.15"""
+  ask  Owen (7)  "Where’s the nearest Rocketeer?" speed 1.3  (placeholder: two lines on screen, copy to follow)    maya  Maya (3) "Nearest Rocketeer. North, by Checkpoint." speed 1.3 (Tony, 8 Nov evening: a landmark, as the app answers; the real answer from Olive Grove on Blue Gate)    url  Maya (3) "Get Arc Relay dot app." speed 1.0 (Tony, 8 Nov evening: "app" was clipped at 1.15)"""
 import soundfile as sf, numpy as np, json, re, os
 H = os.path.dirname(os.path.abspath(__file__))
 LINES = {"ben": "Hey Relay, I’m at the Village. Where’s the nearest Rocketeer?",
