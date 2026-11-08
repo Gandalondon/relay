@@ -60,7 +60,7 @@ const flatPhone=(img)=>'<div class="ph flat" id="ph" style="--pw:var(--endph)"><
 /* every block of words (question, answer, Ask. Find. Get out.) shares one size and one top-left point (Tony, 8 Nov):
    the biggest size where each block fits between the side margins without breaking a line it shouldn't, and the
    tallest block fits the frame; the blocks then all start where the tallest one, centred, would. */
-const ANSWER=()=>sp(T.maya.words.map(w=>w[0]).join(' ')).replace('<span>90</span> <span>metres</span> <span>west.</span>','<span>90</span>&nbsp;<span>metres</span>&nbsp;<span>west.</span>');
+const ANSWER=()=>sp(T.maya.words.map(w=>w[0]).join(' ')).replace('<span>North,</span> <span>by</span> <span>Checkpoint.</span>','<span>North,</span>&nbsp;<span>by</span>&nbsp;<span>Checkpoint.</span>');
 const AFG=()=>sp('Ask. Find. Get out.').replace(/<\/span> <span>/g,'</span><br><span>').replace('<br><span>out.','&nbsp;<span>out.');
 let TOP=0;
 /* optical left edges (Tony, 8 Nov): the legal line and the address start where the big words' first letter starts.
@@ -112,7 +112,7 @@ function build(scene){ if(built==scene) return; built=scene;
   if(scene=='hey') st.innerHTML=sp('Hey Relay','hey')+legal;
   if(scene=='ask') st.innerHTML=sp(words('ask'))+legal;
   if(scene=='phone') st.innerHTML=phoneHTML+legal;
-  if(scene=='answer') st.innerHTML=ANSWER()+legal;  /* one span per spoken word; 90 metres west. never splits */
+  if(scene=='answer') st.innerHTML=ANSWER()+legal;  /* one span per spoken word; North, by Checkpoint. never splits */
   if(scene=='afg') st.innerHTML='<div class="scrim"></div>'+AFG()+legal;
   if(scene=='afg2') st.innerHTML='<div class="scrim blue"></div>'+AFG()+flatPhone()+legal;  /* no address here: it moved to the end card (Tony, 8 Nov) */
   if(scene=='afg3') st.innerHTML=AFG()+flatPhone('phone-home.png')+legal;  /* C (8 Nov): no gameplay, the plain background, the phone on its home greeting */
@@ -147,9 +147,9 @@ function layLock(){
   const svg=st.querySelector('.lock svg'); Object.assign(svg.style,{width:box+'px',height:box+'px',top:(y0-box*7/72)+'px'});
   LK={centre:(W-mk)/2, left:x0};
 }
-/* scene lengths (s). afg3 3.0 and end 4.0 (Tony, 8 Nov: less hold on the phone at the end; were 5.2 and 4.4). phone: two beats of the music (72 bpm), hard cut in on the drop and out on the beat */
-window.TL={hey:2.2, ask:2.2, phone:1.66, answer:3.3, afg:2.3, afg2:5.4, afg3:3.0, mic:2.3, mic2:2.1, legal:1/30, end:4.0, V:{hey:.25, ask:.25, maya:.2, afg:-.07, url:1.25, url2:2.4},
-  AF:{ask:.2, find:.9, out:1.6}, ENDURL:1.5};  /* B2 end frame beats (Tony, 8 Nov): Ask. with the phone / Find. / Get out., then a hold. The address is said on the end card once RELAY and the address are in (ENDURL) */  /* afg -0.07: Ask is heard as the overlay finishes fading in (0.2 s) */
+/* scene lengths (s). afg3 2.4: Ask. / Find. / Get out. / the end card on even 0.8 s beats (Tony, 8 Nov evening; was 0.7 s apart, then a 1.4 s hold). end 4.0. phone: two beats of the music (72 bpm), hard cut in on the drop and out on the beat */
+window.TL={hey:2.2, ask:2.2, phone:1.66, answer:3.3, afg:2.3, afg2:5.4, afg3:2.4, mic:2.3, mic2:2.1, legal:1/30, end:4.0, V:{hey:.25, ask:.25, maya:.2, afg:-.07, url:1.25, url2:2.4},
+  AF:{ask:.2, find:1.0, out:1.8}, ENDURL:1.5};  /* B2 end frame beats (Tony, 8 Nov): Ask. with the phone / Find. / Get out., then a hold. The address is said on the end card once RELAY and the address are in (ENDURL) */  /* afg -0.07: Ask is heard as the overlay finishes fading in (0.2 s) */
 window.setT=function(scene,t){
   if(scene=='afg3') t+=TL.AF.ask;  /* C: no overlay to fade in, so Ask. and the phone land on the cut */
   build(scene); const V=TL.V, ts=st.querySelectorAll('.t');
