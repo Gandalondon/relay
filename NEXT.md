@@ -64,6 +64,8 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 
 - Accessibility (8 Nov, axe-core on the app and every /beta page): site pages clean. App: main landmark and a hidden Relay heading; the map is no longer a picture with a link inside (its description is a hidden line beside it, the map container doesn't take keyboard focus); the MetaForge credit link has a 26 px tap area. Left on purpose: page zoom is off (user-scalable=no) because the map does its own pinch zoom.
 
+- Follow-ups (8 Nov): "how far is it", "which way", "where is it again", "am I close", "can't see it" repeat the last answer in full. Fixed an old bug: any short line with "what" repeated the last answer, so "what about a Bastion" got the Rocketeer again; naming something new is now always a new question. Still not understood: "next one", "second nearest", "anything closer", "what's that near", "I'm here" (after an enemy or loot answer).
+
 ## Next (pick one)
 1. Tony on the Pixel: map buttons, location-only reply, About links open the browser, "show me the Dam map", Hey Relay with game audio.
 2. Done 6 Nov: distances on all seven maps. Scales fitted from allthings.how place pages (`tools/places/dist/*.json`, `node tools/places/scale.js`), typical error 1 to 10%; `tests/maps.js` checks them. Dam's central complex is the roughest (multi-level, published figures disagree). Fixed MetaForge's "Hiltop hatch" to Hilltop Hatch.
