@@ -41,6 +41,8 @@ body.listening{background:var(--navy);color:var(--bone)}
 body.listening .close{color:var(--amber)}
 [hidden]{display:none!important}
 .ctxline{margin:16px 0 0;font-size:16px;line-height:24px;color:var(--grey);text-wrap:pretty}
+.heard{margin:4px 0 0;font-size:14px;line-height:20px;color:var(--grey);text-wrap:pretty}  /* TEST BUILD: what was heard */
+.dbgcopy{all:unset;cursor:pointer;margin:0 0 16px;color:var(--amber);font-weight:600;font-size:16px;line-height:24px;min-height:44px;display:inline-flex;align-items:center}
 .ctxline:empty{display:none}
 /* with a map the context line always holds its one line (even empty), so the map never moves */
 .ctxline.keep{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -200,7 +202,7 @@ body.session .cog,body.listening .cog,body.speaking .cog,body.follow .cog{displa
     <button class="close cog" id="cog" type="button" aria-label="Settings"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M421-80q-14 0-25-9t-13-23l-15-94q-19-7-40-19t-37-25l-86 40q-14 6-28 1.5T155-226L97-330q-8-13-4.5-27t15.5-23l80-59q-2-9-2.5-20.5T185-480q0-9 .5-20.5T188-521l-80-59q-12-9-15.5-23t4.5-27l58-104q8-13 22-17.5t28 1.5l86 40q16-13 37-25t40-18l15-95q2-14 13-23t25-9h118q14 0 25 9t13 23l15 94q19 7 40.5 18.5T669-710l86-40q14-6 27.5-1.5T804-734l59 104q8 13 4.5 27.5T852-580l-80 57q2 10 2.5 21.5t.5 21.5q0 10-.5 21t-2.5 21l80 58q12 8 15.5 22.5T863-330l-58 104q-8 13-22 17.5t-28-1.5l-86-40q-16 13-36.5 25.5T592-206l-15 94q-2 14-13 23t-25 9H421Zm59-270q54 0 92-38t38-92q0-54-38-92t-92-38q-54 0-92 38t-38 92q0 54 38 92t92 38Z"/></svg></button>
     <button class="close" id="close" type="button" aria-label="Close and start again" hidden><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-438 270-228q-9 9-21 9t-21-9q-9-9-9-21t9-21l210-210-210-210q-9-9-9-21t9-21q9-9 21-9t21 9l210 210 210-210q9-9 21-9t21 9q9 9 9 21t-9 21L522-480l210 210q9 9 9 21t-9 21q-9 9-21 9t-21-9L480-438Z"/></svg></button>
   </div>
-  <p class="ctxline" id="ctx"></p>
+  <p class="ctxline" id="ctx"></p><p class="heard" id="heard" hidden></p>
   <div class="gkey sppack" id="sppack" hidden><p id="sppacktxt">Download Google's offline English so Relay hears you without signal. One tap, once.</p><div class="gkrow"><button type="button" class="spget">Download offline speech</button></div></div>
   <div class="stage" id="stage"></div>
   <div class="dock"><button class="mic" id="mic" type="button" aria-label="Talk to Relay"><svg class="mc" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M408-453.92q-29-30.91-29-75.08v-251q0-41.67 29.44-70.83Q437.88-880 479.94-880t71.56 29.17Q581-821.67 581-780v251q0 44.17-29 75.08Q523-423 480-423t-72-30.92ZM450-150v-106q-96-11-166.5-77.5T202-498q-2-12.85 6.59-21.93 8.6-9.07 21.5-9.07 12.91 0 21.41 9t10.5 22q12 81 74.71 132.5Q399.42-314 479.65-314q81.35 0 143.85-51.5T698-498q2-13 10.68-22 8.67-9 21.5-9 12.82 0 21.32 9.07 8.5 9.08 6.5 21.93-11 97-81 164t-167 78v106q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63-8.5-8.62-8.5-21.37Z"/></svg><svg class="wv" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M285-270v-420q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v420q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63-8.5-8.62-8.5-21.37Zm165 160v-740q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v740q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63Q450-97.25 450-110ZM120-430v-100q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v100q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63-8.5-8.62-8.5-21.37Zm495 160v-420q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v420q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63-8.5-8.62-8.5-21.37Zm165-160v-100q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v100q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63-8.5-8.62-8.5-21.37Z"/></svg></button></div>
@@ -244,6 +246,7 @@ body.session .cog,body.listening .cog,body.speaking .cog,body.follow .cog{displa
 </div>
 <div class="vlist" id="debug" hidden role="dialog" aria-label="Diagnostics">
   <div class="vhead"><button class="back" id="dback" type="button" aria-label="Back"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="m274-450 227 227q9 9 9 21t-9 21q-9 9-21 9t-21-9L181-459q-5-5-7-10t-2-11q0-6 2-11t7-10l278-278q9-9 21-9t21 9q9 9 9 21t-9 21L274-510h496q13 0 21.5 8.5T800-480q0 13-8.5 21.5T770-450H274Z"/></svg></button><h2>Diagnostics</h2></div>
+  <button class="dbgcopy" id="dbgcopy" type="button">Copy misses for feedback</button>
   <pre class="dbg" id="dbg"></pre>
 </div>
 <script src="leaflet.js"></script>
@@ -526,6 +529,12 @@ function craftAnswer(it, raw, psNow) {
 /* =================== state =================== */
 const EMPTY = { place: null, placeAt: null, minutesLeft: null, minutesAt: null, quest: null, step: 0, last: null, raidAt: null, pending: null, seen: null, exitSaid: null, avoid: [], skip: [] };
 let S = Object.assign({}, EMPTY);
+/* TEST BUILD (8 Nov, for testers): a "Heard" line under each answer, and the last 30 things Relay didn't understand,
+   kept in Diagnostics to copy into feedback (they become the next held-out test set). Set to false before release. */
+const TEST_BUILD = true;
+const MISSES_KEY = "relay-misses";
+function misses() { try { return JSON.parse(localStorage.getItem(MISSES_KEY) || "[]"); } catch (e) { return []; } }
+function logMiss(q) { try { const m = misses(); m.push({ at: new Date().toISOString().slice(0, 16).replace("T", " "), map: MAP.name || "", q }); localStorage.setItem(MISSES_KEY, JSON.stringify(m.slice(-30))); } catch (e) {} }
 try { const saved = JSON.parse(localStorage.getItem("relay-state") || "null"); if (saved) S = Object.assign(S, saved); } catch (e) {}
 syncMap();
 function save() { try { localStorage.setItem("relay-state", JSON.stringify(S)); } catch (e) {} }
@@ -1664,10 +1673,12 @@ async function handle(q) {
   }
   if (!a) a = answer(q);
   if (a.fallback) { const b = await aiAnswer(q); if (b) a = b; }
+  if (a.fallback) logMiss(q);
   const go = () => { if (a.after) a.after(); if (a.follow === false) { convoUntil = 0; endFollow(); return; } convoUntil = Date.now() + CONVO_MS; setTimeout(() => listen({ auto: true }), 350); };
   if (a.keepLast && S.last) { renderAnswer(S.last.q, S.last.a); speak(a.say, go); return; }
   remember(q, a);
   renderAnswer(q, a);
+  if (TEST_BUILD) { $("heard").hidden = false; $("heard").textContent = "Heard: \u201c" + q + "\u201d"; }
   speak(a.say, go);
 }
 /* the mic is the button, and so is the screen (except the map). Tap while listening to stop. */
@@ -1724,6 +1735,10 @@ $("mback").addEventListener("click", () => show("maplist", false));
 $("mapitems").addEventListener("click", e => { const b = e.target.closest("button[data-map]"); if (!b) return; show("maplist", false); stopSpeaking(); stopListening(); endFollow(); handle("show me the " + MAP_NAMES[b.dataset.map] + " map"); });
 $("vback").addEventListener("click", () => { stopSpeaking(); clearTimeout(ovPoll); show("vlist", false); renderSettings(); });
 $("dback").addEventListener("click", () => show("debug", false));
+/* copies the misses as plain lines, ready to paste into a feedback email */
+$("dbgcopy").addEventListener("click", async () => { const txt = misses().map(m => m.at + "  " + m.map + "  " + m.q).join("\n") || "No misses yet.";
+  try { await navigator.clipboard.writeText(txt); $("dbgcopy").textContent = "Copied"; } catch (e) { $("dbgcopy").textContent = "Couldn't copy: select the lines below"; }
+  setTimeout(() => { $("dbgcopy").textContent = "Copy misses for feedback"; }, 2000); });
 /* hidden diagnostics: press and hold the version line */
 (() => { let t = 0; const v = $("ver");
   v.addEventListener("pointerdown", () => { t = setTimeout(openDebug, 800); });
@@ -1743,8 +1758,9 @@ async function openDebug() {
     "Speech recognition: " + (RS ? (speechOnDevice ? "on the phone (offline)" : "online") + (speechMode ? ", last used " + speechMode : "") : "old plugin"),
     "Offline English pack: " + (packState || "not checked"),
     "Last close: " + (st.lastExit || ovExit || "unknown"),
-    "Phone voice fallback: " + (VINFO && VINFO.current ? VINFO.current : "Google default")
-  ];
+    "Phone voice fallback: " + (VINFO && VINFO.current ? VINFO.current : "Google default"),
+    "", "Not understood (last " + misses().length + "):"
+  ].concat(misses().slice().reverse().map(m => m.at + "  " + m.map + "  \u201c" + m.q + "\u201d"));
   $("dbg").textContent = lines.join("\n");
 }
 /* voice list: the ten Supertonic voices. Tap to hear one; the one you tap is the one Relay uses. */

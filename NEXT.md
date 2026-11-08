@@ -87,6 +87,7 @@ Open testing plan (6 Nov, for when Tony says we're ready; not yet):
    - Feedback loop: feedback@ mail goes to Tony; misheard phrases go into the next held-out test set.
    - Before switching: release checklist below done, homepage copy and screens refreshed (see the USP plan), materials and plants in.
 6. Release checklist (6 Nov):
+   - [ ] TEST BUILD (8 Nov): `TEST_BUILD` in `www/index.html` shows a Heard line under each answer and keeps the last 30 misses in Diagnostics (Copy misses for feedback). Set it to false before release.
    - [ ] TEST BUILD (6 Nov, back in for Tony): onboarding shows on every open and on return from the background (`OB_EVERY_OPEN` in `www/index.html`), with the invisible skip top right (`#obskip`). Before release: remove both, and swap the two `.obph` placeholders for real onboarding images.
    - [x] Hidden diagnostics (press and hold the version line) kept on purpose, for bug reports.
    - [x] Version numbers come from the build (BUILD_NUMBER), nothing to bump by hand.
