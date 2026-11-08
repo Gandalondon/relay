@@ -82,7 +82,9 @@ function fitType(){
     st.style.setProperty('--big',px+'px'); st.innerHTML=blocks.join('');
     const ts=[...st.querySelectorAll('.t')]; ts.forEach(t=>{t.style.right='var(--tg)';t.style.top='0';});
     const edge=W-parseFloat(getComputedStyle(st).getPropertyValue('--tg'));  /* every word's own right edge inside the margin */
-    const ok=ts.every(t=>[...t.querySelectorAll('span')].every(w=>w.getBoundingClientRect().right<=edge)&&t.getBoundingClientRect().height<=maxH);
+    const lines=t=>new Set([...t.querySelectorAll('span')].map(w=>Math.round(w.getBoundingClientRect().top))).size;
+    /* two-line rule (Tony, 8 Nov): the question and the answer are never more than two lines; Ask. Find. Get out. is three by design */
+    const ok=ts.every((t,i)=>[...t.querySelectorAll('span')].every(w=>w.getBoundingClientRect().right<=edge)&&t.getBoundingClientRect().height<=maxH&&(i==2||lines(t)<=2));
     if(ok){ TOP=Math.round((H-Math.max(...ts.map(t=>t.getBoundingClientRect().height)))/2); window.BIG=px; break; }
   }
   st.innerHTML=''; built='';
@@ -129,7 +131,7 @@ function layLock(){
   LK={centre:(W-mk)/2, left:x0};
 }
 /* scene lengths (s). phone: two beats of the music (72 bpm), hard cut in on the drop and out on the beat */
-window.TL={hey:2.2, ask:3.3, phone:1.66, answer:3.3, afg:2.3, afg2:6.2, legal:1/30, end:4.4, V:{hey:.25, ask:.25, maya:.2, afg:-.07, url:1.25, url2:2.4},
+window.TL={hey:2.2, ask:2.2, phone:1.66, answer:3.3, afg:2.3, afg2:6.2, legal:1/30, end:4.4, V:{hey:.25, ask:.25, maya:.2, afg:-.07, url:1.25, url2:2.4},
   AF:{ask:.2, find:.9, out:1.6, url:2.4}};  /* B2 end frame beats (Tony, 8 Nov): Ask. with the phone / Find. / Get out. / the address; then a hold */  /* afg -0.07: Ask is heard as the overlay finishes fading in (0.2 s) */
 window.setT=function(scene,t){
   build(scene); const V=TL.V, ts=st.querySelectorAll('.t');
