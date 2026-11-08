@@ -7,7 +7,9 @@ on every frame.
 B1: Ask. Find. Get out. all at once over the run under a flat 10% black, then the end card (address said there).
 B2: Ask. Find. Get out. over greyscale gameplay under ink, the phone straight on at the right, then getarcrelay.app
 (said) under the words; a 0.2 s fade to the end card.
-Both end cards: the folio lockup at Sniff's end-card size, the Play badge bottom right, Google's trademark line.
+C: no gameplay at all. After the answer, Ask. / Find. / Get out. on the plain background with the phone on its home
+greeting, the same beats as B2, then the end card (address said there, as in B2).
+All end cards: the folio lockup at Sniff's end-card size, the Play badge bottom right, Google's trademark line.
 Game clip windows (seconds into GAME) are in CUTS; the 9:16 version crops the middle of the 16:9 footage."""
 import os, json, subprocess
 R = os.path.dirname(os.path.abspath(__file__)); FR = os.path.join(R, "frames"); OUT = os.path.join(R, "out"); A = os.path.join(R, "audio")
@@ -32,8 +34,11 @@ def build(VER, f, name, W, H):
              "-i", os.path.join(FR, "%s-type-%s" % (f, over), "%05d.png"), "-filter_complex", vf, "-an"] + ENC + [o])
         return o, d
     g0, gd = CUTS["game"]
-    seq = [("hey", clip("hey")), ("ask", clip("ask")), ("answer", clip("answer")), ("game", game("game", g0, gd, "legal"))]
-    if VER == "b1": seq += [("afg", game("afg", g0 + gd, TL["afg"], "afg")), ("end", clip("end"))]
+    seq = [("hey", clip("hey")), ("ask", clip("ask")), ("answer", clip("answer"))]
+    if VER == "c": seq += [("afg", clip("afg3")), ("end", clip("end"))]
+    else: seq += [("game", game("game", g0, gd, "legal"))]
+    if VER == "c": pass
+    elif VER == "b1": seq += [("afg", game("afg", g0 + gd, TL["afg"], "afg")), ("end", clip("end"))]
     else: seq += [("afg", game("afg2", g0 + gd, TL["afg2"], "afg2", grey=True, fadeout=.2)), ("end", clip("end"))]
     at, t = {}, 0.0
     for k, (p, d) in seq: at[k] = t; t += d
@@ -44,9 +49,11 @@ def build(VER, f, name, W, H):
     url_at = at["end"] + Vt["url"] if VER == "b1" else at["afg"] + Vt["url2"]
     voices = [("hey.wav", at["hey"] + Vt["hey"]), ("ask.wav", at["ask"] + Vt["ask"]), ("maya.wav", at["answer"] + Vt["maya"])]
     if VER == "b1": voices += [("afg.wav", at["afg"] + Vt["afg"]), ("url.wav", url_at)]
-    else:  # B2: Maya's Ask. / Find. / Get out. cut from afg.wav and spaced to the beats; each placed so its first sound lands on its word
+    else:  # B2 and C: Maya's Ask. / Find. / Get out. cut from afg.wav and spaced to the beats; each placed so its first sound lands on its word
         AF = TL["AF"]; ON = {"afg-ask.wav": .12, "afg-find.wav": .10, "afg-getout.wav": .065, "url.wav": .29}
-        voices += [(w, at["afg"] + AF[k] - ON[w]) for w, k in (("afg-ask.wav", "ask"), ("afg-find.wav", "find"), ("afg-getout.wav", "out"), ("url.wav", "url"))]
+        sh = AF["ask"] if VER == "c" else 0  # C starts on Ask. (no overlay fade)
+        voices += [(w, at["afg"] + AF[k] - sh - ON[w]) for w, k in (("afg-ask.wav", "ask"), ("afg-find.wav", "find"), ("afg-getout.wav", "out"))]
+        voices += [("url.wav", at["end"] + TL["ENDURL"] - ON["url.wav"])]  # said once the end card's name and address are in
     ins, fl = ["-i", V], []
     for i, (w, s) in enumerate(voices, 1):
         ins += ["-i", os.path.join(A, w)]; d = int(s * 1000); fl.append("[%d]aresample=48000,adelay=%d|%d,volume=1.8[v%d]" % (i, d, d, i))
