@@ -51,7 +51,7 @@ def build(VER, f, name, W, H):
     mi = len(voices) + 1
     if lead >= 0: ins += ["-ss", "%.3f" % lead, "-i", os.path.join(A, MUSIC)]; mdel = 0
     else: ins += ["-i", os.path.join(A, MUSIC)]; mdel = int(-lead * 1000)
-    fl.append("[%d]aresample=48000,adelay=%d|%d,volume=0.3,afade=t=in:st=0:d=0.6,afade=t=out:st=%.2f:d=1.6[mu]" % (mi, mdel, mdel, total - 1.6))
+    fl.append("[%d]aresample=48000,adelay=%d|%d,volume=0.18,afade=t=in:st=0:d=0.6,afade=t=out:st=%.2f:d=1.6[mu]" % (mi, mdel, mdel, total - 1.6))
     fl.append("".join("[v%d]" % i for i in range(1, len(voices) + 1)) + "[mu]amix=inputs=%d:normalize=0,alimiter=limit=0.95,apad,atrim=0:%.2f[a]" % (len(voices) + 1, total))
     tmp = os.path.join(OUT, "tmp-b.mp4"); dst = os.path.join(OUT, "relay-trailer-%s-%s.mp4" % (VER, name))
     run(ins + ["-filter_complex", ";".join(fl), "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-shortest", tmp])
