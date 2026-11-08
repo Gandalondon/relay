@@ -41,6 +41,13 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 - Copy doc not yet synced (the Drive connector here can't edit Docs; do it through Chrome): homepage Arc Raiders, How it works Find the nearest anything wording, Change your mind item, Things to say (drop Find me some moss, add Where do I find wires?, I need rubber parts, Never mind), speed order Normal, Fast or Faster.
 - Found: "I'm at the Beach Bar" on Riven Tides resolves to Azzurro Beach. Not fixed.
 
+## 8 Nov: Share Relay page and trailer (draft, committed, not pushed)
+- `site/beta/share.html` (Share Relay): intro (free, no ads, one person), Watch it (16:9 trailer, poster), The link (copy, native share), Ways to help (tell your squad, post a clip, rate on Play once live, feedback), Grab these (paste-ready blurb, both clips to download, legal line). Not linked from other pages yet; build it out alongside open testing. Clips in `site/beta/media/` (2 MB each).
+- Trailer: `tools/trailer/` (frame.html, render.js, make.py) draws 16:9 and 9:16 from real app screens, game placeholders, captions, Ask. Find. Get out. and the legal strip. Waiting on Tony's PS5 clip (Blue Gate, ask for the nearest Rocketeer, open the game map right after the answer as the sync point; game audio gets stripped) and a free synth track (YouTube Audio Library, Pixabay, FMA). Voices: Supertonic, Ben asks, Maya answers, the app's real words.
+- Shared workflow saved as the promo-video skill (also for Sniff).
+- Reddit rules for r/ArcRaiders / r/ARC_Raiders still to read through Chrome (Reddit is blocked from the workspace).
+- App misses found: "nearest enemy spawn point" and "high level enemy" fall back.
+
 ## Next (pick one)
 1. Tony on the Pixel: map buttons, location-only reply, About links open the browser, "show me the Dam map", Hey Relay with game audio.
 2. Done 6 Nov: distances on all seven maps. Scales fitted from allthings.how place pages (`tools/places/dist/*.json`, `node tools/places/scale.js`), typical error 1 to 10%; `tests/maps.js` checks them. Dam's central complex is the roughest (multi-level, published figures disagree). Fixed MetaForge's "Hiltop hatch" to Hilltop Hatch.
