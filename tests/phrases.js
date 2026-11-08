@@ -227,5 +227,13 @@ module.exports = [
   /* directions to a place (8 Nov): with no location, ask where, then answer from there */
   { set: { map: "dam" }, say: ["how do I get to the Scrap Yard", "I'm at the Control Tower"], want: { show: "Scrap Yard, south" } },
   { set: { map: "dam", place: "Control Tower" }, say: "take me to the Scrap Yard", want: { show: "Scrap Yard, south" } },
-  { set: { map: "blue-gate", place: "Village" }, say: "how far is the Olive Grove", want: { show: "Olive Grove, south" } }
+  { set: { map: "blue-gate", place: "Village" }, say: "how far is the Olive Grove", want: { show: "Olive Grove, south" } },
+  /* Tony's raid, 8 Nov: wrong map said, map in the reply, enemies in general */
+  { set: { map: "blue-gate" }, say: ["nearest sentinel", "Buried City hospital"], want: { show: "Nearest Sentinel: south-west" } },
+  { set: { map: "blue-gate" }, say: ["I'm looking for a sentinel", "hospital"], want: { show: "Nearest Sentinel: south-west" } },
+  { set: { map: "blue-gate" }, say: ["nearest sentinel", "Buried City", "hospital"], want: { show: "Nearest Sentinel: south-west" } },
+  { set: { map: "blue-gate" }, say: ["I'm on Blue Gate at the hospital", "nearest sentinel"], want: { show: "Nearest Sentinel: south-west" } },
+  { set: { map: "blue-gate" }, say: "low level enemies", want: { show: "Small ARC: not tracked" } },
+  { set: { map: "blue-gate", place: "Village" }, say: "nearest enemy spawn point", want: { show: "Nearest ARC:" } },
+  { set: { map: "blue-gate" }, say: ["show me the nearest high level enemy", "Village"], want: { show: "Nearest ARC:" } }
 ];

@@ -48,6 +48,13 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 - Reddit rules for r/ArcRaiders / r/ARC_Raiders still to read through Chrome (Reddit is blocked from the workspace).
 - App misses found: "nearest enemy spawn point" and "high level enemy" fall back.
 
+## 8 Nov late morning: Tony's raid test (Buried City), fixed and committed, not pushed
+- Replying to "Where are you?" with another map or a place only another map has ("Buried City hospital", "hospital" while on Blue Gate) now switches and answers the question; before, it dropped the question and said Say that again.
+- "I'm on Blue Gate at the hospital": goes with the place and says "Hospital is on Buried City, not Blue Gate." Every map switch is now spoken ("That's on Buried City.") and shown on the context line, never silent.
+- "low level / small enemies": small ARC not tracked. "nearest enemy", "enemy spawn point", "high level enemy": nearest big ARC of any kind.
+- Tests 194/194 (7 new from this raid).
+- Not fixable from here: speech mishearing with game audio. Idea: a test-build-only "Heard: ..." line so Tony can see what Relay heard.
+
 ## Next (pick one)
 1. Tony on the Pixel: map buttons, location-only reply, About links open the browser, "show me the Dam map", Hey Relay with game audio.
 2. Done 6 Nov: distances on all seven maps. Scales fitted from allthings.how place pages (`tools/places/dist/*.json`, `node tools/places/scale.js`), typical error 1 to 10%; `tests/maps.js` checks them. Dam's central complex is the roughest (multi-level, published figures disagree). Fixed MetaForge's "Hiltop hatch" to Hilltop Hatch.

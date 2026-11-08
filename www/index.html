@@ -597,6 +597,9 @@ const MAP_SAID = [
   ["buried-city", [" buried city "]], ["spaceport", [" spaceport ", " space port "]], ["stella-montis", [" stella montis ", " stella "]],
   ["riven-tides", [" riven tides ", " riven "]], ["pendola-pass", [" pendola pass ", " pendola "]]
 ];
+/* the question without its map name, so replaying it after a switch doesn't switch back */
+const cap1 = s => s.charAt(0).toUpperCase() + s.slice(1);
+function stripMaps(raw) { let s = norm(raw); MAP_SAID.forEach(([, al]) => al.forEach(a => { s = s.split(a).join(" "); })); return s.trim(); }
 function mapSaid(t) { for (const [id, al] of MAP_SAID) { const a = al.find(a => t.includes(a)); if (a) return { id, a }; } return null; }
 const readyNames = () => andList(Object.keys(MAP_NAMES).filter(ready).map(id => MAP_NAMES[id]));
 function switchMap(id) {
@@ -721,8 +724,17 @@ function resolvePending(q) {
   const p = S.pending, t = norm(q);
   /* after "show me the map": a whole question ("I'm Blue Gate, south-east, find me a Sentinel") is answered as asked, not just as a place */
   if (p.q === MAP_ASK && (mapSaid(t) || placeMap(t) || findItem(t) || findQuest(t) || has(t, ["exit", "extract", "evac", "way out", "hatch", "where", "nearest", "find", ...ENEMY_WORDS]))) { S.pending = null; save(); return null; }
+  /* the reply names another map, or a place only another map has ("Buried City, hospital"): switch to it and keep the
+     question, rather than dropping it and missing (8 Nov, Tony's raid) */
+  let moved = "";
+  if (p.q !== MAP_ASK) {
+    const ms = mapSaid(t), om = ms ? null : (!findPlace(t) ? placeMap(noLoot(t)) : null);
+    const go = ms ? (ready(ms.id) ? [ms.id] : []) : om ? om.ids.filter(ready) : [];
+    if (go.length === 1 && go[0] !== MAP.id) { switchMap(go[0]); S.pending = p; moved = MAP.name + ". "; p.q = stripMaps(p.q); save(); }
+    if (moved && !findWhere(t)) { const a = askWhere(p.q); a.say = moved + a.say; return a; }
+  }
   const place = findWhere(t);
-  if (place) { S.place = place; S.placeAt = Date.now(); S.raidAt = S.raidAt || Date.now(); S.pending = null; save(); const a = answer(p.q); a.say = (place.rough ? "Got it. " : "Got it, " + place.n + ". ") + a.say; return a; }
+  if (place) { S.place = place; S.placeAt = Date.now(); S.raidAt = S.raidAt || Date.now(); S.pending = null; save(); const a = answer(p.q); a.say = moved + (place.rough ? "Got it. " : "Got it, " + place.n + ". ") + a.say; if (moved && !a.ctx) a.ctx = MAP.name; return a; }
   if (/\b(yes|yeah|yep|yup|still|same|correct)\b/.test(t) && S.place) { S.placeAt = Date.now(); S.pending = null; save(); return answer(p.q); }
   if (/(don't know|dont know|no idea|not sure|lost|no clue|skip)/.test(t)) { S.pending = null; save(); return answer(p.q, { general: true }); }
   if (/\b(no|nope|moved)\b/.test(t)) { S.place = null; save(); return askWhere(p.q); }
@@ -809,9 +821,16 @@ function answer(raw, opts) {
   const said = mapSaid(t.replace(/\bback (in|to|at) (the )?lobby\b/g, " "));
   /* "show me the Dam map", "open the map", "pull up Blue Gate": a request to see a map (5 Nov) */
   const showQ = /\b(show|open|pull up|bring up|display|view|load|see|check)\b/.test(t) && (/\bmaps?\b/.test(t) || !!said);
+  let clash = "";
   if (said) {
     if (!ready(said.id)) return notYet(said.id);
     if (said.id !== MAP.id) { switchMap(said.id); switched = true; }
+    /* the place isn't on the map you named, but only one other map has it: go with the place and say so (8 Nov) */
+    const rest = t.replace(said.a, " ");
+    if (!findPlace(rest)) {
+      const om = placeMap(noLoot(rest)), go = om ? om.ids.filter(ready) : [];
+      if (go.length === 1 && go[0] !== MAP.id) { const was = MAP.name; switchMap(go[0]); switched = true; const pl = findPlace(rest); clash = (pl ? cap1(pl.n) + " is" : "That's") + " on " + MAP.name + ", not " + was + ". "; raw = rest; }
+    }
   } else {
     const om = placeMap(noLoot(t.replace(/\bback (in|to|at) (the )?lobby\b/g, " ")));  /* "back in the lobby" is the game's menu, not Stella Montis' Lobby (6 Nov) */
     if (om && (!findPlace(t) || (om.len >= 8 && om.words > 1))) {
@@ -828,7 +847,8 @@ function answer(raw, opts) {
     if (!rest) return showMapAnswer();
   }
   const a = answerOn(raw, opts);
-  if (switched) { a.say = MAP.name + ". " + a.say; if (a.full) a.full = MAP.name + ". " + a.full; }
+  /* a map switch is said and shown, so it's never silent (8 Nov: Tony thought he was on Blue Gate) */
+  if (switched) { const pre = clash || (said ? MAP.name + ". " : "That's on " + MAP.name + ". "); a.say = pre + a.say; if (a.full) a.full = pre + a.full; if (!a.ctx) a.ctx = MAP.name; }
   return a;
 }
 /* the whole map, ready for where you are: say a place (or a side), or tap it */
@@ -1014,6 +1034,19 @@ function answerOn(raw, opts) {
     const dir = psNow === "fresh" ? compass(S.place, placeMention) : "";
     const away = dir && !S.place.rough ? far(S.place, placeMention) : "";
     return { show: P1 + (dir ? ", " + dir + "." : "."), say: P1 + (dir ? " is " + away + dir + " of you." : " is marked on the map." + (placeMention.pos ? " It's in the " + placeMention.pos + " of the map." : "")), map: { you: psNow === "fresh" ? S.place : null, stars: [placeMention] } };
+  }
+  /* enemies in general (8 Nov, Tony's raid): small ones aren't tracked; "nearest enemy" means the nearest big ARC of any kind */
+  if (/\b(low level|low-level|lower level|small|smaller|little|weak|weaker|tiny|easy)\b.*\b(enem(y|ies)|arcs?|bots?|robots?)\b/.test(t))
+    return { show: "Small ARC: not tracked.", say: "I don't track small ARC like wasps, ticks and pops. They roam the whole map. Ask me for a bigger one, like a rocketeer." };
+  if (/\b(enem(y|ies)|arcs?|bots?|robots?)\b/.test(t.replace(/\barc raiders?\b/g, " ")) && !has(t, EXIT_WORDS)) {
+    const all = Object.entries(ENEMIES).filter(([, v]) => v.length);
+    if (all.length) {
+      if (psNow === "stale") return askStill(raw);
+      if (psNow !== "fresh") return askWhere(raw);
+      let best = null; for (const [k, pts] of all) { const b = near(S.place, pts), d = dist(S.place, b); if (!best || d < best.d) best = { k, b, d }; }
+      const dir = compass(S.place, best.b);
+      return { show: "Nearest ARC: " + cap1(best.k) + ", " + dir + ".", say: "The nearest big ARC is a " + best.k + " spawn, " + (S.place.rough ? "" : far(S.place, best.b)) + dir + " of you.", map: { you: S.place, stars: [best.b] } };
+    }
   }
   if (has(t, ["grandioso", "launch tower"])) return { show: readyNames() + " only, for now.", say: "That's on another map. I only have " + readyNames() + " so far." };
 
