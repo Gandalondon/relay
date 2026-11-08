@@ -3,7 +3,7 @@
 @font-face{font-family:"Inter Tight";font-weight:600;font-display:swap;src:url(/fonts/inter-tight-600.woff2) format("woff2")}
 @font-face{font-family:"Inter Tight";font-weight:700;font-display:swap;src:url(/fonts/inter-tight-700.woff2) format("woff2")}
 /* Relay site. Inter Tight throughout. One charcoal ground with faint contour lines behind the whole page, fixed while you scroll.
-   Hierarchy comes from size, weight and space. No divider lines or borders. 8px grid. */
+   Hierarchy comes from size, weight and space. No divider lines or borders, except the hairline round the Share page's YouTube players (Tony, 8 Nov). 8px grid. */
 :root{
   /* Tracking scale (6 Nov): set once, never per element. Inter Tight is spaced for headlines, so smaller sizes open up. */
   --tr-display:-.01em;  /* H1, hero words, phone-screen headlines */
@@ -234,7 +234,11 @@ canvas.topo{display:none}
 
 /* share page (8 Nov, draft): same two-half grid as How it works */
 .sharebody{display:flex;flex-direction:column;gap:20px;min-width:0}
-.clip{display:block;width:100%;aspect-ratio:16/9;border-radius:16px;background:var(--panel);object-fit:cover}
+.yt{position:relative;width:100%;aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:var(--panel)}
+.yt.v{width:min(100%,320px);aspect-ratio:9/16}  /* the vertical cut, left-aligned at the middle line like everything else in the section */
+.yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.yt::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(238,232,220,.16);pointer-events:none}  /* hairline over the player: the trailer's charcoal matches the page, so it needs an edge */
+.yt + .hnote{margin-top:-8px}
 .sharelink{font:600 var(--h3)/var(--h3-lh) var(--font);color:var(--text-hi)}
 .sharebtns{display:flex;gap:12px;flex-wrap:wrap}
 .btn.ghost{background:transparent;color:var(--text-hi);box-shadow:inset 0 0 0 2px var(--text-hi)}
