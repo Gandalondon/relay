@@ -524,7 +524,7 @@ function craftAnswer(it, raw, psNow) {
 }
 
 /* =================== state =================== */
-const EMPTY = { place: null, placeAt: null, minutesLeft: null, minutesAt: null, quest: null, step: 0, last: null, raidAt: null, pending: null, seen: null, exitSaid: null, avoid: [] };
+const EMPTY = { place: null, placeAt: null, minutesLeft: null, minutesAt: null, quest: null, step: 0, last: null, raidAt: null, pending: null, seen: null, exitSaid: null, avoid: [], skip: [] };
 let S = Object.assign({}, EMPTY);
 try { const saved = JSON.parse(localStorage.getItem("relay-state") || "null"); if (saved) S = Object.assign(S, saved); } catch (e) {}
 syncMap();
@@ -538,7 +538,10 @@ function compass(from, to) {
   const a = (Math.atan2(to.x - from.x, -(to.y - from.y)) * 180 / Math.PI + 360) % 360;
   return ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"][Math.round(a / 45) % 8];
 }
-const near = (p, list) => list.slice().sort((a, b) => dist(p, a) - dist(p, b))[0];
+/* "next one" (8 Nov): spots you've asked past (S.skip) are left out until you ask for something else or move */
+const spotKey = p => Math.round(p.y) + "," + Math.round(p.x);
+const near = (p, list) => { const sk = (S.skip || []).map(k => { const [y, x] = k.split(",").map(Number); return { y, x }; }),
+  gap = METRES ? 40 * METRES : 40, l = sk.length ? list.filter(x => sk.every(k => dist(k, x) > gap)) : list;  /* 40 m clear of a skipped spot, so "next" isn't the same patch */ return (l.length ? l : list).slice().sort((a, b) => dist(p, a) - dist(p, b))[0]; };
 
 /* =================== understanding =================== */
 const has = (t, words) => words.some(w => t.includes(w));
@@ -891,6 +894,27 @@ function answerOn(raw, opts) {
   if (has(t, ["that's all", "thats all", "stop listening", "thanks", "thank you", "cheers", "that's it", "thats it", "that's me", "thats me", " ta ", "ta very much", "much obliged"]) && t.trim().split(" ").length <= 4) return { show: "Standing by.", say: "Standing by.", follow: false, keepLast: true };
   /* follow-ups about the last answer ("how far is it", "which way", "where is it again", "can't see it") repeat it in full (8 Nov) */
   const aboutLast = S.last && S.last.a && S.last.a.map && S.last.a.map.stars && S.last.a.map.stars.length && has(t, ["how far", "which way", "what way", "where is it", "where's it", "wheres it", "where was it", "where was that", "is it far", "am i close", "am i near", "can't see it", "cant see it", "can't find it", "cant find it", "remind me", " again "]) && t.trim().split(" ").length <= 7;
+  /* after an enemy or loot answer (8 Nov): "next one" skips that spot; "anything closer" says it's the closest;
+     "what's that near" names the nearest place to it; "I'm here" / "made it" puts you there. Exits keep their own "another one". */
+  const lastT = S.last && S.last.a && S.last.a.map && S.last.a.map.stars && S.last.a.map.stars.length === 1 && S.want && !(S.exitSaid && Date.now() - S.exitSaid.at < 10 * 60000) ? S.last.a.map.stars[0] : null;
+  const short7 = t.trim().split(" ").length <= 7;
+  if (lastT && short7 && !findPlace(t) && has(t, ["next one", "next nearest", "next closest", "another one", "a different one", "different one", "second nearest", "second closest", "one after", "not that one", "other one", "next spawn", "another spawn"])) {
+    S.skip = Array.from(new Set((S.skip || []).concat([spotKey(lastT)]))); save();
+    const b = answer(S.want, { noSet: true }); if (b && !b.fallback) { const nx = x => x.replace(/^Nearest /, "Next nearest "); b.show = nx(b.show); b.say = nx(b.say); b.keepWant = true; return b; }
+  }
+  if (lastT && short7 && has(t, ["anything closer", "any closer", "something closer", "one closer", "nearer one", "closer one"])) {
+    if ((S.skip || []).length) { S.skip = []; save(); const b = answer(S.want, { noSet: true }); if (b && !b.fallback) { b.say = "Back to the closest. " + b.say; b.keepWant = true; return b; } }
+    const a = Object.assign({}, S.last.a); a.say = "That's the closest one I know. " + (a.full || a.say); a.keepWant = true; return a;
+  }
+  if (lastT && short7 && has(t, ["what's that near", "whats that near", "what is that near", "what's it near", "whats it near", "what is it near", "near what", "what's near it", "whats near it", "nearest landmark", "any landmark", "what's next to it", "whats next to it"])) {
+    const ar = AREAS.filter(x => x.n !== (S.place && S.place.n)).slice().sort((u, v) => dist(u, lastT) - dist(v, lastT))[0];
+    if (ar) return { show: "By " + ar.n + ".", say: "It's by " + ar.n + (S.place ? ", " + compass(S.place, ar) + " of you" : "") + ".", map: S.last.a.map, ctx: S.place ? metresLine(S.place, lastT) : "", keepWant: true };
+  }
+  if (lastT && short7 && !findPlace(t) && has(t, ["i'm here", "im here", "i am here", "i'm there", "im there", "made it", "got there", "got here", "arrived", "i'm at it", "im at it", "found it"])) {
+    const lm = landmark(lastT, null), w = { n: lm ? lm.n : (lastT.n || "that spot"), y: lastT.y, x: lastT.x };
+    S.place = w; S.placeAt = Date.now(); S.raidAt = S.raidAt || Date.now(); S.avoid = []; S.exitSaid = null; S.skip = []; save();
+    return { show: "Got it. You're there.", say: "Got it, you're there. " + vary(["What do you need?", "What next?", "What are you after?"]), map: { you: w, stars: [] }, keepWant: true };
+  }
   /* naming something new is a new question, never a repeat: "what about a Bastion" (8 Nov; " what " used to repeat the last answer) */
   const newAsk = has(t, ENEMY_WORDS) || !!lootFind(t) || !!findItem(t) || !!findCraft(t) || !!findPlace(t) || has(t, ["exit", "extract", "evac", "hatch", "way out", "quest", "step"]);
   if (S.last && S.last.a && !newAsk && (aboutLast || has(t, ["more detail", "more details", "tell me more", "say again", "say that again", "repeat", "not sure", "didn't catch", "didnt catch", " what ", "pardon", "explain"])) && t.trim().split(" ").length <= 6 + (aboutLast ? 1 : 0)) {
@@ -931,7 +955,7 @@ function answerOn(raw, opts) {
   const dirOnly = !placeMention && !dirQ && !has(t, ["step"]) && (iAm || /\b(from|in|on|around|near) the\b/.test(t)) ? findDir(t) : null;  /* "I'm in the south-east", "evac from the south east" */  /* "I'm in the south-east" */
   if (!opts.noSet && (setsLocation || dirOnly)) {
     const w = setsLocation ? { n: placeMention.n, y: placeMention.y, x: placeMention.x } : dirOnly;
-    if (!S.place || S.place.n !== w.n) { S.avoid = []; S.exitSaid = null; S.hatchTold = false; }  /* somewhere new: every exit is back on the table */
+    if (!S.place || S.place.n !== w.n) { S.avoid = []; S.exitSaid = null; S.hatchTold = false; S.skip = []; }  /* somewhere new: every exit is back on the table */
     S.place = w; S.placeAt = Date.now(); S.raidAt = S.raidAt || Date.now(); save();
     if (!lootSaid && !findCraft(t) && !has(t, ["extract", "exit", " out ", "leave", "evac", "escape", "step", "where", "hatch", ...ENEMY_WORDS])) {  /* " out " as a word: "south" contains "out" */
       /* "I'm over by the Dam now": still after the same thing, so answer it from here (7 Nov) */
@@ -950,7 +974,7 @@ function answerOn(raw, opts) {
     return { show: ar.map(a => a.n).join(", ") + ".", say: from + ar.map(a => a.n + " is " + compass(lp.p, a)).join(", ") + ".", map: { you: lp.p, stars: ar } };
   }
   /* "can't go that way", "too many enemies", "another one": the last exit (and that direction) is out, give the next best */
-  const OTHER = ["another", "different", "other one", "other way", "something else", "somewhere else", "alternative", "can't go", "cant go", "can not go", "cannot go", "too many", "blocked", "not that one", "not that way", "too dangerous", "too hot", "swarming", "camped", "no good", "next closest", "next nearest", "second closest", "plan b", "backup", "closed", "shut", "locked", "not open", "isn't open", "isnt open", "not working"];
+  const OTHER = ["another", "different", "other one", "next one", "next nearest", "next closest", "second nearest", "second closest", "other way", "something else", "somewhere else", "alternative", "can't go", "cant go", "can not go", "cannot go", "too many", "blocked", "not that one", "not that way", "too dangerous", "too hot", "swarming", "camped", "no good", "next closest", "next nearest", "second closest", "plan b", "backup", "closed", "shut", "locked", "not open", "isn't open", "isnt open", "not working"];
   const wantsOther = has(t, OTHER) && (has(t, ["exit", "extract", "evac", "airshaft", "way out", "way", "one", "point"]) || (S.exitSaid && Date.now() - S.exitSaid.at < 10 * 60000));
   const saidDir = findCompass(t);
   if (wantsOther && S.exitSaid) {
@@ -1621,7 +1645,7 @@ function pinHere(pt) {
    "I'm over here now" re-answers it from there, even when the ask also named a place (7 Nov, Tony's test) */
 function remember(q, a) {
   S.last = { q, a };
-  if (q && q !== MAP_ASK && q !== "pin" && a.map && a.map.stars && a.map.stars.length && !a.fallback) S.want = q;
+  if (!a.keepWant && q && q !== MAP_ASK && q !== "pin" && a.map && a.map.stars && a.map.stars.length && !a.fallback) { if (q !== S.want) S.skip = []; S.want = q; }
   save();
 }
 function deliver(q, a) {

@@ -18,7 +18,7 @@ const page_ = process.argv[2] || path.join(__dirname, "../www/index.html");
       if (c.set.place) { const pl = PLACES.find(p => p.n === c.set.place); S.place = { n: pl.n, y: pl.y, x: pl.x }; S.placeAt = Date.now(); S.raidAt = Date.now(); }
       const before = { quest: S.quest, step: S.step };
       const turns = Array.isArray(c.say) ? c.say : [c.say]; let a;
-      for (const say of turns) { a = S.pending ? resolvePending(say) : null; if (!a) a = answer(say); }
+      for (const say of turns) { a = S.pending ? resolvePending(say) : null; if (!a) a = answer(say); remember(say, a); }  /* as the app does, so follow-ups see the last answer (8 Nov) */
       return { before, after: { quest: S.quest, step: S.step, place: S.place && S.place.n, map: MAP.id }, a: { show: a.show, say: a.say, ctx: a.ctx || "", intent: a.intent || "" } };
     }, { c });
     const w = c.want, A = r.a, txt = (A.show + " " + A.say).toLowerCase();
