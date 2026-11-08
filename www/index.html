@@ -897,7 +897,12 @@ function answerOn(raw, opts) {
   /* "any ammo crate near me": the loot words aren't a place ("crate", "field", "olive", "security" are in Blue Gate place names) (6 Nov) */
   const placeMention = findPlace(lootSaid ? noLoot(t) : t);
   const iAm = /\b(i'm|i am|im|we're|we are)\b/.test(t);
-  const setsLocation = placeMention && (/\b(i'm|i am|im|we're|we are)\s+(at|near|in|by|next to|outside|on|inside|beside|around|close to)\b/.test(t) || (/\b(at|near|by|next to|beside|outside|inside|around|close to|from)\b/.test(t) && !has(t, ["where", "how"])));  /* "nearest exit from the Village" (5 Nov) */
+  /* a place said on its own or before the ask is where you are: "hospital", "Buried City hospital", "beach bar, nearest exit"
+     (8 Nov, Tony's raid). It's a destination only when it comes after a where/how/go-to ("where's the Hospital") */
+  const placeAt = placeMention ? Math.min(...placeMention.al.map(a => t.indexOf(" " + a + " ")).filter(i => i >= 0)) : -1;
+  const destAt = t.search(/\b(where|how|get to|go to|going to|head to|heading to|take me|directions?|route to|way to|path to)\b/);
+  const bareLoc = placeMention && isFinite(placeAt) && placeAt >= 0 && (destAt < 0 || placeAt < destAt) && !lootSaid && !findCraft(t) && !has(t, ["step", "quest"]) && !QUESTS.some(q => q.al.some(a => t.includes(a)));  /* "Building a Library" is a quest, not the Library */
+  const setsLocation = placeMention && (bareLoc || /\b(i'm|i am|im|we're|we are)\s+(at|near|in|by|next to|outside|on|inside|beside|around|close to)\b/.test(t) || (/\b(at|near|by|next to|beside|outside|inside|around|close to|from)\b/.test(t) && !has(t, ["where", "how"])));  /* "nearest exit from the Village" (5 Nov) */
   const dirQ = !!findCompass(t) && (/\b(of me|of here|of my|to my|from me)\b/.test(t) || has(t, ["anything", "what's to", "whats to", "what is to", "is there", "any exit", "exit to", "exits to", "towards", "way out to", "out to the"]));
   const dirOnly = !placeMention && !dirQ && !has(t, ["step"]) && (iAm || /\b(from|in|on|around|near) the\b/.test(t)) ? findDir(t) : null;  /* "I'm in the south-east", "evac from the south east" */  /* "I'm in the south-east" */
   if (!opts.noSet && (setsLocation || dirOnly)) {
