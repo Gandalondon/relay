@@ -84,6 +84,11 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 - E (mic opening, app-exact halo) still builds with VER=e. Voices need the Supertonic model in /home/claude/voices (sherpa-onnx tts-models release).
 - Next: Relay YouTube brand channel under Tony's Google account (alongside Get Sniff), upload the trailer.
 
+## 8 Nov evening: YouTube and Share page (pushed)
+- Relay YouTube channel (@getarcrelay): banner removed (picture and name only, like Sniff; art kept in marketing/youtube). Both trailers unlisted: 16:9 "Relay: Arc Raiders Voice Guide (Trailer)" youtu.be/EQyYAiuklks, Short "Ask. Find. Get out. Relay for Arc Raiders #Shorts" youtube.com/shorts/HdJfW9Q3bIM.
+- 16:9 end card: the Play badge's bottom edge sits on the legal line's baseline (type.html does it for future builds).
+- /beta/share: both videos embedded via youtube-nocookie with a hairline (the one exception to no borders), downloads from site/beta/media, linked from every /beta footer. Privacy has a line on the embeds; copy Doc still to sync (that line, plus the Share page).
+
 ## Next (pick one)
 1. Tony on the Pixel: map buttons, location-only reply, About links open the browser, "show me the Dam map", Hey Relay with game audio.
 2. Done 6 Nov: distances on all seven maps. Scales fitted from allthings.how place pages (`tools/places/dist/*.json`, `node tools/places/scale.js`), typical error 1 to 10%; `tests/maps.js` checks them. Dam's central complex is the roughest (multi-level, published figures disagree). Fixed MetaForge's "Hiltop hatch" to Hilltop Hatch.
