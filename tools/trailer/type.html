@@ -34,7 +34,7 @@ html,body{color:var(--cream);font-family:IT,sans-serif;overflow:hidden}
 .lock path{fill:none;stroke:var(--amber);stroke-width:10}
 .lock .w{position:absolute;font-weight:700;color:var(--cream);white-space:nowrap;line-height:1}
 .legal{position:absolute;z-index:5;left:var(--g);right:var(--g);bottom:calc(var(--g)*.5);font:500 var(--lg)/1.35 IT;color:var(--cream);letter-spacing:.01em;text-wrap:pretty;text-shadow:0 1px 3px rgba(21,23,28,.85)}
-.h{--g:96px;--tg:150px;--lg:20px;--pw:430px;--persp:2000px;--big:200px;--mid:120px;--mk:98px;--bigph:640px;--hey:320px;--url2:64px;--endph:400px}
+.h{--g:96px;--tg:120px;--lg:20px;--pw:430px;--persp:2000px;--big:200px;--mid:120px;--mk:98px;--bigph:640px;--hey:320px;--url2:64px;--endph:400px}
 .v{--g:72px;--tg:72px;--lg:26px;--pw:520px;--persp:2500px;--big:130px;--mid:104px;--mk:110px;--bigph:980px;--hey:208px;--url2:56px;--endph:440px}
 </style></head><body><div class="stage" id="st"></div>
 <script>
@@ -71,7 +71,8 @@ function alignLeft(scene){
   /* the block's leftmost ink: the first letter of every line (Village and the sit further left than I'm) */
   let starts=['I','V','t','R'];   /* the question's line starts, for scenes with no big words */
   if(t){ starts=[]; let top=null; t.querySelectorAll('span').forEach(w=>{const y=Math.round(w.getBoundingClientRect().top); if(y!==top){starts.push(w.textContent.trim()[0]); top=y;}}); }
-  const x=tg+Math.min(...starts.map(c=>inkL(c,'700 '+size+'px IT')));
+  /* every block's leftmost ink sits exactly on the margin line, so the cards (and Hey Relay) share one left edge */
+  const x=tg; if(t) t.style.left=(tg-Math.min(...starts.map(c=>inkL(c,'700 '+size+'px IT'))))+'px';
   const lg=st.querySelector('.legal'); if(lg){const fs=getComputedStyle(lg).fontSize; lg.style.left=(x-inkL(LEGAL,'500 '+fs+' IT'))+'px';}
   return x;
 }
@@ -139,9 +140,9 @@ window.setT=function(scene,t){
     const ph=document.getElementById('ph'), pw=parseFloat(getComputedStyle(ph).getPropertyValue('--pw')), phH=pw*844/390, u=document.getElementById('url2'), tb=ts[0].getBoundingClientRect();
     if(F=='h'){ ph.style.left=(W-150-pw)+'px'; ph.style.top=((H-phH)/2-30)+'px'; } else { ph.style.left=((W-pw)/2)+'px'; ph.style.top=(H-phH-200)+'px'; }
     const OUT=V.afg+T.afg.words[3][1];   /* the final "out": the phone and the address arrive with it */
-    ph.style.opacity=clamp((t-OUT)/.2,0,1);
+    ph.style.opacity=t>=OUT?1:0;   /* snaps in, like the words */
     const us=parseFloat(getComputedStyle(st).getPropertyValue('--url2'));
-    u.style.left=(INKX-inkL('getarcrelay.app','700 '+us+'px IT'))+'px'; u.style.top=(tb.bottom+us*.6)+'px'; u.style.opacity=clamp((t-OUT)/.2,0,1); }
+    u.style.left=(INKX-inkL('getarcrelay.app','700 '+us+'px IT'))+'px'; u.style.top=(tb.bottom+us*.6)+'px'; u.style.opacity=t>=OUT?1:0; }
   if(scene=='answer') show(ts[0],T.maya.words,V.maya,t);
   if(scene=='phone'){ /* nearly flat and big, cropped by the frame: the answer's headline and the map, a slow push in */
     const pw=parseFloat(getComputedStyle(st).getPropertyValue('--bigph')), k=t/TL.phone;
