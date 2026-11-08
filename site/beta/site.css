@@ -76,7 +76,8 @@ p{margin:0;text-wrap:pretty}
 
 /* contours: decorative terrain in the hero and footer, one colour, one line weight */
 canvas.topo{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
-.site{position:relative;z-index:1}
+.site{position:relative;z-index:1;min-height:100vh;min-height:100svh;display:flex;flex-direction:column}
+.site > main{flex:1 0 auto}  /* short pages (Feedback): the footer sits at the bottom of the window, not under the last line (Tony, 8 Nov) */
 
 /* hero */
 /* hero: headline, line and button on the left; the phone, angled, on the right as the main visual */
