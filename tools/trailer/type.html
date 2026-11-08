@@ -49,7 +49,7 @@ st.classList.add(F); if(q.get('alpha')) document.documentElement.classList.add('
 const ease=u=>u<=0?0:u>=1?1:u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2, mix=(a,b,k)=>a+(b-a)*k, clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const ARCS=['M -10 12 H 14 A 46 46 0 0 1 60 58 V 82','M -10 28 H 14 A 30 30 0 0 1 44 58 V 82','M -10 44 H 14 A 14 14 0 0 1 28 58 V 82'];
 const ONR={rx:22,ry:-34,rz:10};
-let PH3=390, PH3X=220;  /* the end frame's 3D phone: width, and how far its centre sits in from the right margin */
+let PH3=390, PH3X=220, PH3V=470;  /* the end frame's 3D phone: width, and how far its centre sits in from the right margin */
 let T, CV={}, built='';
 const sp=(text,cls)=>'<div class="t '+(cls||'')+'">'+text.split(' ').map(w=>'<span>'+w+'</span>').join(' ')+'</div>';
 const phone3D=(img)=>'<div class="ph" id="ph">'+Array.from({length:12},(_,k)=>'<i class="slab'+(k==11?' rim':'')+'" style="--k:'+(12-k)+'"></i>').join('')+'<div class="scr"><img src="'+(img||'phone-answer.png')+'"></div></div>', phoneHTML=phone3D();
@@ -117,23 +117,26 @@ function build(scene){ if(built==scene) return; built=scene;
   if(scene=='answer') st.innerHTML=ANSWER()+legal;  /* one span per spoken word; North, by Checkpoint. never splits */
   if(scene=='afg') st.innerHTML='<div class="scrim"></div>'+AFG()+legal;
   if(scene=='afg2') st.innerHTML='<div class="scrim blue"></div>'+AFG()+flatPhone()+legal;  /* no address here: it moved to the end card (Tony, 8 Nov) */
-  if(scene=='afg3') st.innerHTML=AFG()+(F=='h'?phone3D('phone-home.png'):flatPhone('phone-home.png'))+legal;  /* 16:9 (Tony, 8 Nov evening): the site's angled 3D phone, still, so it reads as a phone */  /* C (8 Nov): no gameplay, the plain background, the phone on its home greeting */
+  if(scene=='afg3') st.innerHTML=AFG()+phone3D('phone-home.png')+legal;  /* both formats (9:16 too, Tony 8 Nov evening) */  /* 16:9 (Tony, 8 Nov evening): the site's angled 3D phone, still, so it reads as a phone */  /* C (8 Nov): no gameplay, the plain background, the phone on its home greeting */
   if(scene=='mic'||scene=='mic2') st.innerHTML='<div class="bigmic'+(scene=='mic2'?' xl':'')+'" id="bm">'+MIC_MC+MIC_WV+'</div><div class="tap" id="tap"></div>'+legal;
   if(scene=='legal') st.innerHTML=legal;
   if(scene=='end') st.innerHTML='<div class="lock"><svg viewBox="0 0 72 72">'+ARCS.map(d=>'<path d="'+d+'" pathLength="1" stroke-dasharray="1"/>').join('')+'</svg><div class="w nm">RELAY</div><div class="w url">getarcrelay.app</div></div>'+BADGE+legalEnd;
   const ts=st.querySelectorAll('.t');
   ts.forEach(t=>{ t.style.right='var(--tg)';
-    if(t.classList.contains('hey')&&F=='h'){ /* 16:9 (Tony, 8 Nov evening): Hey Relay's cap top on the same line as every other block's */
+    if(t.classList.contains('hey')){ /* 16:9 (Tony, 8 Nov evening): Hey Relay's cap top on the same line as every other block's */
       const hp=parseFloat(getComputedStyle(t).fontSize), c=document.createElement('canvas').getContext('2d'); c.font='700 100px IT'; const m=c.measureText('H'), k=((98-(m.fontBoundingBoxAscent+m.fontBoundingBoxDescent))/2+m.fontBoundingBoxAscent-m.actualBoundingBoxAscent)/100;
       t.style.top=(TOP+(window.BIG-hp)*k)+'px'; t.style.transform='none'; }
-    else if(t.classList.contains('hey')){t.style.top='50%';t.style.transform=F=='h'?'translateY(-52%)':'translateY(-60%)';} else t.style.top=((scene=='afg2'||scene=='afg3')&&F=='v'?200:TOP)+'px'; });  /* 9:16 B2: words up top, the phone under them */
+    else if(false){t.style.top='50%';t.style.transform=F=='h'?'translateY(-52%)':'translateY(-60%)';} else t.style.top=((scene=='afg2'||scene=='afg3')&&F=='v'?200:TOP)+'px'; });  /* 9:16 B2: words up top, the phone under them */
   if(scene=='phone'){ const el=document.getElementById('ph'); el.style.setProperty('--pw',getComputedStyle(st).getPropertyValue('--bigph')); }
   if(scene=='end'){ layLock();
     /* the end card's legal line stays on one line (Tony, 8 Nov evening): if Google's sentence would wrap it, drop the
        ARC Raiders trademark here (every earlier frame carries it, and the end card never shows the game) */
     const le=st.querySelector('.legal.end'), lh=parseFloat(getComputedStyle(le).lineHeight);
-    if(le.getBoundingClientRect().height>lh*1.5) le.textContent='Unofficial companion app. Not affiliated with or endorsed by Embark Studios. Google Play and the Google Play logo are trademarks of Google LLC.';
-    if(le.getBoundingClientRect().height>lh*1.5) le.textContent='Unofficial companion app. Not affiliated with Embark Studios. Google Play and the Google Play logo are trademarks of Google LLC.';
+    if(F=='v'){ /* 9:16: the legal line takes the full width; the badge sits above it, on the right margin */
+      le.style.right='var(--g)'; const b=document.getElementById('badge'), g=parseFloat(getComputedStyle(st).getPropertyValue('--g'));
+      b.style.right=g+'px'; b.style.bottom=(H-le.getBoundingClientRect().top+40)+'px'; }
+    if(le.getBoundingClientRect().height>lh*(F=='h'?1.5:2.5)) le.textContent='Unofficial companion app. Not affiliated with or endorsed by Embark Studios. Google Play and the Google Play logo are trademarks of Google LLC.';
+    if(le.getBoundingClientRect().height>lh*(F=='h'?1.5:2.5)) le.textContent='Unofficial companion app. Not affiliated with Embark Studios. Google Play and the Google Play logo are trademarks of Google LLC.';
     window.LEGALEND=le.textContent; }
   window.INKX=alignLeft(scene);
 }
@@ -176,6 +179,11 @@ window.setT=function(scene,t){
       const k=.5+.5*clamp((t-TL.AF.ask)/TL.afg3,0,1), A={rx:ONR.rx*k, ry:ONR.ry*k, rz:ONR.rz*k};
       place({x:cx, y:H/2-30, s:1}, A); }
     else if(F=='h'){ ph.style.left=(W-150-pw)+'px'; ph.style.top=((H-phH)/2-30)+'px'; } else { ph.style.left=((W-pw)/2)+'px'; ph.style.top=(H-phH-200)+'px'; }
+    if(F=='v'&&scene=='afg3'){ /* 9:16 (Tony, 8 Nov evening): the same angled 3D phone, centred across, midway between the words and the legal line, with the same drift */
+      ph.style.setProperty('--pw',PH3V+'px'); ph.style.left='0px'; ph.style.top='0px';
+      const wb=st.querySelector('.t').getBoundingClientRect().bottom, lt=st.querySelector('.legal').getBoundingClientRect().top;
+      place({x:W/2,y:(wb+lt)/2,s:1},ONR); const pr=ph.getBoundingClientRect(), cx=W/2+(W/2-(pr.left+pr.right)/2), cy=(wb+lt)/2+((wb+lt)/2-(pr.top+pr.bottom)/2);
+      const k=.5+.5*clamp((t-TL.AF.ask)/TL.afg3,0,1); place({x:cx,y:cy,s:1},{rx:ONR.rx*k,ry:ONR.ry*k,rz:ONR.rz*k}); }
     ph.style.opacity=t>=TL.AF.ask?1:0;   /* the phone snaps in with Ask. */
    }  /* the address snaps in as Maya says it */
   if(scene=='answer') show(ts[0],T.maya.words,V.maya,t);

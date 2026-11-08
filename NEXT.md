@@ -72,7 +72,7 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 
 ## 8 Nov evening: trailer final
 - Everything under 8 Nov above (listening, follow-ups, landmark answers, accessibility, test build) went up to main at 15:23.
-- Final trailer: `marketing/trailer/relay-trailer-16x9.mp4` (12.8 s, 16:9 only), version F of `tools/trailer/make_b.py`:
+- Final trailer: `marketing/trailer/relay-trailer-16x9.mp4` and `relay-trailer-9x16.mp4` (12.8 s; FMT=v for the vertical: same 3D phone centred under the words, badge above a full-width legal line), version F of `tools/trailer/make_b.py`:
   `PAGE=type SCENES=hey,ask,answer,afg3,end FMT=h node tools/trailer/render_anim.js`, then `VER=f FMT=h python3 tools/trailer/make_b.py`.
 - F: Hey Relay as big type (Owen), "Where's the nearest Rocketeer?", Maya: "Nearest Rocketeer. North, by Checkpoint." (the app's real answer
   from Olive Grove), Ask. / Find. / Get out. on even 0.8 s beats with the angled 3D phone (home screen) centred between Get out.'s full stop
