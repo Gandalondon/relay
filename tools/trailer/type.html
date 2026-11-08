@@ -137,7 +137,10 @@ function build(scene){ if(built==scene) return; built=scene;
       b.style.right=g+'px'; b.style.bottom=(H-le.getBoundingClientRect().top+40)+'px'; }
     if(le.getBoundingClientRect().height>lh*(F=='h'?1.5:2.5)) le.textContent='Unofficial companion app. Not affiliated with or endorsed by Embark Studios. Google Play and the Google Play logo are trademarks of Google LLC.';
     if(le.getBoundingClientRect().height>lh*(F=='h'?1.5:2.5)) le.textContent='Unofficial companion app. Not affiliated with Embark Studios. Google Play and the Google Play logo are trademarks of Google LLC.';
-    window.LEGALEND=le.textContent; }
+    window.LEGALEND=le.textContent;
+    if(F=='h'){ /* 16:9 (Tony, 8 Nov evening): the badge's bottom edge sits on the legal line's baseline */
+      const m=document.createElement('span'); m.style.cssText='display:inline-block;width:0;height:0;vertical-align:baseline'; le.appendChild(m);
+      const base=m.getBoundingClientRect().bottom; m.remove(); document.getElementById('badge').style.bottom=(H-base)+'px'; } }
   window.INKX=alignLeft(scene);
 }
 function show(el,list,t0,t){el.querySelectorAll('span').forEach((s,i)=>s.classList.toggle('on',t>=t0+list[i][1]));}
