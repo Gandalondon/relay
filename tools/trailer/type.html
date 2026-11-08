@@ -13,7 +13,14 @@ html,body{color:var(--cream);font-family:IT,sans-serif;overflow:hidden}
 .game{position:absolute;inset:0;background:radial-gradient(120% 90% at 30% 35%,#4a4f48 0%,#2c302d 45%,#17191b 100%)}
 .game::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.025) 0 2px,transparent 2px 42px)}
 .game .tag{position:absolute;left:var(--g);top:var(--g);font:500 26px/1.3 IT;color:rgba(238,232,220,.55)}
-.scrim{position:absolute;inset:0;background:linear-gradient(90deg,rgba(28,30,34,.8) 0%,rgba(28,30,34,.35) 55%,rgba(28,30,34,0) 100%)}
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.1)}  /* B1: a flat 10% black over the whole frame (Tony, 8 Nov) */
+.scrim.blue{background:rgba(21,23,28,.72)}                       /* B2: ink over greyscale footage (greyscale done in make_b.py) */
+.ph.flat{transform:none!important}
+.url2{position:absolute;font:700 var(--url2)/1 IT;color:var(--cream);letter-spacing:.01em;white-space:nowrap}
+.fade{opacity:0}
+.badge{position:absolute;right:80px;bottom:64px;height:84px;width:282px;border-radius:12px;border:2px dashed rgba(238,232,220,.6);display:flex;align-items:center;justify-content:center;font:500 20px IT;color:rgba(238,232,220,.8)}
+.badge img{position:absolute;height:125px;width:auto;right:-21px;top:-21px}  /* Google's generic PNG has padding: 125 px tall shows an 84 px badge */
+.legal.end{right:calc(80px + 282px + 48px)}
 .ph{position:absolute;left:0;top:0;width:var(--pw);aspect-ratio:390/844;border-radius:calc(var(--pw)*.1467);transform-style:preserve-3d;--d:calc(var(--pw)*.117);z-index:3}
 .ph .slab{position:absolute;inset:0;border-radius:inherit;background:#222429;transform:translateZ(calc(var(--k)*var(--d)/-12))}
 .ph .slab.rim{background:#34363C}
@@ -27,8 +34,8 @@ html,body{color:var(--cream);font-family:IT,sans-serif;overflow:hidden}
 .lock path{fill:none;stroke:var(--amber);stroke-width:10}
 .lock .w{position:absolute;font-weight:700;color:var(--cream);white-space:nowrap;line-height:1}
 .legal{position:absolute;z-index:5;left:var(--g);right:var(--g);bottom:calc(var(--g)*.5);font:500 var(--lg)/1.35 IT;color:var(--cream);letter-spacing:.01em;text-wrap:pretty;text-shadow:0 1px 3px rgba(21,23,28,.85)}
-.h{--g:96px;--tg:150px;--lg:20px;--pw:430px;--persp:2000px;--big:200px;--mid:120px;--mk:200px;--bigph:640px;--hey:320px}
-.v{--g:72px;--tg:72px;--lg:26px;--pw:520px;--persp:2500px;--big:130px;--mid:104px;--mk:180px;--bigph:980px;--hey:208px}
+.h{--g:96px;--tg:150px;--lg:20px;--pw:430px;--persp:2000px;--big:200px;--mid:120px;--mk:98px;--bigph:640px;--hey:320px;--url2:64px;--endph:400px}
+.v{--g:72px;--tg:72px;--lg:26px;--pw:520px;--persp:2500px;--big:130px;--mid:104px;--mk:110px;--bigph:980px;--hey:208px;--url2:56px;--endph:440px}
 </style></head><body><div class="stage" id="st"></div>
 <script>
 const q=new URLSearchParams(location.search), F=q.get('f')||'h', W=F=='h'?1920:1080, H=F=='h'?1080:1920, st=document.getElementById('st');
@@ -39,7 +46,11 @@ const ONR={rx:22,ry:-34,rz:10};
 let T, CV={}, built='';
 const sp=(text,cls)=>'<div class="t '+(cls||'')+'">'+text.split(' ').map(w=>'<span>'+w+'</span>').join(' ')+'</div>';
 const phoneHTML='<div class="ph" id="ph">'+Array.from({length:12},(_,k)=>'<i class="slab'+(k==11?' rim':'')+'" style="--k:'+(12-k)+'"></i>').join('')+'<div class="scr"><img src="phone-answer.png"></div></div>';
-const legal='<div class="legal">Unofficial companion app. Not affiliated with or endorsed by Embark Studios. ARC Raiders is a trademark of Embark Studios. Maps by MetaForge.</div>';
+const LEGAL='Unofficial companion app. Not affiliated with or endorsed by Embark Studios. ARC Raiders is a trademark of Embark Studios. Maps by MetaForge.';
+const legal='<div class="legal">'+LEGAL+'</div>';
+/* the store badge and Google's trademark line, as on Sniff's end card. Placeholder until Google's badge file is in tools/trailer/ */
+const BADGE='<div class="badge fade" id="badge">Google Play badge</div>', legalEnd='<div class="legal end">'+LEGAL+' Google Play and the Google Play logo are trademarks of Google LLC.</div>';
+const flatPhone=()=>'<div class="ph flat" id="ph" style="--pw:var(--endph)"><div class="slab rim" style="--k:1"></div><div class="scr"><img src="phone-answer.png"></div></div>';
 /* every block of words (question, answer, Ask. Find. Get out.) shares one size and one top-left point (Tony, 8 Nov):
    the biggest size where each block fits between the side margins without breaking a line it shouldn't, and the
    tallest block fits the frame; the blocks then all start where the tallest one, centred, would. */
@@ -70,11 +81,12 @@ function build(scene){ if(built==scene) return; built=scene;
   if(scene=='phone') st.innerHTML=phoneHTML+legal;
   if(scene=='answer') st.innerHTML=ANSWER()+legal;  /* one span per spoken word; 90 metres west. never splits */
   if(scene=='afg') st.innerHTML='<div class="scrim"></div>'+AFG()+legal;
+  if(scene=='afg2') st.innerHTML='<div class="scrim blue"></div>'+AFG()+flatPhone()+'<div class="url2 fade" id="url2">getarcrelay.app</div>'+legal;
   if(scene=='legal') st.innerHTML=legal;
-  if(scene=='end') st.innerHTML='<div class="lock"><svg viewBox="0 0 72 72">'+ARCS.map(d=>'<path d="'+d+'" pathLength="1" stroke-dasharray="1"/>').join('')+'</svg><div class="w nm">RELAY</div><div class="w url">getarcrelay.app</div></div>'+legal;
+  if(scene=='end') st.innerHTML='<div class="lock"><svg viewBox="0 0 72 72">'+ARCS.map(d=>'<path d="'+d+'" pathLength="1" stroke-dasharray="1"/>').join('')+'</svg><div class="w nm">RELAY</div><div class="w url">getarcrelay.app</div></div>'+BADGE+legalEnd;
   const ts=st.querySelectorAll('.t');
   ts.forEach(t=>{ t.style.right='var(--tg)';
-    if(t.classList.contains('hey')){t.style.top='50%';t.style.transform=F=='h'?'translateY(-52%)':'translateY(-60%)';} else t.style.top=TOP+'px'; });
+    if(t.classList.contains('hey')){t.style.top='50%';t.style.transform=F=='h'?'translateY(-52%)':'translateY(-60%)';} else t.style.top=(scene=='afg2'&&F=='v'?200:TOP)+'px'; });  /* 9:16 B2: words up top, the phone under them */
   if(scene=='phone'){ const el=document.getElementById('ph'); el.style.setProperty('--pw',getComputedStyle(st).getPropertyValue('--bigph')); }
   if(scene=='end') layLock();
 }
@@ -97,12 +109,17 @@ function layLock(){
   LK={centre:(W-mk)/2, left:x0};
 }
 /* scene lengths (s). phone: two beats of the music (72 bpm), hard cut in on the drop and out on the beat */
-window.TL={hey:2.2, ask:3.3, phone:1.66, answer:3.3, afg:2.3, legal:1/30, end:3.6, V:{hey:.25, ask:.25, maya:.2, afg:.15, url:1.25}};
+window.TL={hey:2.2, ask:3.3, phone:1.66, answer:3.3, afg:2.3, afg2:5.0, legal:1/30, end:4.4, V:{hey:.25, ask:.25, maya:.2, afg:.15, url:1.25, url2:2.0}};
 window.setT=function(scene,t){
   build(scene); const V=TL.V, ts=st.querySelectorAll('.t');
   if(scene=='hey') show(ts[0],T.hey.words,V.hey,t);
   if(scene=='ask') show(ts[0],T.ask.words,V.ask,t);
-  if(scene=='afg') show(ts[0],T.afg.words,V.afg,t);
+  if(scene=='afg'||scene=='afg2') ts[0].querySelectorAll('span').forEach(s=>s.classList.add('on'));  /* all at once, with the overlay (Tony, 8 Nov) */
+  if(scene=='afg2'){ /* B2 end frame: the phone straight on at the right, then the address under the words; 0.2 s fades */
+    const ph=document.getElementById('ph'), pw=parseFloat(getComputedStyle(ph).getPropertyValue('--pw')), phH=pw*844/390, u=document.getElementById('url2'), tb=ts[0].getBoundingClientRect();
+    if(F=='h'){ ph.style.left=(W-150-pw)+'px'; ph.style.top=((H-phH)/2-30)+'px'; } else { ph.style.left=((W-pw)/2)+'px'; ph.style.top=(H-phH-200)+'px'; }
+    ph.style.opacity=clamp((t-1.0)/.2,0,1);
+    u.style.left=tb.left+'px'; u.style.top=(tb.bottom+parseFloat(getComputedStyle(st).getPropertyValue('--url2'))*.6)+'px'; u.style.opacity=clamp((t-V.url2)/.2,0,1); }
   if(scene=='answer') show(ts[0],T.maya.words,V.maya,t);
   if(scene=='phone'){ /* nearly flat and big, cropped by the frame: the answer's headline and the map, a slow push in */
     const pw=parseFloat(getComputedStyle(st).getPropertyValue('--bigph')), k=t/TL.phone;
@@ -112,7 +129,7 @@ window.setT=function(scene,t){
     const draw=clamp(t/.45,0,1), mv=ease(clamp((t-.6)/.5,0,1));
     st.querySelectorAll('.lock path').forEach((p,i)=>p.setAttribute('stroke-dashoffset',Math.max(0,1-clamp(draw*1.5-i*.25,0,1))));
     st.querySelector('.lock svg').style.left=mix(LK.centre,LK.left,mv)+'px';
-    st.querySelectorAll('.lock .w').forEach(w=>w.style.opacity=ease(clamp((t-1.0)/.5,0,1))); }  /* fades in as the mark settles */
+    st.querySelectorAll('.lock .w').forEach(w=>w.style.opacity=ease(clamp((t-1.0)/.5,0,1))); document.getElementById('badge').style.opacity=clamp((t-1.0)/.2,0,1); }  /* fades in as the mark settles */
 };
 init();
 </script></body></html>

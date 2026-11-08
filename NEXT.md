@@ -57,6 +57,7 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 
 ## 8 Nov
 - Site header: RELAY back beside the mark on every /beta page, folio lockup proportions (see the style guide, Site patterns). Mark only under 390 px.
+- Trailer B (8 Nov): two versions from `tools/trailer/make_b.py` (see its header). B1: no phone shot, game starts on the map, flat 10% black under Ask. Find. Get out. B2: greyscale game under ink, phone and address in the end frame, then the logo. End card at Sniff's size with a Play badge PLACEHOLDER (needs Google's badge file in tools/trailer/). Game footage is Tony's 720p test clip (Buried City), a stand-in.
 - Trailer end lockup with the address: `tools/trailer/lockup.html` (folio lockup, getarcrelay.app under it as wide as RELAY, gap 0.32 of the cap height; Tony approved 8 Nov). Goes into trailer B's end scene.
 
 ## Next (pick one)
