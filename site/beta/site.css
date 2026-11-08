@@ -247,6 +247,7 @@ canvas.topo{display:none}
 .blurb h3{font-size:var(--h3);line-height:var(--h3-lh);font-weight:600}
 .blurb p{margin:10px 0 20px;max-width:42em;text-wrap:pretty}
 .how p a,.hnote a{color:var(--amber)}
+.hnote a[download]{white-space:nowrap}  /* Download MP4 never splits */
 .hnote.small{font-size:var(--small);line-height:var(--small-lh);color:var(--text-meta)}
 .hnote{text-wrap:pretty}
 .how .ic.ic-star{transform:scale(1.18)}  /* Material's star sits small in its box; sized up to match the other icons by eye */
