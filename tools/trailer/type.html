@@ -52,7 +52,7 @@ let PH3=390, PH3X=220;  /* the end frame's 3D phone: width, and how far its cent
 let T, CV={}, built='';
 const sp=(text,cls)=>'<div class="t '+(cls||'')+'">'+text.split(' ').map(w=>'<span>'+w+'</span>').join(' ')+'</div>';
 const phone3D=(img)=>'<div class="ph" id="ph">'+Array.from({length:12},(_,k)=>'<i class="slab'+(k==11?' rim':'')+'" style="--k:'+(12-k)+'"></i>').join('')+'<div class="scr"><img src="'+(img||'phone-answer.png')+'"></div></div>', phoneHTML=phone3D();
-const LEGAL='Unofficial companion app. Not affiliated with or endorsed by Embark Studios. ARC Raiders is a trademark of Embark Studios. Maps by MetaForge.';
+const LEGAL='Unofficial companion app. Not affiliated with or endorsed by Embark Studios. ARC Raiders is a trademark of Embark Studios.';  /* no MetaForge credit: this trailer shows none of their maps (Tony, 8 Nov evening) */
 const legal='<div class="legal">'+LEGAL+'</div>';
 /* the store badge and Google's trademark line, as on Sniff's end card. Placeholder until Google's badge file is in tools/trailer/ */
 const BADGE='<div class="badge fade" id="badge">Google Play badge</div>', legalEnd='<div class="legal end">'+LEGAL+' Google Play and the Google Play logo are trademarks of Google LLC.</div>';
@@ -127,7 +127,13 @@ function build(scene){ if(built==scene) return; built=scene;
       t.style.top=(TOP+(window.BIG-hp)*k)+'px'; t.style.transform='none'; }
     else if(t.classList.contains('hey')){t.style.top='50%';t.style.transform=F=='h'?'translateY(-52%)':'translateY(-60%)';} else t.style.top=((scene=='afg2'||scene=='afg3')&&F=='v'?200:TOP)+'px'; });  /* 9:16 B2: words up top, the phone under them */
   if(scene=='phone'){ const el=document.getElementById('ph'); el.style.setProperty('--pw',getComputedStyle(st).getPropertyValue('--bigph')); }
-  if(scene=='end') layLock();
+  if(scene=='end'){ layLock();
+    /* the end card's legal line stays on one line (Tony, 8 Nov evening): if Google's sentence would wrap it, drop the
+       ARC Raiders trademark here (every earlier frame carries it, and the end card never shows the game) */
+    const le=st.querySelector('.legal.end'), lh=parseFloat(getComputedStyle(le).lineHeight);
+    if(le.getBoundingClientRect().height>lh*1.5) le.textContent='Unofficial companion app. Not affiliated with or endorsed by Embark Studios. Google Play and the Google Play logo are trademarks of Google LLC.';
+    if(le.getBoundingClientRect().height>lh*1.5) le.textContent='Unofficial companion app. Not affiliated with Embark Studios. Google Play and the Google Play logo are trademarks of Google LLC.';
+    window.LEGALEND=le.textContent; }
   window.INKX=alignLeft(scene);
 }
 function show(el,list,t0,t){el.querySelectorAll('span').forEach((s,i)=>s.classList.toggle('on',t>=t0+list[i][1]));}
@@ -164,7 +170,10 @@ window.setT=function(scene,t){
       /* centred between the ink of Get out.'s full stop and the frame's right edge (Tony, 8 Nov evening) */
       const sp=[...st.querySelectorAll('.t span')].pop(), sr=sp.getBoundingClientRect(), fs=getComputedStyle(sp).fontSize, c=document.createElement('canvas').getContext('2d');
       c.font='700 '+fs+' IT'; c.letterSpacing=getComputedStyle(sp).letterSpacing; const mm=c.measureText('out.'), dot=sr.left+mm.actualBoundingBoxRight;
-      const pr=ph.getBoundingClientRect(); place({x:W-150-PH3X+((dot+W)/2-(pr.left+pr.right)/2), y:H/2-30, s:1}, ONR); window.DOTX=[dot,pr.left,pr.right]; }
+      const pr=ph.getBoundingClientRect(), cx=W-150-PH3X+((dot+W)/2-(pr.left+pr.right)/2);
+      /* a slow constant drift (Tony, 8 Nov evening): from half the angle to the full one, still moving at the cut */
+      const k=.5+.5*clamp((t-TL.AF.ask)/TL.afg3,0,1), A={rx:ONR.rx*k, ry:ONR.ry*k, rz:ONR.rz*k};
+      place({x:cx, y:H/2-30, s:1}, A); }
     else if(F=='h'){ ph.style.left=(W-150-pw)+'px'; ph.style.top=((H-phH)/2-30)+'px'; } else { ph.style.left=((W-pw)/2)+'px'; ph.style.top=(H-phH-200)+'px'; }
     ph.style.opacity=t>=TL.AF.ask?1:0;   /* the phone snaps in with Ask. */
    }  /* the address snaps in as Maya says it */
