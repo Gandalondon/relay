@@ -21,6 +21,10 @@ html,body{color:var(--cream);font-family:IT,sans-serif;overflow:hidden}
 .badge{position:absolute;right:80px;bottom:64px;height:84px;width:282px;border-radius:12px;border:2px dashed rgba(238,232,220,.6);display:flex;align-items:center;justify-content:center;font:500 20px IT;color:rgba(238,232,220,.8)}
 .badge img{position:absolute;height:125px;width:auto;right:-21px;top:-21px}  /* Google's generic PNG has padding: 125 px tall shows an 84 px badge */
 .legal.end{right:calc(80px + 282px + 48px)}
+/* D's opening (8 Nov): the app's own mic button, centred and bigger (180 px for the app's 72), tapped, then its listening rings */
+.bigmic{position:absolute;left:50%;top:50%;width:180px;height:180px;margin:-90px 0 0 -90px;border-radius:50%;background:var(--amber);color:#15171C;display:flex;align-items:center;justify-content:center}
+.bigmic svg{width:90px;height:90px;position:absolute}
+.tap{position:absolute;left:50%;top:50%;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;background:rgba(238,232,220,.22)}
 .ph{position:absolute;left:0;top:0;width:var(--pw);aspect-ratio:390/844;border-radius:calc(var(--pw)*.1467);transform-style:preserve-3d;--d:calc(var(--pw)*.117);z-index:3}
 .ph .slab{position:absolute;inset:0;border-radius:inherit;background:#222429;transform:translateZ(calc(var(--k)*var(--d)/-12))}
 .ph .slab.rim{background:#34363C}
@@ -50,6 +54,7 @@ const LEGAL='Unofficial companion app. Not affiliated with or endorsed by Embark
 const legal='<div class="legal">'+LEGAL+'</div>';
 /* the store badge and Google's trademark line, as on Sniff's end card. Placeholder until Google's badge file is in tools/trailer/ */
 const BADGE='<div class="badge fade" id="badge">Google Play badge</div>', legalEnd='<div class="legal end">'+LEGAL+' Google Play and the Google Play logo are trademarks of Google LLC.</div>';
+const MIC_MC='<svg class="mc" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M408-453.92q-29-30.91-29-75.08v-251q0-41.67 29.44-70.83Q437.88-880 479.94-880t71.56 29.17Q581-821.67 581-780v251q0 44.17-29 75.08Q523-423 480-423t-72-30.92ZM450-150v-106q-96-11-166.5-77.5T202-498q-2-12.85 6.59-21.93 8.6-9.07 21.5-9.07 12.91 0 21.41 9t10.5 22q12 81 74.71 132.5Q399.42-314 479.65-314q81.35 0 143.85-51.5T698-498q2-13 10.68-22 8.67-9 21.5-9 12.82 0 21.32 9.07 8.5 9.08 6.5 21.93-11 97-81 164t-167 78v106q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63-8.5-8.62-8.5-21.37Z"/></svg>', MIC_WV='<svg class="wv" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M285-270v-420q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v420q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63-8.5-8.62-8.5-21.37Zm165 160v-740q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v740q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63Q450-97.25 450-110ZM120-430v-100q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v100q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63-8.5-8.62-8.5-21.37Zm495 160v-420q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v420q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63-8.5-8.62-8.5-21.37Zm165-160v-100q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v100q0 12.75-8.68 21.37-8.67 8.63-21.5 8.63-12.82 0-21.32-8.63-8.5-8.62-8.5-21.37Z"/></svg>';
 const flatPhone=(img)=>'<div class="ph flat" id="ph" style="--pw:var(--endph)"><div class="slab rim" style="--k:1"></div><div class="scr"><img src="'+(img||'phone-answer.png')+'"></div></div>';
 /* every block of words (question, answer, Ask. Find. Get out.) shares one size and one top-left point (Tony, 8 Nov):
    the biggest size where each block fits between the side margins without breaking a line it shouldn't, and the
@@ -104,6 +109,7 @@ function build(scene){ if(built==scene) return; built=scene;
   if(scene=='afg') st.innerHTML='<div class="scrim"></div>'+AFG()+legal;
   if(scene=='afg2') st.innerHTML='<div class="scrim blue"></div>'+AFG()+flatPhone()+legal;  /* no address here: it moved to the end card (Tony, 8 Nov) */
   if(scene=='afg3') st.innerHTML=AFG()+flatPhone('phone-home.png')+legal;  /* C (8 Nov): no gameplay, the plain background, the phone on its home greeting */
+  if(scene=='mic') st.innerHTML='<div class="bigmic" id="bm">'+MIC_MC+MIC_WV+'</div><div class="tap" id="tap"></div>'+legal;
   if(scene=='legal') st.innerHTML=legal;
   if(scene=='end') st.innerHTML='<div class="lock"><svg viewBox="0 0 72 72">'+ARCS.map(d=>'<path d="'+d+'" pathLength="1" stroke-dasharray="1"/>').join('')+'</svg><div class="w nm">RELAY</div><div class="w url">getarcrelay.app</div></div>'+BADGE+legalEnd;
   const ts=st.querySelectorAll('.t');
@@ -132,7 +138,7 @@ function layLock(){
   LK={centre:(W-mk)/2, left:x0};
 }
 /* scene lengths (s). phone: two beats of the music (72 bpm), hard cut in on the drop and out on the beat */
-window.TL={hey:2.2, ask:2.2, phone:1.66, answer:3.3, afg:2.3, afg2:5.4, afg3:5.2, legal:1/30, end:4.4, V:{hey:.25, ask:.25, maya:.2, afg:-.07, url:1.25, url2:2.4},
+window.TL={hey:2.2, ask:2.2, phone:1.66, answer:3.3, afg:2.3, afg2:5.4, afg3:5.2, mic:2.3, legal:1/30, end:4.4, V:{hey:.25, ask:.25, maya:.2, afg:-.07, url:1.25, url2:2.4},
   AF:{ask:.2, find:.9, out:1.6}, ENDURL:1.5};  /* B2 end frame beats (Tony, 8 Nov): Ask. with the phone / Find. / Get out., then a hold. The address is said on the end card once RELAY and the address are in (ENDURL) */  /* afg -0.07: Ask is heard as the overlay finishes fading in (0.2 s) */
 window.setT=function(scene,t){
   if(scene=='afg3') t+=TL.AF.ask;  /* C: no overlay to fade in, so Ask. and the phone land on the cut */
@@ -147,6 +153,16 @@ window.setT=function(scene,t){
     ph.style.opacity=t>=TL.AF.ask?1:0;   /* the phone snaps in with Ask. */
    }  /* the address snaps in as Maya says it */
   if(scene=='answer') show(ts[0],T.maya.words,V.maya,t);
+  if(scene=='mic'){ /* fades in, a tap at 0.6 s (press and a soft circle), then listening: waveform and the app's halo rings, then a quick fade */
+    const bm=document.getElementById('bm'), tp=document.getElementById('tap'), k=180/72, on=t>=.75;
+    const fade=Math.min(clamp(t/.2,0,1), 1-clamp((t-2.05)/.2,0,1)); bm.style.opacity=fade;
+    const press=t>=.6&&t<.75?.94:1; bm.style.transform='scale('+press+')';
+    const tu=clamp((t-.5)/.12,0,1)*(1-clamp((t-.85)/.2,0,1)); tp.style.opacity=tu; tp.style.transform='scale('+(.6+.4*clamp((t-.5)/.12,0,1))+')';
+    bm.querySelector('.mc').style.display=on?'none':'block'; const w=bm.querySelector('.wv'); w.style.display=on?'block':'none';
+    if(on){ const ph=(1-Math.cos((t-.75)/1.6*2*Math.PI))/2;   /* the app's halo keyframes: 8/18 px rings at .30/.12, out to 12/26 at .26/.08 */
+      const r1=(8+4*ph)*k, r2=(18+8*ph)*k, a1=(.30-.04*ph)*fade, a2=(.12-.04*ph)*fade;
+      bm.style.boxShadow='0 0 0 '+r1+'px rgba(242,179,61,'+a1+'),0 0 0 '+r2+'px rgba(242,179,61,'+a2+')';
+      w.style.transform='scaleY('+(.6+.4*(1+Math.sin((t-.75)*2*Math.PI/.8))/2)+')'; } else bm.style.boxShadow='none'; }
   if(scene=='phone'){ /* nearly flat and big, cropped by the frame: the answer's headline and the map, a slow push in */
     const pw=parseFloat(getComputedStyle(st).getPropertyValue('--bigph')), k=t/TL.phone;
     const ph=pw*844/390; /* 16:9: top of the phone 56 px down, so the headline, map and route show and the mic is cropped */

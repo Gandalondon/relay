@@ -9,6 +9,7 @@ B2: Ask. Find. Get out. over greyscale gameplay under ink, the phone straight on
 (said) under the words; a 0.2 s fade to the end card.
 C: no gameplay at all. After the answer, Ask. / Find. / Get out. on the plain background with the phone on its home
 greeting, the same beats as B2, then the end card (address said there, as in B2).
+D: C with an opening: the app's mic button centred, tapped, its listening rings, a quick fade, then Hey Relay.
 All end cards: the folio lockup at Sniff's end-card size, the Play badge bottom right, Google's trademark line.
 Game clip windows (seconds into GAME) are in CUTS; the 9:16 version crops the middle of the 16:9 footage."""
 import os, json, subprocess
@@ -23,9 +24,9 @@ os.makedirs(OUT, exist_ok=True)
 
 def build(VER, f, name, W, H):
     fit = "scale=%d:%d:force_original_aspect_ratio=increase:flags=lanczos,crop=%d:%d,setsar=1,fps=30" % (W, H, W, H)
-    def clip(sc):
+    def clip(sc, skip=0):  # skip: frames dropped from the start (D trims the Hey Relay card's lead-in after the mic)
         o = os.path.join(OUT, "b-%s-%s.mp4" % (f, sc))
-        run(["-framerate", "30", "-i", os.path.join(FR, "%s-type-%s" % (f, sc), "%05d.jpg"), "-vf", "settb=1/30,format=yuv420p"] + ENC + [o]); return o, TL[sc]
+        run(["-framerate", "30", "-start_number", str(1 + skip), "-i", os.path.join(FR, "%s-type-%s" % (f, sc), "%05d.jpg"), "-vf", "settb=1/30,format=yuv420p"] + ENC + [o]); return o, TL[sc] - skip / 30
     def game(tag, start, d, over, grey=False, fadeout=0):  # a window of the game clip under a clear-background overlay
         o = os.path.join(OUT, "b-%s-%s.mp4" % (f, tag))
         vf = "[0:v]%s%s[g];[g][1:v]overlay=shortest=0:eof_action=repeat,trim=duration=%.3f,format=yuv420p" % (fit, ",hue=s='max(0,1-t/0.2)'" if grey else "", d)  # colour drains in 0.2 s with the overlay
@@ -34,10 +35,11 @@ def build(VER, f, name, W, H):
              "-i", os.path.join(FR, "%s-type-%s" % (f, over), "%05d.png"), "-filter_complex", vf, "-an"] + ENC + [o])
         return o, d
     g0, gd = CUTS["game"]
-    seq = [("hey", clip("hey")), ("ask", clip("ask")), ("answer", clip("answer"))]
-    if VER == "c": seq += [("afg", clip("afg3")), ("end", clip("end"))]
+    HSKIP = 10 if VER == "d" else 0  # 0.33 s
+    seq = ([("mic", clip("mic"))] if VER == "d" else []) + [("hey", clip("hey", HSKIP)), ("ask", clip("ask")), ("answer", clip("answer"))]
+    if VER in ("c", "d"): seq += [("afg", clip("afg3")), ("end", clip("end"))]
     else: seq += [("game", game("game", g0, gd, "legal"))]
-    if VER == "c": pass
+    if VER in ("c", "d"): pass
     elif VER == "b1": seq += [("afg", game("afg", g0 + gd, TL["afg"], "afg")), ("end", clip("end"))]
     else: seq += [("afg", game("afg2", g0 + gd, TL["afg2"], "afg2", grey=True, fadeout=.2)), ("end", clip("end"))]
     at, t = {}, 0.0
@@ -47,11 +49,11 @@ def build(VER, f, name, W, H):
     V = os.path.join(OUT, "b-v.mp4"); run(["-f", "concat", "-safe", "0", "-i", lst, "-c", "copy", V])
     Vt = TL["V"]
     url_at = at["end"] + Vt["url"] if VER == "b1" else at["afg"] + Vt["url2"]
-    voices = [("hey.wav", at["hey"] + Vt["hey"]), ("ask.wav", at["ask"] + Vt["ask"]), ("maya.wav", at["answer"] + Vt["maya"])]
+    voices = [("hey.wav", at["hey"] + Vt["hey"] - HSKIP / 30), ("ask.wav", at["ask"] + Vt["ask"]), ("maya.wav", at["answer"] + Vt["maya"])]
     if VER == "b1": voices += [("afg.wav", at["afg"] + Vt["afg"]), ("url.wav", url_at)]
     else:  # B2 and C: Maya's Ask. / Find. / Get out. cut from afg.wav and spaced to the beats; each placed so its first sound lands on its word
         AF = TL["AF"]; ON = {"afg-ask.wav": .12, "afg-find.wav": .10, "afg-getout.wav": .065, "url.wav": .29}
-        sh = AF["ask"] if VER == "c" else 0  # C starts on Ask. (no overlay fade)
+        sh = AF["ask"] if VER in ("c", "d") else 0  # C starts on Ask. (no overlay fade)
         voices += [(w, at["afg"] + AF[k] - sh - ON[w]) for w, k in (("afg-ask.wav", "ask"), ("afg-find.wav", "find"), ("afg-getout.wav", "out"))]
         voices += [("url.wav", at["end"] + TL["ENDURL"] - ON["url.wav"])]  # said once the end card's name and address are in
     ins, fl = ["-i", V], []
