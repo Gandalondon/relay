@@ -1,4 +1,4 @@
-# Relay: where we are (Saturday 7 November 2026)
+# Relay: where we are (Sunday 8 November 2026, evening)
 
 Start a new conversation by reading this file, then the style guide.
 
@@ -35,20 +35,20 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 - Fixed 8 Nov: "how do I get to the Scrap Yard" (also take me to, head to, how far is...) gives way and distance; with no location it asks where you are, keeps the place marked, then answers. Tests 187/187.
 - Next session, captures (Tony, 7 Nov late; visuals not updated yet): swap maps across the screens (site homepage phones, Play screenshots, portfolio) so they aren't all the same Blue Gate Village crop, and avoid two yellow loot-zone outlines in one screen. Scenes live in `tools/captures/scenes.js`. Recaptures will also show the new clear route button wherever a route is drawn.
 
-## 8 Nov (committed, not pushed)
+## 8 Nov (pushed)
 - Done: homepage intro and meta say Arc Raiders; clear route icon in the style guide (icons, map controls) and a How it works item, Change your mind, plus "Never mind" in Things to say; Scrap Yard fix (above); Play all-countries note in the release checklist.
 - Recaptures half done: new scenes in `tools/captures/scenes.js`, one map per screen and at most one yellow zone (find Dam Scrap Yard, exit Buried City Church Ruins, loot and whole Riven Tides Wharf, quest Stella Montis Snap and Salvage step 2, moss Pendola Pass, cache Spaceport). capture.js now matches Stella Montis x_y tiles. Still needed: the missing tiles for those maps, fetched through Chrome on Tony's Mac, then capture.js, publish.py and the Play render. The homepage alt texts already describe the new screens, so don't push site/ until the new webps are in.
 - Copy doc not yet synced (the Drive connector here can't edit Docs; do it through Chrome): homepage Arc Raiders, How it works Find the nearest anything wording, Change your mind item, Things to say (drop Find me some moss, add Where do I find wires?, I need rubber parts, Never mind), speed order Normal, Fast or Faster.
 - Found: "I'm at the Beach Bar" on Riven Tides resolves to Azzurro Beach. Not fixed.
 
-## 8 Nov: Share Relay page and trailer (draft, committed, not pushed)
+## 8 Nov: Share Relay page and trailer (draft, pushed)
 - `site/beta/share.html` (Share Relay): intro (free, no ads, one person), Watch it (16:9 trailer, poster), The link (copy, native share), Ways to help (tell your squad, post a clip, rate on Play once live, feedback), Grab these (paste-ready blurb, both clips to download, legal line). Not linked from other pages yet; build it out alongside open testing. Clips in `site/beta/media/` (2 MB each).
 - Trailer: `tools/trailer/` (frame.html, render.js, make.py) draws 16:9 and 9:16 from real app screens, game placeholders, captions, Ask. Find. Get out. and the legal strip. Waiting on Tony's PS5 clip (Blue Gate, ask for the nearest Rocketeer, open the game map right after the answer as the sync point; game audio gets stripped) and a free synth track (YouTube Audio Library, Pixabay, FMA). Voices: Supertonic, Ben asks, Maya answers, the app's real words.
 - Shared workflow saved as the promo-video skill (also for Sniff).
 - Reddit rules for r/ArcRaiders / r/ARC_Raiders still to read through Chrome (Reddit is blocked from the workspace).
 - App misses found: "nearest enemy spawn point" and "high level enemy" fall back.
 
-## 8 Nov late morning: Tony's raid test (Buried City), fixed and committed, not pushed
+## 8 Nov late morning: Tony's raid test (Buried City), fixed (pushed)
 - Replying to "Where are you?" with another map or a place only another map has ("Buried City hospital", "hospital" while on Blue Gate) now switches and answers the question; before, it dropped the question and said Say that again.
 - "I'm on Blue Gate at the hospital": goes with the place and says "Hospital is on Buried City, not Blue Gate." Every map switch is now spoken ("That's on Buried City.") and shown on the context line, never silent.
 - "low level / small enemies": small ARC not tracked. "nearest enemy", "enemy spawn point", "high level enemy": nearest big ARC of any kind.
@@ -69,6 +69,19 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 - Landmark answers (8 Nov, Tony approved): enemies, loot, crafting items and big ARC answer with the named place the target is in (50 m) or by (120 m), as on MetaForge's map and the game's: "Nearest Sentinel: south-east, in Arrival Building." Never the place you're at, nor one nearer you than the target. Nothing named close: "close", "a short run", "a long way". Exits and places keep their own name plus the distance word. No metres are said; the small line under the headline shows "South-east, about 100 m." to check against the game's waypoint distance. Helpers `landmark`, `whereIs`, `headWhere`, `metresLine` in www/index.html. Longest headline (Pendola's Controlled Receiving Facility) fits at 360 px. Removed a stale line that said Grandioso and Launch Tower were on another map.
 
 - After an enemy or loot answer (8 Nov): "next one" / "another one" / "second nearest" give the next spot at least 40 m from the last (S.skip, cleared on a new ask or a new place); "anything closer" goes back to the closest; "what's that near" names the nearest place; "I'm here" / "made it" puts you at that spot. Exits take "next one" too. `tests/followups.js` (14); tests/run.js now remembers each answer between turns, as the app does.
+
+## 8 Nov evening: trailer final
+- Everything under 8 Nov above (listening, follow-ups, landmark answers, accessibility, test build) went up to main at 15:23.
+- Final trailer: `marketing/trailer/relay-trailer-16x9.mp4` (12.8 s, 16:9 only), version F of `tools/trailer/make_b.py`:
+  `PAGE=type SCENES=hey,ask,answer,afg3,end FMT=h node tools/trailer/render_anim.js`, then `VER=f FMT=h python3 tools/trailer/make_b.py`.
+- F: Hey Relay as big type (Owen), "Where's the nearest Rocketeer?", Maya: "Nearest Rocketeer. North, by Checkpoint." (the app's real answer
+  from Olive Grove), Ask. / Find. / Get out. on even 0.8 s beats with the angled 3D phone (home screen) centred between Get out.'s full stop
+  and the right edge, drifting from half to full angle, then the end card (folio lockup, getarcrelay.app said at Normal speed, Google's
+  badge `tools/trailer/google-play-badge.png` at Sniff's size). Every block shares one cap-top line; the end words are centred on the phone.
+- Legal: no MetaForge credit (no maps shown). End card line kept to one line: Embark disclaimer plus Google's trademark sentence.
+- Music: Jonas Blakewood synthwave at 12%, drop on Maya's answer. The Mountain is in audio/ (`MUSIC=mountain MDROP=16.0`), not used.
+- E (mic opening, app-exact halo) still builds with VER=e. Voices need the Supertonic model in /home/claude/voices (sherpa-onnx tts-models release).
+- Next: Relay YouTube brand channel under Tony's Google account (alongside Get Sniff), upload the trailer.
 
 ## Next (pick one)
 1. Tony on the Pixel: map buttons, location-only reply, About links open the browser, "show me the Dam map", Hey Relay with game audio.
