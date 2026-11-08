@@ -12,6 +12,9 @@ greeting, the same beats as B2, then the end card (address said there, as in B2)
 D: C with an opening: the app's mic button centred, tapped, its listening rings, a quick fade, then Hey Relay.
 E (Tony, 8 Nov): a bigger mic button, tapped; Hey Relay is heard over the listening rings (no Hey Relay card); a hard cut to
 the question, the answer, C's end frame, the end card. About 16 s.
+E, 8 Nov evening (Tony): the mic behaves exactly as in the app: the icon swaps to the still waveform and only the halo
+rings breathe (no bounce, press or tap circle). C's end frame cut to 3.0 s and the end card to 4.0 s (less hold).
+F (Tony, 8 Nov): E without the mic: Hey Relay as big bold type (cut to 1.6 s), then E's question, answer and ending.
 All end cards: the folio lockup at Sniff's end-card size, the Play badge bottom right, Google's trademark line.
 Game clip windows (seconds into GAME) are in CUTS; the 9:16 version crops the middle of the 16:9 footage."""
 import os, json, subprocess
@@ -26,9 +29,9 @@ os.makedirs(OUT, exist_ok=True)
 
 def build(VER, f, name, W, H):
     fit = "scale=%d:%d:force_original_aspect_ratio=increase:flags=lanczos,crop=%d:%d,setsar=1,fps=30" % (W, H, W, H)
-    def clip(sc, skip=0):  # skip: frames dropped from the start (D trims the Hey Relay card's lead-in after the mic)
-        o = os.path.join(OUT, "b-%s-%s.mp4" % (f, sc))
-        run(["-framerate", "30", "-start_number", str(1 + skip), "-i", os.path.join(FR, "%s-type-%s" % (f, sc), "%05d.jpg"), "-vf", "settb=1/30,format=yuv420p"] + ENC + [o]); return o, TL[sc] - skip / 30
+    def clip(sc, skip=0, keep=None):  # skip: frames dropped from the start (D trims the Hey Relay card's lead-in after the mic); keep: seconds kept
+        o = os.path.join(OUT, "b-%s-%s.mp4" % (f, sc)); d = keep or TL[sc] - skip / 30
+        run(["-framerate", "30", "-start_number", str(1 + skip), "-i", os.path.join(FR, "%s-type-%s" % (f, sc), "%05d.jpg"), "-frames:v", str(round(d * 30)), "-vf", "settb=1/30,format=yuv420p"] + ENC + [o]); return o, d
     def game(tag, start, d, over, grey=False, fadeout=0):  # a window of the game clip under a clear-background overlay
         o = os.path.join(OUT, "b-%s-%s.mp4" % (f, tag))
         vf = "[0:v]%s%s[g];[g][1:v]overlay=shortest=0:eof_action=repeat,trim=duration=%.3f,format=yuv420p" % (fit, ",hue=s='max(0,1-t/0.2)'" if grey else "", d)  # colour drains in 0.2 s with the overlay
@@ -38,12 +41,13 @@ def build(VER, f, name, W, H):
         return o, d
     g0, gd = CUTS["game"]
     HSKIP = 10 if VER == "d" else 0  # 0.33 s
-    ASKIP, MSKIP = (12, 9) if VER == "e" else (0, 0)  # E: the question and answer start on their first word, right on the cut
+    ASKIP, MSKIP = (12, 9) if VER in ("e", "f") else (0, 0)  # E: the question and answer start on their first word, right on the cut
     if VER == "e": seq = [("mic", clip("mic2")), ("ask", clip("ask", ASKIP)), ("answer", clip("answer", MSKIP))]
+    elif VER == "f": seq = [("hey", clip("hey", keep=1.6)), ("ask", clip("ask", ASKIP)), ("answer", clip("answer", MSKIP))]
     else: seq = ([("mic", clip("mic"))] if VER == "d" else []) + [("hey", clip("hey", HSKIP)), ("ask", clip("ask")), ("answer", clip("answer"))]
-    if VER in ("c", "d", "e"): seq += [("afg", clip("afg3")), ("end", clip("end"))]
+    if VER in ("c", "d", "e", "f"): seq += [("afg", clip("afg3")), ("end", clip("end"))]
     else: seq += [("game", game("game", g0, gd, "legal"))]
-    if VER in ("c", "d", "e"): pass
+    if VER in ("c", "d", "e", "f"): pass
     elif VER == "b1": seq += [("afg", game("afg", g0 + gd, TL["afg"], "afg")), ("end", clip("end"))]
     else: seq += [("afg", game("afg2", g0 + gd, TL["afg2"], "afg2", grey=True, fadeout=.2)), ("end", clip("end"))]
     at, t = {}, 0.0
@@ -58,7 +62,7 @@ def build(VER, f, name, W, H):
     if VER == "b1": voices += [("afg.wav", at["afg"] + Vt["afg"]), ("url.wav", url_at)]
     else:  # B2 and C: Maya's Ask. / Find. / Get out. cut from afg.wav and spaced to the beats; each placed so its first sound lands on its word
         AF = TL["AF"]; ON = {"afg-ask.wav": .12, "afg-find.wav": .10, "afg-getout.wav": .065, "url.wav": .29}
-        sh = AF["ask"] if VER in ("c", "d", "e") else 0  # C starts on Ask. (no overlay fade)
+        sh = AF["ask"] if VER in ("c", "d", "e", "f") else 0  # C starts on Ask. (no overlay fade)
         voices += [(w, at["afg"] + AF[k] - sh - ON[w]) for w, k in (("afg-ask.wav", "ask"), ("afg-find.wav", "find"), ("afg-getout.wav", "out"))]
         voices += [("url.wav", at["end"] + TL["ENDURL"] - ON["url.wav"])]  # said once the end card's name and address are in
     ins, fl = ["-i", V], []

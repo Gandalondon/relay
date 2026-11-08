@@ -138,8 +138,8 @@ function layLock(){
   const svg=st.querySelector('.lock svg'); Object.assign(svg.style,{width:box+'px',height:box+'px',top:(y0-box*7/72)+'px'});
   LK={centre:(W-mk)/2, left:x0};
 }
-/* scene lengths (s). phone: two beats of the music (72 bpm), hard cut in on the drop and out on the beat */
-window.TL={hey:2.2, ask:2.2, phone:1.66, answer:3.3, afg:2.3, afg2:5.4, afg3:5.2, mic:2.3, mic2:2.1, legal:1/30, end:4.4, V:{hey:.25, ask:.25, maya:.2, afg:-.07, url:1.25, url2:2.4},
+/* scene lengths (s). afg3 3.0 and end 4.0 (Tony, 8 Nov: less hold on the phone at the end; were 5.2 and 4.4). phone: two beats of the music (72 bpm), hard cut in on the drop and out on the beat */
+window.TL={hey:2.2, ask:2.2, phone:1.66, answer:3.3, afg:2.3, afg2:5.4, afg3:3.0, mic:2.3, mic2:2.1, legal:1/30, end:4.0, V:{hey:.25, ask:.25, maya:.2, afg:-.07, url:1.25, url2:2.4},
   AF:{ask:.2, find:.9, out:1.6}, ENDURL:1.5};  /* B2 end frame beats (Tony, 8 Nov): Ask. with the phone / Find. / Get out., then a hold. The address is said on the end card once RELAY and the address are in (ENDURL) */  /* afg -0.07: Ask is heard as the overlay finishes fading in (0.2 s) */
 window.setT=function(scene,t){
   if(scene=='afg3') t+=TL.AF.ask;  /* C: no overlay to fade in, so Ask. and the phone land on the cut */
@@ -158,14 +158,14 @@ window.setT=function(scene,t){
     const bm=document.getElementById('bm'), tp=document.getElementById('tap'), k=parseFloat(getComputedStyle(bm).getPropertyValue('--b'))/72, on=t>=.75;
     /* E (mic2): Hey Relay is heard over the rings, then a hard cut to the question, so no fade out */
     const fade=Math.min(clamp(t/.2,0,1), scene=='mic2'?1:1-clamp((t-2.05)/.2,0,1)); bm.style.opacity=fade;
-    const press=t>=.6&&t<.75?.94:1; bm.style.transform='scale('+press+')';
+    const press=scene=='mic2'?1:(t>=.6&&t<.75?.94:1); bm.style.transform='scale('+press+')';  /* E: no press, as in the app (Tony, 8 Nov) */
     if(scene=='mic2') tp.style.width=tp.style.height='180px', tp.style.margin='-90px 0 0 -90px';
-    const tu=clamp((t-.5)/.12,0,1)*(1-clamp((t-.85)/.2,0,1)); tp.style.opacity=tu; tp.style.transform='scale('+(.6+.4*clamp((t-.5)/.12,0,1))+')';
+    const tu=scene=='mic2'?0:clamp((t-.5)/.12,0,1)*(1-clamp((t-.85)/.2,0,1));  /* E: no tap circle */ tp.style.opacity=tu; tp.style.transform='scale('+(.6+.4*clamp((t-.5)/.12,0,1))+')';
     bm.querySelector('.mc').style.display=on?'none':'block'; const w=bm.querySelector('.wv'); w.style.display=on?'block':'none';
     if(on){ const ph=(1-Math.cos((t-.75)/1.6*2*Math.PI))/2;   /* the app's halo keyframes: 8/18 px rings at .30/.12, out to 12/26 at .26/.08 */
       const r1=(8+4*ph)*k, r2=(18+8*ph)*k, a1=(.30-.04*ph)*fade, a2=(.12-.04*ph)*fade;
       bm.style.boxShadow='0 0 0 '+r1+'px rgba(242,179,61,'+a1+'),0 0 0 '+r2+'px rgba(242,179,61,'+a2+')';
-      w.style.transform='scaleY('+(.6+.4*(1+Math.sin((t-.75)*2*Math.PI/.8))/2)+')'; } else bm.style.boxShadow='none'; }
+      w.style.transform=scene=='mic2'?'none':'scaleY('+(.6+.4*(1+Math.sin((t-.75)*2*Math.PI/.8))/2)+')';  /* E: the waveform icon stays still; only the halo breathes, as in the app */ } else bm.style.boxShadow='none'; }
   if(scene=='phone'){ /* nearly flat and big, cropped by the frame: the answer's headline and the map, a slow push in */
     const pw=parseFloat(getComputedStyle(st).getPropertyValue('--bigph')), k=t/TL.phone;
     const ph=pw*844/390; /* 16:9: top of the phone 56 px down, so the headline, map and route show and the mic is cropped */
