@@ -3,6 +3,7 @@ The lines live here; run say.py for each first:  python3 timing.py"""
 import soundfile as sf, numpy as np, json, re, os
 H = os.path.dirname(os.path.abspath(__file__))
 LINES = {"ben": "Hey Relay, I’m at the Village. Where’s the nearest Rocketeer?",
+         "hey": "Hey Relay.", "afg": "Ask. Find. Get out.", "url": "Get Arc Relay dot app.", "ask": "I’m at the Village. Where’s the nearest Rocketeer?",
          "maya": "The nearest rocketeer spawn is about 90 metres west of you."}
 def timing(wav, text):
     a, sr = sf.read(wav)
@@ -31,5 +32,7 @@ def timing(wav, text):
         L = [len(re.sub(r'\W', '', w)) + 1 for w in ph]; tot = sum(L); x = a0
         for w, l in zip(ph, L): out.append([w, round(x, 2)]); x += (a1 - a0) * l / tot
     return {"dur": round(len(a) / sr, 2), "words": out}
-json.dump({k: timing(os.path.join(H, k + ".wav"), v) for k, v in LINES.items()}, open(os.path.join(H, "timing.json"), "w"), indent=0)
+R = {k: timing(os.path.join(H, k + ".wav"), v) for k, v in LINES.items()}
+R["hey"]["words"] = [["Hey", 0.2], ["Relay.", 0.5]]  # two short words: the loudness split misplaces them, so set by ear
+json.dump(R, open(os.path.join(H, "timing.json"), "w"), indent=0)
 print(open(os.path.join(H, "timing.json")).read())

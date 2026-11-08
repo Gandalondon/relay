@@ -10,7 +10,7 @@ def words(key, lead, tail):  # (frame suffix, seconds) for each step of a spoken
     w = T[key]["words"]; st = [lead + x[1] for x in w]; end = lead + T[key]["dur"] + tail
     seq = [("-0", st[0])] + [("-%d" % (i + 1), (st[i + 1] if i + 1 < len(st) else end) - st[i]) for i in range(len(st))]
     return seq, end
-TL = json.load(open(os.path.join(FR, "timeline.json")))
+TL = json.load(open(os.path.join(FR, "anim-timeline.json")))
 def clip(f, sc):  # a filmed scene (render_anim.js) as video
     out = os.path.join(OUT, f + "-" + sc + ".mp4")
     run(["-framerate", "30", "-i", os.path.join(FR, f + "-anim-" + sc, "%05d.jpg"), "-vf", "format=yuv420p"] + ENC + [out]); return out
@@ -27,14 +27,17 @@ for f, name in (("h", "16x9"), ("v", "9x16")):
     # Ask. Find. Get out. fall on its beats (bar 2.22 s, beat 0.555 s), Ask on the bar at 20.02 s.
     MUSIC, MDROP, BEAT, ASK_AT = "music-jonasblakewood-synthwave-retro-wave-618632.mp3", 7.93, 0.555, 20.02
     mstart = MDROP - talk_at; pin = (ASK_AT - mstart) - a_len
-    seq = [("pin", pin), ("w1", BEAT), ("w2", BEAT), ("w3", BEAT * 2)] + [("end-%d" % k, 0.05) for k in range(12)] + [("end-12", 2.8)]
+    seq = [("pin", pin), ("w1", BEAT), ("w2", BEAT), ("w3", BEAT * 2)]
     lst = os.path.join(OUT, "b.txt")
     with open(lst, "w") as L:
         for s, d in seq: L.write("file '%s'\nduration %.3f\n" % (p(s), d))
         L.write("file '%s'\n" % p(seq[-1][0]))
     B = os.path.join(OUT, "b.mp4"); run(["-f", "concat", "-safe", "0", "-i", lst, "-vf", "fps=30,format=yuv420p"] + ENC + [B]); os.remove(lst)
-    total = a_len + sum(d for _, d in seq)
-    cat = os.path.join(OUT, "c.txt"); open(cat, "w").write("file '%s'\nfile '%s'\n" % (A, B))
+    # the shared end lockup, filmed from type.html (mark draws in the middle, slides left, name and address appear)
+    TLB = json.load(open(os.path.join(FR, "type-timeline.json")))
+    END = os.path.join(OUT, "end.mp4"); run(["-framerate", "30", "-i", os.path.join(FR, f + "-type-end", "%05d.jpg"), "-vf", "settb=1/30,format=yuv420p"] + ENC + [END])
+    total = a_len + sum(d for _, d in seq) + TLB["end"]
+    cat = os.path.join(OUT, "c.txt"); open(cat, "w").write("file '%s'\nfile '%s'\nfile '%s'\n" % (A, B, END))
     V = os.path.join(OUT, "v.mp4"); run(["-f", "concat", "-safe", "0", "-i", cat, "-c", "copy", V])
     ben = int((talk_at + TL["B0"]) * 1000); maya = int((talk_at + TL["Y0"]) * 1000)
     tmp = os.path.join(OUT, "tmp-" + name + ".mp4"); dst = os.path.join(OUT, "relay-trailer-" + name + ".mp4")
@@ -47,5 +50,5 @@ for f, name in (("h", "16x9"), ("v", "9x16")):
          % (duck, total - 1.8, ben, ben, maya, maya, total),
          "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-shortest", tmp])
     os.replace(tmp, dst)
-    for x in (A, B, V, cat, HM, TK): os.remove(x)
+    for x in (A, B, V, cat, HM, TK, END): os.remove(x)
     print("wrote", dst, "%.1f s" % total)

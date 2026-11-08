@@ -1,0 +1,91 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:IT;font-weight:500;src:url(../../www/fonts/inter-tight-500.woff2)}
+@font-face{font-family:IT;font-weight:700;src:url(../../www/fonts/inter-tight-700.woff2)}
+/* Relay trailer B, type-led (8 Nov): big words as they're spoken, the site's 3D phone only for Relay's answer,
+   and the shared end lockup (mark draws in the centre, slides left, name and address appear). setT(scene, t) draws a frame. */
+:root{--ch:#1C1E22;--cream:#EEE8DC;--amber:#F2B33D}
+*{margin:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:var(--ch);color:var(--cream);font-family:IT,sans-serif;overflow:hidden}
+.stage{position:absolute;inset:0;perspective:var(--persp)}
+.game{position:absolute;inset:0;background:radial-gradient(120% 90% at 30% 35%,#4a4f48 0%,#2c302d 45%,#17191b 100%)}
+.game::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.025) 0 2px,transparent 2px 42px)}
+.game .tag{position:absolute;left:var(--g);top:var(--g);font:500 26px/1.3 IT;color:rgba(238,232,220,.55)}
+.scrim{position:absolute;inset:0;background:linear-gradient(90deg,rgba(28,30,34,.8) 0%,rgba(28,30,34,.35) 55%,rgba(28,30,34,0) 100%)}
+.ph{position:absolute;left:0;top:0;width:var(--pw);aspect-ratio:390/844;border-radius:calc(var(--pw)*.1467);transform-style:preserve-3d;--d:calc(var(--pw)*.117);z-index:3}
+.ph .slab{position:absolute;inset:0;border-radius:inherit;background:#222429;transform:translateZ(calc(var(--k)*var(--d)/-12))}
+.ph .slab.rim{background:#34363C}
+.ph .scr{position:absolute;inset:calc(var(--pw)*.0333);border-radius:calc(var(--pw)*.1133);overflow:hidden;transform:translateZ(.5px);background:var(--ch)}
+.ph .scr img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top}
+.t{position:absolute;left:var(--tg);font:700 var(--big)/.98 IT;letter-spacing:-.02em;text-wrap:balance}
+.t span{opacity:0}.t span.on{opacity:1}
+.t.hey{font-size:calc(var(--big)*1.6)}
+.t.mid{font-size:var(--mid);line-height:1}
+.lock{position:absolute;left:0;top:0}
+.lock svg{position:absolute;overflow:hidden}
+.lock path{fill:none;stroke:var(--amber);stroke-width:10}
+.lock .n{position:absolute;display:flex;flex-direction:column;align-items:flex-start}
+.lock b{font:700 var(--wm)/.86 IT;letter-spacing:-.02em;white-space:nowrap}
+.lock i{font:700 calc(var(--wm)*.247)/1 IT;font-style:normal;margin-top:calc(var(--wm)*.2);white-space:nowrap}
+.legal{position:absolute;z-index:5;left:var(--g);right:var(--g);bottom:calc(var(--g)*.5);font:500 var(--lg)/1.35 IT;color:var(--cream);letter-spacing:.01em;text-wrap:pretty;text-shadow:0 1px 3px rgba(21,23,28,.85)}
+.h{--g:96px;--tg:150px;--lg:20px;--pw:430px;--persp:2000px;--big:200px;--mid:120px;--mk:150px;--wm:118px}
+.v{--g:72px;--tg:96px;--lg:26px;--pw:520px;--persp:2500px;--big:170px;--mid:104px;--mk:150px;--wm:118px}
+</style></head><body><div class="stage" id="st"></div>
+<script>
+const q=new URLSearchParams(location.search), F=q.get('f')||'h', W=F=='h'?1920:1080, H=F=='h'?1080:1920, st=document.getElementById('st');
+st.classList.add(F);
+const ease=u=>u<=0?0:u>=1?1:u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2, mix=(a,b,k)=>a+(b-a)*k, clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const ARCS=['M -10 12 H 14 A 46 46 0 0 1 60 58 V 82','M -10 28 H 14 A 30 30 0 0 1 44 58 V 82','M -10 44 H 14 A 14 14 0 0 1 28 58 V 82'];
+const ONR={rx:22,ry:-34,rz:10};
+let T, CV={};
+const sp=(text,cls)=>'<div class="t '+(cls||'')+'">'+text.split(' ').map(w=>'<span>'+w+'</span>').join(' ')+'</div>';
+const phoneHTML='<div class="ph" id="ph">'+Array.from({length:12},(_,k)=>'<i class="slab'+(k==11?' rim':'')+'" style="--k:'+(12-k)+'"></i>').join('')+'<div class="scr"><img src="phone-answer.png"></div></div>';
+const legal='<div class="legal">Unofficial companion app. Not affiliated with or endorsed by Embark Studios. ARC Raiders is a trademark of Embark Studios. Maps by MetaForge.</div>';
+async function init(){
+  T=await (await fetch('audio/timing.json')).json();
+  document.body.dataset.ready=1;
+}
+let built='';
+function build(scene){ if(built==scene) return; built=scene;
+  const words=k=>T[k].words.map(w=>w[0]).join(' ');
+  if(scene=='hey') st.innerHTML=sp('Hey Relay','hey')+legal;
+  if(scene=='ask') st.innerHTML=sp(words('ask'))+legal;
+  if(scene=='reply') st.innerHTML=sp(words('ask'))+sp(words('maya').replace('90 metres','90&nbsp;metres'),'mid')+phoneHTML+legal;
+  if(scene=='afg') st.innerHTML='<div class="game"><div class="tag">Game footage: running to the pin (placeholder)</div></div><div class="scrim"></div>'+sp('Ask. Find. Get out.')+legal;
+  if(scene=='end') st.innerHTML='<div class="lock"><svg viewBox="0 0 72 72">'+ARCS.map(d=>'<path d="'+d+'" pathLength="1" stroke-dasharray="1"/>').join('')+'</svg><div class="n"><b>Relay</b><i>getarcrelay.app</i></div></div>'+legal;
+  const ts=st.querySelectorAll('.t');
+  ts.forEach(t=>{ if(F=='h'){t.style.right='var(--tg)';t.style.top='50%';t.style.transform='translateY(-52%)';} else {t.style.right='var(--tg)';t.style.top='50%';t.style.transform='translateY(-60%)';} });
+  if(scene=='afg'){const t=ts[0]; t.innerHTML=t.innerHTML.replace(/<\/span> <span>/g,'</span><br><span>').replace('<br><span>out.','&nbsp;<span>out.');}
+  if(scene=='reply'){ const m=ts[1]; if(F=='h'){m.style.right=(W*.44)+'px';} else {m.style.top='300px';m.style.transform='none';} }
+  if(scene=='end'){ /* the URL as wide as the wordmark, as on Sniff's tote lockup */
+    const b=st.querySelector('.lock b'),i=st.querySelector('.lock i'); i.style.fontSize=(parseFloat(getComputedStyle(i).fontSize)*b.getBoundingClientRect().width/i.getBoundingClientRect().width)+'px'; }
+}
+function show(el,list,t0,t){el.querySelectorAll('span').forEach((s,i)=>s.classList.toggle('on',t>=t0+list[i][1]));}
+function place(p,a){const el=document.getElementById('ph'),pw=parseFloat(getComputedStyle(st).getPropertyValue('--pw')),ph=pw*844/390;
+  el.style.transform='translate('+(p.x-pw/2)+'px,'+(p.y-ph/2)+'px) scale('+p.s+') rotateX('+a.rx+'deg) rotateY('+a.ry+'deg) rotateZ('+a.rz+'deg)';}
+window.TL={hey:2.2, ask:3.3, reply:5.2, afg:2.3, end:3.6, V:{hey:.4, ask:.25, maya:1.6, afg:.15, url:1.25}};
+window.setT=function(scene,t){
+  build(scene); const V=TL.V, ts=st.querySelectorAll('.t');
+  if(scene=='hey') show(ts[0],T.hey.words,V.hey,t);
+  if(scene=='ask') show(ts[0],T.ask.words,V.ask,t);
+  if(scene=='afg') show(ts[0],T.afg.words,V.afg,t);
+  if(scene=='reply'){ /* the asked words stay, the phone sweeps in from the left over them to the right, then Relay's words appear */
+    ts[0].querySelectorAll('span').forEach(s=>s.classList.add('on'));
+    const pw=parseFloat(getComputedStyle(st).getPropertyValue('--pw')), u=ease(clamp(t/1.2,0,1));
+    const from=F=='h'?{x:-pw,y:H/2,s:1.05}:{x:-pw,y:H*.66,s:1}, to=F=='h'?{x:W*.75,y:H/2-20,s:1}:{x:W/2+40,y:H*.68,s:1};
+    place({x:mix(from.x,to.x,u),y:mix(from.y,to.y,u),s:mix(from.s,to.s,u)},{rx:22,ry:mix(10,ONR.ry,u)+2.5*Math.sin(t*1.3)*u,rz:mix(0,ONR.rz,u)});
+    ts[0].style.opacity=1-clamp((t-.35)/.5,0,1);
+    show(ts[1],T.maya.words,V.maya,t); }
+  if(scene=='end'){ /* the mark draws in the middle, slides left, then the name and address appear beside it */
+    const mk=parseFloat(getComputedStyle(st).getPropertyValue('--mk')), svg=st.querySelector('.lock svg'), n=st.querySelector('.lock .n'), nb=n.getBoundingClientRect();
+    const gap=mk*.18, groupW=mk*65/72+gap+nb.width;
+    svg.style.width=svg.style.height=mk+'px';
+    const draw=clamp(t/.45,0,1), mv=ease(clamp((t-.6)/.5,0,1));
+    st.querySelectorAll('.lock path').forEach((p,i)=>p.setAttribute('stroke-dashoffset',Math.max(0,1-clamp(draw*1.5-i*.25,0,1))));
+    if(F=='h'){ const cx=W/2-mk*65/72/2, fx=W/2-groupW/2; svg.style.left=mix(cx,fx,mv)+'px'; svg.style.top=(H/2-mk/2)+'px';
+      n.style.left=(fx+mk*65/72+gap)+'px'; n.style.top=(H/2+mk/2-nb.height)+'px'; }
+    else { const cy=H/2-mk/2, fy=H/2-(mk+gap+nb.height)/2; svg.style.left=(W/2-mk*65/72/2)+'px'; svg.style.top=mix(cy,fy,mv)+'px';
+      n.style.left=(W/2-nb.width/2)+'px'; n.style.top=(fy+mk+gap)+'px'; n.style.alignItems='center'; }
+    n.style.opacity=t>=1.1?1:0; }
+};
+init();
+</script></body></html>
