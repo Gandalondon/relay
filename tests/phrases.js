@@ -113,7 +113,7 @@ module.exports = [
   /* directions and map edges (4 Nov) */
   { set: NONE, say: ["I'm south west", "anything south of me"], want: { near: "edge of the map" } },
   { set: NONE, say: ["I'm at the farm", "is there an exit to the west"], want: { near: "Forest Airshaft" } },
-  { set: NONE, say: ["I'm at the farm", "anything north of me"], want: { near: "metres north" } },
+  { set: NONE, say: ["I'm at the farm", "anything north of me"], want: { near: "north, (close|a short run|a long way)" } }  /* 8 Nov: rough distance words, not metres */,
   { set: NONE, say: ["I'm at the farm", "get me out", "I can't go north east"], want: { near: "(Forest|Cliffside) Airshaft" } },
   { set: NONE, say: ["I'm near the fort", "evac", "that one's closed"], want: { near: "(Next best is|Try|Then go for)" } },
   { set: NONE, say: ["I'm near the fort", "evac", "it's shut, another one", "there's an ARC blocking it, another"], want: { near: "(Next best is|Try|Then go for)" } },
@@ -146,9 +146,9 @@ module.exports = [
   { set: { map: "stella-montis", place: "Atrium" }, say: "where can I find apricots", want: { show: "No apricots on Stella Montis" } },
   { set: { map: "spaceport", place: "Launch Towers" }, say: "nearest rocketeer husk", want: { show: "Nearest rocketeer husk" } },
   { set: { map: "spaceport", place: "Launch Towers" }, say: "nearest rocketeer", want: { enemy: true } },
-  { set: { map: "pendola-pass", place: "Old Town" }, say: "I need a med crate", want: { near: "metres" } },
+  { set: { map: "pendola-pass", place: "Old Town" }, say: "I need a med crate", want: { near: ": [a-z-]+, (in|by|close|a short run|a long way)" } },
   /* ARC by name on any map (6 Nov) */
-  { set: { map: "dam", place: "Control Tower" }, say: "where's the nearest rocket ear", want: { near: "metres" } },
+  { set: { map: "dam", place: "Control Tower" }, say: "where's the nearest rocket ear", want: { near: ": [a-z-]+, (in|by|close|a short run|a long way)" } },
   { set: { map: "stella-montis", place: "Atrium" }, say: "any rocketeers near me", want: { show: "No Rocketeers on Stella Montis" } },
   { set: AT_VILLAGE, say: "where are the wasps", want: { show: "not tracked" } },
   { set: AT_VILLAGE, say: "bombadiers near me", want: { enemy: true } },

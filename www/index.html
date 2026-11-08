@@ -447,7 +447,7 @@ function lootAnswer(L, raw, psNow) {
   if (psNow !== "fresh") { const q = askWhere(raw); q.show = N + ": where are you?"; q.say = "I know " + pts.length + " " + (L.pl || L.n) + " spots on " + MAP.name + ". Where are you? I'll find the nearest."; return q; }
   const open = pts.filter(p => !p.lock), b = near(S.place, open.length ? open : pts), dir = compass(S.place, b);
   const lockTip = b.lock ? " It's behind a locked door." : "";
-  return { show: "Nearest " + L.n + ": " + dir + ".", say: "The nearest " + L.n + " is " + (S.place.rough ? "" : far(S.place, b)) + dir + " of you." + lockTip, map: { you: S.place, stars: [b] } };
+  return { show: "Nearest " + L.n + ": " + headWhere(S.place, b) + ".", say: "Nearest " + L.n + ": " + whereIs(S.place, b) + "." + lockTip, ctx: metresLine(S.place, b), map: { you: S.place, stars: [b] } };
 }
 function itemAnswer(it) {
   if (MAP.id !== "blue-gate" && (it.spots || it.areas)) return { show: it.n + ": Blue Gate spots only.", say: it.n + ". I only have spots for it on Blue Gate so far." + (it.loose ? " It's a search, so try houses and crates." : ""), ctx: "Soul's Offering item" };
@@ -457,11 +457,11 @@ function itemAnswer(it) {
   if (here) {
     const b = near(here, pts), area = it.spots ? nearestAreas(b, 1)[0] : b;
     const where = it.spots ? "near " + area.n : area.n;
-    const away = here.rough ? "" : far(here, b);
+    const away = "";  /* metres are on screen, not said (8 Nov) */
     /* "loose" items have no fixed spot: name the best area, and say once that it's a search, not a guaranteed spawn */
     const looseTip = it.loose && !S.looseTold ? " No fixed spot, so search the houses there." : "";
     if (looseTip) { S.looseTold = true; save(); }
-    return { show: it.n + ": " + where + ".", say: (it.loose ? "Try " + where + ", " : "Nearest " + it.n.toLowerCase() + ": " + where + ", ") + away + compass(here, b) + " of you." + looseTip + (it.spots || it.loose ? "" : " " + it.note), map: { you: here.rough ? Object.assign({ guess: true }, here) : here, stars: [b] }, ctx: "Soul's Offering item" };
+    return { show: it.n + ": " + where + ".", say: (it.loose ? "Try " + where + ", " : "Nearest " + it.n.toLowerCase() + ": " + where + ", ") + away + compass(here, b) + " of you." + looseTip + (it.spots || it.loose ? "" : " " + it.note), map: { you: here.rough ? Object.assign({ guess: true }, here) : here, stars: [b] }, ctx: "Soul's Offering item. " + metresLine(here, b) };
   }
   const names = it.spots ? "the Village and the Abandoned Housing Project" : (it.areas || []).slice(0, 3).join(", ").replace(/, ([^,]*)$/, " or $1");
   return { show: it.n + ": " + (it.spots ? "Village, Housing Project." : (it.areas || []).slice(0, 2).join(", ") + "."), say: it.n + ". Try " + names + "." + (it.loose ? " No fixed spot, it's a search." : it.spots || !it.note ? "" : " " + it.note) + " Tell me where you are and I'll find the nearest.", map: { you: null, stars: pts }, ctx: "Soul's Offering item" };
@@ -520,7 +520,7 @@ function craftAnswer(it, raw, psNow) {
   }
   const b = near(S.place, pts), dir = compass(S.place, b), close = dist(S.place, b) < 80 && !S.place.rough;
   if (close) return { show: low1 + ": search here.", say: "You're right by " + b.n + ". It's " + kinds + " loot, so search there for " + lowN + "." + arcTip, map: { you: S.place, stars: [b] } };
-  return { show: low1 + ": " + (b.spot ? b.n.replace(/^a /, "") : b.n) + ", " + dir + ".", say: low1 + turn + kinds + " loot. Nearest is " + b.n + ", " + (S.place.rough ? "" : far(S.place, b)) + dir + " of you." + arcTip, map: { you: S.place, stars: [b] } };
+  return { show: low1 + ": " + (b.spot ? b.n.replace(/^a /, "") : b.n) + ", " + dir + ".", say: low1 + turn + kinds + " loot. Nearest is " + b.n + ", " + whereIs(S.place, b) + "." + arcTip, ctx: metresLine(S.place, b), map: { you: S.place, stars: [b] } };
 }
 
 /* =================== state =================== */
@@ -623,6 +623,26 @@ function vary(list) { S.varyN = ((S.varyN || 0) + 1) % 997; return list[S.varyN 
 const metres = (a, b) => { const m = dist(a, b) / METRES; return m < 100 ? Math.max(10, Math.round(m / 10) * 10) : Math.round(m / 50) * 50; };
 /* "about 120 metres " on a map with a fitted scale; nothing on one without (direction only) */
 const far = (a, b) => METRES ? "about " + metres(a, b) + " metres " : "";
+/* landmark answers (8 Nov, Tony's raid): "west, by The Forest". Players read the map by its labels (in game and in the app,
+   both MetaForge's), so a named place beats a number. "in" within 50 m of the place, "by" within 120 m; never the place
+   you're at, nor one nearer you than the target. Nothing named close: a rough distance word. Metres stay on screen. */
+function landmark(b, from) {
+  if (!METRES || !AREAS.length) return null;
+  let best = null, bd = 1e9;
+  for (const a of AREAS) { if ((from && a.n === from.n) || a.n === b.n) continue; const d = dist(a, b) / METRES; if (d < bd) { bd = d; best = a; } }
+  if (!best || bd > 120 || (from && !from.rough && dist(from, best) < dist(best, b))) return null;
+  return { n: best.n, how: bd < 50 ? "in" : "by" };
+}
+const roughly = (a, b) => { const m = metres(a, b); return m < 100 ? "close" : m < 250 ? "a short run" : "a long way"; };
+/* "west, by The Forest" / "south, a long way" / "west" (no fitted scale, or you're only roughly placed) */
+function whereIs(from, b) {
+  const dir = compass(from, b), lm = landmark(b, from);
+  return dir + (lm ? ", " + lm.how + " " + lm.n : METRES && !from.rough ? ", " + roughly(from, b) : "");
+}
+/* the headline: the landmark when there is one ("by The Forest"), else the direction */
+const headWhere = (from, b) => { const lm = landmark(b, from); return lm ? lm.how + " " + lm.n : compass(from, b); };
+/* the small line under the headline: direction and metres, to check against the game's waypoint distance */
+const metresLine = (from, b) => { const d = compass(from, b); return cap1(d) + (METRES && !from.rough ? ", about " + metres(from, b) + " m" : "") + "."; };
 const nearestAreas = (p, n) => AREAS.slice().sort((a, b) => dist(p, a) - dist(p, b)).slice(0, n);
 /* quest names, forgiving of mishearing: exact words first, then near matches ("home to boost" = Home to Roost).
    A name of several words may be 2 letters off in total; a single long word 1; short single words must be exact. */
@@ -759,7 +779,7 @@ function stepAnswer(q, i, prefix) {
   if (st.enemy) {
     const pts = ENEMIES[st.enemy] || [];
     if (pts.length) {
-      if (you) { const b = near(you, pts); map = { you, stars: [b], others: pts.filter(p => p !== b) }; go = go || "Nearest " + st.enemy + " spawn is " + (you.rough ? "" : far(you, b)) + compass(you, b) + " of you."; }
+      if (you) { const b = near(you, pts); map = { you, stars: [b], others: pts.filter(p => p !== b) }; go = go || "Nearest " + cap1(st.enemy) + ": " + whereIs(you, b) + "."; }
       else { map = { you: null, stars: pts, others: [] }; go = go || pts.length + " " + st.enemy + " spawn points on " + MAP.name + "."; }
     } else go = go || "I have no " + st.enemy + " spawn points on " + MAP.name + ".";
   }
@@ -848,7 +868,7 @@ function answer(raw, opts) {
   }
   const a = answerOn(raw, opts);
   /* a map switch is said and shown, so it's never silent (8 Nov: Tony thought he was on Blue Gate) */
-  if (switched) { const pre = clash || (said ? MAP.name + ". " : "That's on " + MAP.name + ". "); a.say = pre + a.say; if (a.full) a.full = pre + a.full; if (!a.ctx) a.ctx = MAP.name; }
+  if (switched) { const pre = clash || (said ? MAP.name + ". " : "That's on " + MAP.name + ". "); a.say = pre + a.say; if (a.full) a.full = pre + a.full; a.ctx = a.ctx ? MAP.name + ". " + a.ctx : MAP.name; }
   return a;
 }
 /* the whole map, ready for where you are: say a place (or a side), or tap it */
@@ -956,7 +976,7 @@ function answerOn(raw, opts) {
     if (wantsExit || has(t, ["exit", "airshaft", "way out", "extract", "evac"])) {
       if (!exits.length) { const e = near(lp.p, EXITS); return { show: "No exit " + dq + ".", say: "No " + WAYS.exits.one + " to the " + dq + " of you. Nearest is " + e.n + ", " + compass(lp.p, e) + ".", map: { you: lp.p, stars: [e] } }; }
       const e = exits[0]; S.exitSaid = { n: e.n, at: Date.now() }; save();
-      return { show: e.n + ", " + compass(lp.p, e) + ".", say: e.n + ", " + (lp.p.rough ? "" : far(lp.p, e)) + compass(lp.p, e) + ".", map: { you: lp.p, stars: [e] } };
+      return { show: e.n + ", " + compass(lp.p, e) + ".", say: e.n + ", " + compass(lp.p, e) + (lp.p.rough || !METRES ? "" : ", " + roughly(lp.p, e)) + ".", ctx: metresLine(lp.p, e), map: { you: lp.p, stars: [e] } };
     }
     if (!areas.length && !exits.length) {
       const e = near(lp.p, EXITS);
@@ -964,7 +984,7 @@ function answerOn(raw, opts) {
     }
     const picks = areas.slice(0, 2);
     const ex = exits[0] ? " " + exits[0].n + " is that way too." : "";
-    return { show: (picks[0] || exits[0]).n + ", " + compass(lp.p, picks[0] || exits[0]) + ".", say: picks.map(a => a.n + ", " + (lp.p.rough ? "" : far(lp.p, a)) + compass(lp.p, a)).join(". ") + "." + ex, map: { you: lp.p, stars: picks.concat(exits.slice(0, 1)) } };
+    return { show: (picks[0] || exits[0]).n + ", " + compass(lp.p, picks[0] || exits[0]) + ".", say: picks.map(a => a.n + ", " + compass(lp.p, a) + (lp.p.rough || !METRES ? "" : ", " + roughly(lp.p, a))).join(". ") + "." + ex, map: { you: lp.p, stars: picks.concat(exits.slice(0, 1)) } };
   }
 
 
@@ -996,8 +1016,8 @@ function answerOn(raw, opts) {
     const hb = HATCHES.length ? near(lp.p, HATCHES) : null, hatchTip = hb && !(wantsOther && S.hatchTold) && dist(lp.p, hb) < dist(lp.p, best) * 0.7 ? " " + hb.n + " is closer, " + compass(lp.p, hb) + ", if you've got a hatch key." : "";
     if (hatchTip) { S.hatchTold = true; save(); }
     const lead = lp.p.rough ? vary(["Your best bet is ", "Head for ", "From " + lp.p.n + ", try "]) : "";
-    const how = lp.p.rough ? ". Head " + dir + "." : ", " + far(lp.p, best) + dir + ".";
-    return { show: (rush ? "Move. " : "") + best.n + ", " + dir + ".", say: rush + (alt ? alt + best.n : lead ? lead + best.n : best.n) + how + hatchTip, map: { you: lp.p.rough ? Object.assign({ guess: true }, lp.p) : lp.p, stars: hatchTip ? [best, hb] : [best] } };
+    const how = lp.p.rough ? ". Head " + dir + "." : ", " + dir + (METRES ? ", " + roughly(lp.p, best) : "") + ".";
+    return { show: (rush ? "Move. " : "") + best.n + ", " + dir + ".", say: rush + (alt ? alt + best.n : lead ? lead + best.n : best.n) + how + hatchTip, ctx: metresLine(lp.p, best), map: { you: lp.p.rough ? Object.assign({ guess: true }, lp.p) : lp.p, stars: hatchTip ? [best, hb] : [best] } };
   }
   if (has(t, ["hatch"]) && !HATCHES.length) return { show: "No hatches here.", say: MAP.name + " has no Raider Hatches. Nearest way out is " + (likelyPos() ? near(likelyPos().p, EXITS).n + ", " + compass(likelyPos().p, near(likelyPos().p, EXITS)) + "." : "one of the " + WAYS.exits.count + " " + WAYS.exits.many + ", marked."), map: { you: likelyPos() ? likelyPos().p : null, stars: likelyPos() ? [near(likelyPos().p, EXITS)] : EXITS } };
   if (has(t, ["hatch"])) {
@@ -1027,7 +1047,7 @@ function answerOn(raw, opts) {
     if (wantsNearest && psNow === "stale") return askStill(raw);
     if (wantsNearest && psNow === "none") return askWhere(raw);
     const E = enemy.charAt(0).toUpperCase() + enemy.slice(1);
-    if (psNow === "fresh") { const b = near(S.place, pts); const dir = compass(S.place, b); return { show: "Nearest " + E + ": " + dir + ".", say: "The nearest " + enemy + " spawn is " + (S.place.rough ? "" : far(S.place, b)) + dir + " of you.", map: { you: S.place, stars: [b] } }; }
+    if (psNow === "fresh") { const b = near(S.place, pts); const dir = compass(S.place, b); return { show: "Nearest " + E + ": " + headWhere(S.place, b) + ".", say: "Nearest " + E + ": " + whereIs(S.place, b) + ".", ctx: metresLine(S.place, b), map: { you: S.place, stars: [b] } }; }
     /* lots of spawns and no location: ask first rather than fill the map with markers (5 Nov) */
     if (pts.length > 8 && psNow !== "fresh" && !has(t, ["show", "location", " all ", " every", "spawns", "where are the", " list", "mark"])) { const q = askWhere(raw); q.show = pts.length + " " + E + " spawns. Where are you?"; q.say = "There are " + pts.length + " " + enemy + " spawn points on " + MAP.name + ". Where are you? I'll find the nearest."; return q; }
     return { show: pts.length + " " + E + " spawns, marked.", say: "There are " + pts.length + " " + enemy + " spawn points on " + MAP.name + ". They're marked on the map. Tell me where you are and I'll find the nearest.", map: { you: null, stars: pts } };
@@ -1041,8 +1061,8 @@ function answerOn(raw, opts) {
   if (placeMention && (goTo || has(t, ["where"]))) {
     const P1 = placeMention.n.charAt(0).toUpperCase() + placeMention.n.slice(1);
     const dir = psNow === "fresh" ? compass(S.place, placeMention) : "";
-    const away = dir && !S.place.rough ? far(S.place, placeMention) : "";
-    return { show: P1 + (dir ? ", " + dir + "." : "."), say: P1 + (dir ? " is " + away + dir + " of you." : " is marked on the map." + (placeMention.pos ? " It's in the " + placeMention.pos + " of the map." : "")), map: { you: psNow === "fresh" ? S.place : null, stars: [placeMention] } };
+    const away = dir && !S.place.rough && METRES ? ", " + roughly(S.place, placeMention) : "";
+    return { show: P1 + (dir ? ", " + dir + "." : "."), ctx: dir ? metresLine(S.place, placeMention) : "", say: P1 + (dir ? " is " + dir + away + "." : " is marked on the map." + (placeMention.pos ? " It's in the " + placeMention.pos + " of the map." : "")), map: { you: psNow === "fresh" ? S.place : null, stars: [placeMention] } };
   }
   /* enemies in general (8 Nov, Tony's raid): small ones aren't tracked; "nearest enemy" means the nearest big ARC of any kind */
   if (/\b(low level|low-level|lower level|small|smaller|little|weak|weaker|tiny|easy)\b.*\b(enem(y|ies)|arcs?|bots?|robots?)\b/.test(t))
@@ -1054,10 +1074,9 @@ function answerOn(raw, opts) {
       if (psNow !== "fresh") return askWhere(raw);
       let best = null; for (const [k, pts] of all) { const b = near(S.place, pts), d = dist(S.place, b); if (!best || d < best.d) best = { k, b, d }; }
       const dir = compass(S.place, best.b);
-      return { show: "Nearest ARC: " + cap1(best.k) + ", " + dir + ".", say: "The nearest big ARC is a " + best.k + " spawn, " + (S.place.rough ? "" : far(S.place, best.b)) + dir + " of you.", map: { you: S.place, stars: [best.b] } };
+      return { show: "Nearest ARC: " + cap1(best.k) + ", " + dir + ".", say: "Nearest big ARC: a " + best.k + ", " + whereIs(S.place, best.b) + ".", ctx: metresLine(S.place, best.b), map: { you: S.place, stars: [best.b] } };
     }
   }
-  if (has(t, ["grandioso", "launch tower"])) return { show: readyNames() + " only, for now.", say: "That's on another map. I only have " + readyNames() + " so far." };
 
   /* didn't understand: the screen just asks again and the voice says it didn't catch that; no "Heard: ..." line (5 Nov, Tony).
      The quest isn't dropped: the full reminder once says the step; after that, short and varied. It comes back after five quiet minutes. */
