@@ -25,6 +25,7 @@ TL = json.load(open(os.path.join(FR, "type-timeline.json")))
 ENC = ["-r", "30", "-c:v", "libx264", "-crf", "18", "-preset", "veryfast", "-pix_fmt", "yuv420p"]
 def run(a): subprocess.run(["ffmpeg", "-y", "-loglevel", "error"] + a, check=True)
 MUSIC, MDROP = "music-jonasblakewood-synthwave-retro-wave-618632.mp3", 7.93
+if os.environ.get("MUSIC") == "mountain": MUSIC, MDROP = "music-the_mountain-synthwave-593074.mp3", float(os.environ.get("MDROP", "0"))  # Tony, 8 Nov
 os.makedirs(OUT, exist_ok=True)
 
 def build(VER, f, name, W, H):
@@ -74,7 +75,7 @@ def build(VER, f, name, W, H):
     else: ins += ["-i", os.path.join(A, MUSIC)]; mdel = int(-lead * 1000)
     fl.append("[%d]aresample=48000,adelay=%d|%d,volume=0.18,afade=t=in:st=0:d=0.6,afade=t=out:st=%.2f:d=1.6[mu]" % (mi, mdel, mdel, total - 1.6))
     fl.append("".join("[v%d]" % i for i in range(1, len(voices) + 1)) + "[mu]amix=inputs=%d:normalize=0,alimiter=limit=0.95,apad,atrim=0:%.2f[a]" % (len(voices) + 1, total))
-    tmp = os.path.join(OUT, "tmp-b.mp4"); dst = os.path.join(OUT, "relay-trailer-%s-%s.mp4" % (VER, name))
+    tmp = os.path.join(OUT, "tmp-b.mp4"); dst = os.path.join(OUT, "relay-trailer-%s-%s%s.mp4" % (VER, name, "-mountain" if os.environ.get("MUSIC") == "mountain" else ""))
     run(ins + ["-filter_complex", ";".join(fl), "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-shortest", tmp])
     os.replace(tmp, dst)
     for x in [p for _, (p, _) in seq] + [V, lst]: os.remove(x)

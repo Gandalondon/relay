@@ -91,7 +91,13 @@ function fitType(){
     const lines=t=>new Set([...t.querySelectorAll('span')].map(w=>Math.round(w.getBoundingClientRect().top))).size;
     /* two-line rule (Tony, 8 Nov): the question and the answer are never more than two lines; Ask. Find. Get out. is three by design */
     const ok=ts.every((t,i)=>[...t.querySelectorAll('span')].every(w=>w.getBoundingClientRect().right<=edge)&&t.getBoundingClientRect().height<=maxH&&(i==2||lines(t)<=2));
-    if(ok){ TOP=Math.round((H-Math.max(...ts.map(t=>t.getBoundingClientRect().height)))/2); window.BIG=px; break; }
+    if(ok){ TOP=Math.round((H-Math.max(...ts.map(t=>t.getBoundingClientRect().height)))/2); window.BIG=px;
+      /* 16:9 (Tony, 8 Nov evening): the end frame's ink, from Ask.'s cap top to Get out.'s baseline, is centred on the phone
+         beside it (the phone sits 30 px above the frame's middle); every block shares that top line */
+      if(F=='h'){ const c=document.createElement('canvas').getContext('2d'); c.font='700 '+px+'px IT'; const m=c.measureText('A'), L=px*.98,
+        fa=m.fontBoundingBoxAscent, fd=m.fontBoundingBoxDescent, cap=m.actualBoundingBoxAscent, half=(L-(fa+fd))/2;
+        TOP=Math.round(H/2-30-(half+fa+L-cap/2)); }
+      break; }
   }
   st.innerHTML=''; built='';
 }
@@ -115,7 +121,10 @@ function build(scene){ if(built==scene) return; built=scene;
   if(scene=='end') st.innerHTML='<div class="lock"><svg viewBox="0 0 72 72">'+ARCS.map(d=>'<path d="'+d+'" pathLength="1" stroke-dasharray="1"/>').join('')+'</svg><div class="w nm">RELAY</div><div class="w url">getarcrelay.app</div></div>'+BADGE+legalEnd;
   const ts=st.querySelectorAll('.t');
   ts.forEach(t=>{ t.style.right='var(--tg)';
-    if(t.classList.contains('hey')){t.style.top='50%';t.style.transform=F=='h'?'translateY(-52%)':'translateY(-60%)';} else t.style.top=((scene=='afg2'||scene=='afg3')&&F=='v'?200:TOP)+'px'; });  /* 9:16 B2: words up top, the phone under them */
+    if(t.classList.contains('hey')&&F=='h'){ /* 16:9 (Tony, 8 Nov evening): Hey Relay's cap top on the same line as every other block's */
+      const hp=parseFloat(getComputedStyle(t).fontSize), c=document.createElement('canvas').getContext('2d'); c.font='700 100px IT'; const m=c.measureText('H'), k=((98-(m.fontBoundingBoxAscent+m.fontBoundingBoxDescent))/2+m.fontBoundingBoxAscent-m.actualBoundingBoxAscent)/100;
+      t.style.top=(TOP+(window.BIG-hp)*k)+'px'; t.style.transform='none'; }
+    else if(t.classList.contains('hey')){t.style.top='50%';t.style.transform=F=='h'?'translateY(-52%)':'translateY(-60%)';} else t.style.top=((scene=='afg2'||scene=='afg3')&&F=='v'?200:TOP)+'px'; });  /* 9:16 B2: words up top, the phone under them */
   if(scene=='phone'){ const el=document.getElementById('ph'); el.style.setProperty('--pw',getComputedStyle(st).getPropertyValue('--bigph')); }
   if(scene=='end') layLock();
   window.INKX=alignLeft(scene);
