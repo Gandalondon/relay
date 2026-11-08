@@ -83,6 +83,7 @@ Open testing plan (6 Nov, for when Tony says we're ready; not yet):
    - [ ] Fresh held-out set (tests/heldout3.js) from Tony's raid notes, scored cold before any fixes.
 
 ## Where things are
+- Relay board (8 Nov): every Relay artifact (hero mock-ups, app, brand, early days) grouped and dated: https://claude.ai/artifact/AP24azfqV7rMwvDem6Bnca . Add new Relay artifacts to it.
 - Site copy (5 Nov): Google Doc "Relay" in Drive Claude/Relay, every page of getarcrelay.app: https://docs.google.com/document/d/1hS12w_3GLEDgG62_lDrAJV3aB_Nl2Je9P-BKeoo7MrU/edit . Tony edits there; copy changes go from the doc to the site, and any wording changed on the site goes back into the doc. Site only, not the app.
 - Repo: github.com/Gandalondon/relay (was spottr, then arcrelay; GitHub forwards the old addresses), branch main. Mac copy: `~/Relay` (git clone; pull after each push).
 - App: `www/index.html` (whole app), native plugins in `android/app/src/main/java/app/getarcrelay/`. Tests: `node tests/run.js` (understanding, 175/175; `SET=heldout`, `SET=heldout2`, `SET=adversarial` for the extra sets) and `node tests/maps.js` (every map's markers well formed and inside its bounds).
