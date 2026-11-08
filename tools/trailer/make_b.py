@@ -42,8 +42,11 @@ def build(VER, f, name, W, H):
     V = os.path.join(OUT, "b-v.mp4"); run(["-f", "concat", "-safe", "0", "-i", lst, "-c", "copy", V])
     Vt = TL["V"]
     url_at = at["end"] + Vt["url"] if VER == "b1" else at["afg"] + Vt["url2"]
-    voices = [("hey.wav", at["hey"] + Vt["hey"]), ("ask.wav", at["ask"] + Vt["ask"]), ("maya.wav", at["answer"] + Vt["maya"]),
-              ("afg.wav", at["afg"] + Vt["afg"]), ("url.wav", url_at)]
+    voices = [("hey.wav", at["hey"] + Vt["hey"]), ("ask.wav", at["ask"] + Vt["ask"]), ("maya.wav", at["answer"] + Vt["maya"])]
+    if VER == "b1": voices += [("afg.wav", at["afg"] + Vt["afg"]), ("url.wav", url_at)]
+    else:  # B2: Maya's Ask. / Find. / Get out. cut from afg.wav and spaced to the beats; each placed so its first sound lands on its word
+        AF = TL["AF"]; ON = {"afg-ask.wav": .12, "afg-find.wav": .10, "afg-getout.wav": .065, "url.wav": .29}
+        voices += [(w, at["afg"] + AF[k] - ON[w]) for w, k in (("afg-ask.wav", "ask"), ("afg-find.wav", "find"), ("afg-getout.wav", "out"), ("url.wav", "url"))]
     ins, fl = ["-i", V], []
     for i, (w, s) in enumerate(voices, 1):
         ins += ["-i", os.path.join(A, w)]; d = int(s * 1000); fl.append("[%d]aresample=48000,adelay=%d|%d,volume=1.8[v%d]" % (i, d, d, i))

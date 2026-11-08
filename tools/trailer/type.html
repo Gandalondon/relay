@@ -129,20 +129,20 @@ function layLock(){
   LK={centre:(W-mk)/2, left:x0};
 }
 /* scene lengths (s). phone: two beats of the music (72 bpm), hard cut in on the drop and out on the beat */
-window.TL={hey:2.2, ask:3.3, phone:1.66, answer:3.3, afg:2.3, afg2:5.0, legal:1/30, end:4.4, V:{hey:.25, ask:.25, maya:.2, afg:-.07, url:1.25, url2:1.7}};  /* afg -0.07: Ask is heard as the overlay finishes fading in (0.2 s) */
+window.TL={hey:2.2, ask:3.3, phone:1.66, answer:3.3, afg:2.3, afg2:6.2, legal:1/30, end:4.4, V:{hey:.25, ask:.25, maya:.2, afg:-.07, url:1.25, url2:2.4},
+  AF:{ask:.2, find:.9, out:1.6, url:2.4}};  /* B2 end frame beats (Tony, 8 Nov): Ask. with the phone / Find. / Get out. / the address; then a hold */  /* afg -0.07: Ask is heard as the overlay finishes fading in (0.2 s) */
 window.setT=function(scene,t){
   build(scene); const V=TL.V, ts=st.querySelectorAll('.t');
   if(scene=='hey') show(ts[0],T.hey.words,V.hey,t);
   if(scene=='ask') show(ts[0],T.ask.words,V.ask,t);
   if(scene=='afg') ts[0].querySelectorAll('span').forEach(s=>s.classList.add('on'));  /* B1: all at once, with the overlay */
-  if(scene=='afg2'){ const w=T.afg.words; show(ts[0],[w[0],w[1],w[2],[w[3][0],w[2][1]]],V.afg,t);  /* Ask. / Find. / Get out. as three beats */ st.querySelector('.scrim').style.opacity=clamp(t/.2,0,1); }  /* B2: word by word with Maya, punchy */
+  if(scene=='afg2'){ const A=TL.AF; show(ts[0],[['Ask.',A.ask],['Find.',A.find],['Get',A.out],['out.',A.out]],0,t);  /* Ask. / Find. / Get out. with a beat between */ st.querySelector('.scrim').style.opacity=clamp(t/.2,0,1); }  /* B2: word by word with Maya, punchy */
   if(scene=='afg2'){ /* B2 end frame: the phone straight on at the right, then the address under the words; 0.2 s fades */
     const ph=document.getElementById('ph'), pw=parseFloat(getComputedStyle(ph).getPropertyValue('--pw')), phH=pw*844/390, u=document.getElementById('url2'), tb=ts[0].getBoundingClientRect();
     if(F=='h'){ ph.style.left=(W-150-pw)+'px'; ph.style.top=((H-phH)/2-30)+'px'; } else { ph.style.left=((W-pw)/2)+'px'; ph.style.top=(H-phH-200)+'px'; }
-    const OUT=V.afg+T.afg.words[3][1];   /* the final "out": the phone and the address arrive with it */
-    ph.style.opacity=t>=OUT?1:0;   /* snaps in, like the words */
+    ph.style.opacity=t>=TL.AF.ask?1:0;   /* the phone snaps in with Ask. */
     const us=parseFloat(getComputedStyle(st).getPropertyValue('--url2'));
-    u.style.left=(INKX-inkL('getarcrelay.app','700 '+us+'px IT'))+'px'; u.style.top=(tb.bottom+us*.6)+'px'; u.style.opacity=t>=OUT?1:0; }
+    u.style.left=(INKX-inkL('getarcrelay.app','700 '+us+'px IT'))+'px'; u.style.top=(tb.bottom+us*.6)+'px'; u.style.opacity=t>=TL.AF.url?1:0; }  /* the address snaps in as Maya says it */
   if(scene=='answer') show(ts[0],T.maya.words,V.maya,t);
   if(scene=='phone'){ /* nearly flat and big, cropped by the frame: the answer's headline and the map, a slow push in */
     const pw=parseFloat(getComputedStyle(st).getPropertyValue('--bigph')), k=t/TL.phone;
