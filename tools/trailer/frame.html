@@ -1,0 +1,60 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:IT;font-weight:500;src:url(../../www/fonts/inter-tight-500.woff2)}
+@font-face{font-family:IT;font-weight:700;src:url(../../www/fonts/inter-tight-700.woff2)}
+:root{--ch:#1C1E22;--panel:#26282D;--cream:#EEE8DC;--amber:#F2B33D}
+*{margin:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:var(--ch);color:var(--cream);font-family:IT,sans-serif;overflow:hidden}
+.stage{position:absolute;inset:0}
+/* game footage stand-in: reads as footage, labelled so nobody mistakes it */
+.game{position:absolute;inset:0;background:radial-gradient(120% 90% at 30% 35%,#4a4f48 0%,#2c302d 45%,#17191b 100%)}
+.game::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.025) 0 2px,transparent 2px 42px)}
+.game .tag{position:absolute;left:var(--g);top:var(--g);font:500 var(--tag)/1.3 IT;color:rgba(238,232,220,.55);letter-spacing:.01em;max-width:60%}
+.game .tag b{display:block;font-weight:700;color:rgba(238,232,220,.8)}
+.scrim{position:absolute;inset:0;background:linear-gradient(90deg,rgba(28,30,34,.78) 0%,rgba(28,30,34,.35) 55%,rgba(28,30,34,0) 100%)}
+.v .scrim{background:linear-gradient(0deg,rgba(28,30,34,.85) 0%,rgba(28,30,34,.4) 55%,rgba(28,30,34,0) 100%)}
+.phone{position:absolute;border-radius:calc(var(--ph)*.06);overflow:hidden;box-shadow:0 0 0 2px var(--panel),0 30px 80px rgba(0,0,0,.45)}
+.phone img{display:block;height:100%;width:auto}
+.cap{position:absolute;font:500 var(--cap)/1.3 IT;letter-spacing:.01em;text-wrap:pretty}
+.cap small{display:block;font:500 calc(var(--cap)*.6)/1 IT;color:var(--amber);margin-bottom:.6em;letter-spacing:.04em;text-transform:uppercase}
+.big{position:absolute;font:700 var(--big)/.98 IT;letter-spacing:-.01em}
+.big div{opacity:0}.big div.on{opacity:1}
+.lock{position:absolute;display:flex;align-items:center;gap:calc(var(--mk)*.3)}
+.lock svg{width:var(--mk);height:var(--mk);overflow:hidden}
+.lock path{fill:none;stroke:var(--amber);stroke-width:10}
+.lock b{font:700 calc(var(--mk)*.9)/1 IT;letter-spacing:-.01em}
+.url{position:absolute;font:500 var(--url)/1 IT;color:var(--cream);letter-spacing:.01em}
+/* 16:9 */
+.h{--g:96px;--tag:26px;--ph:900px;--cap:46px;--big:220px;--mk:120px;--url:44px}
+.h .phone{height:var(--ph);top:90px;left:calc(25% - var(--ph)*.2309)}
+.h .cap{left:50%;right:var(--g);top:50%;transform:translateY(-50%)}
+.h .big{left:var(--g);top:50%;transform:translateY(-50%)}
+.h .lock{left:var(--g);top:calc(50% - var(--mk)*.75)}
+.h .url{left:var(--g);top:calc(50% + var(--mk)*.6)}
+.h .solo .phone{left:calc(50% - var(--ph)*.2309)}
+/* 9:16 */
+.v{--g:72px;--tag:30px;--ph:1240px;--cap:52px;--big:210px;--mk:130px;--url:48px}
+.v .phone{height:var(--ph);top:150px;left:calc(50% - var(--ph)*.2309)}
+.v .cap{left:var(--g);right:var(--g);top:1480px}
+.v .big{left:var(--g);bottom:300px}
+.v .lock{left:var(--g);bottom:340px}
+.v .url{left:var(--g);bottom:230px}
+</style></head><body><div class="stage" id="st"></div>
+<script>
+const q=new URLSearchParams(location.search), F=q.get('f'), S=q.get('s'), st=document.getElementById('st');
+st.classList.add(F);
+const LOGO='<svg viewBox="0 0 72 72"><path d="M -10 12 H 14 A 46 46 0 0 1 60 58 V 82"/><path d="M -10 28 H 14 A 30 30 0 0 1 44 58 V 82"/><path d="M -10 44 H 14 A 14 14 0 0 1 28 58 V 82"/></svg>';
+const game=(t,s)=>'<div class="game"><div class="tag"><b>'+t+'</b>'+s+'</div></div>';
+const phone=(img,cap,who)=>'<div class="phone"><img src="'+img+'"></div>'+(cap?'<div class="cap"><small>'+who+'</small>'+cap+'</div>':'');
+const words=n=>'<div class="big">'+['Ask.','Find.','Get out.'].map((w,i)=>'<div class="'+(i<n?'on':'')+'">'+w+'</div>').join('')+'</div>';
+const runbg=game('Game footage: running to the pin','Placeholder for Tony’s PS5 clip')+'<div class="scrim"></div>';
+const SC={
+ home:'<div class="solo">'+phone('phone-home.png')+'</div>',
+ load:game('Game footage: loading in','Placeholder for Tony’s PS5 clip. Then open the map.'),
+ ask:phone('phone-listening.png','Hey Relay, I’m at the Village. Where’s the nearest Rocketeer?','You'),
+ answer:phone('phone-answer.png','The nearest rocketeer spawn is about 90&nbsp;metres west of you.','Relay'),
+ pin:game('Game footage: pin and run','Placeholder for Tony’s PS5 clip. Pin where Relay showed, close the map, run.'),
+ w1:runbg+words(1), w2:runbg+words(2), w3:runbg+words(3),
+ end:runbg+'<div class="lock">'+LOGO+'<b>Relay</b></div><div class="url">getarcrelay.app</div>',
+};
+st.innerHTML=SC[S];
+</script></body></html>
