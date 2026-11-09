@@ -47,7 +47,8 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 - Pendola raid bug (Tony): "I'm at the Emperor, nearest Bastion" started Belly of the Beast (its alias "emperor"). Now a quest alias that is also a place on the map only counts with quest, step or mission said. Emperor nicknames added: emperor, crashed emperor, crashed arc, crashed big arc, fallen arc, the crash. Misheard Bastion: bastian, bastien, baston, bastyon.
 - Beach Bar fixed (longest place name wins, ignoring a leading "the"). "I can't go south-east" on its own is now an exit ask (nearest way out, not that way).
 - Tests 202/202 (8 new), all held-out sets pass.
-- Open question for Tony: on Pendola Pass, "nearest raider cache" only counts the 18 normal caches, not the 89 frozen ones ("nearest frozen cache" finds those). Should a raider cache ask include frozen ones there?
+- Frozen caches (Pendola only in our data): kept separate from raider caches (normal ones are fixed; 13 frozen caches move each raid over ~98 spots, better loot, breach to open). Frozen answers now say "Nearest possible frozen cache spot ... They move each raid, so it may be empty." Later, if testers want it: the player says "Cold Snap" and Relay adds that condition's frozen caches on the other maps for that raid (needs the spots; check MetaForge first, ArcTracker lists 47 Dam, 34 Buried City, 32 Spaceport, 24 Blue Gate). Relay can't see the map condition itself.
+- Packaged for Tony to test in his browser: one self-contained file (relay-test-9nov.html, built from www/index.html with every data file, font and image inlined). Not pushed: Tony said leave it there for now.
 - Coverage per map is from MetaForge's data, not from which map came first: Stella Montis (underground) has no raider caches, probes or couriers; Pendola Pass has no hatches and mostly frozen caches; Riven Tides is the smallest (18 places, 2 exits).
 
 ## Share Relay page: complete (9 Nov, Tony: no changes needed)

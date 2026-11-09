@@ -450,6 +450,7 @@ function lootAnswer(L, raw, psNow) {
   if (psNow !== "fresh") { const q = askWhere(raw); q.show = N + ": where are you?"; q.say = "I know " + pts.length + " " + (L.pl || L.n) + " spots on " + MAP.name + ". Where are you? I'll find the nearest."; return q; }
   const open = pts.filter(p => !p.lock), b = near(S.place, open.length ? open : pts), dir = compass(S.place, b);
   const lockTip = b.lock ? " It's behind a locked door." : "";
+  if (L.maybe) return { show: "Possible " + L.n + ": " + headWhere(S.place, b) + ".", say: "Nearest possible " + L.n + " spot: " + whereIs(S.place, b) + ". They move each raid, so it may be empty." + lockTip, ctx: metresLine(S.place, b), map: { you: S.place, stars: [b] } };
   return { show: "Nearest " + L.n + ": " + headWhere(S.place, b) + ".", say: "Nearest " + L.n + ": " + whereIs(S.place, b) + "." + lockTip, ctx: metresLine(S.place, b), map: { you: S.place, stars: [b] } };
 }
 function itemAnswer(it) {
@@ -717,7 +718,7 @@ const LOOT = [
   { k: "roots", n: "patch of roots", pl: "roots", al: ["roots", "root"] },
   { k: "fertilizer", n: "fertiliser", al: ["fertilizer", "fertiliser", "fertilisers", "fertilizers"] },
   { k: "raider_cache", n: "raider cache", al: ["raider cache", "raider caches", "raider stash", "cache", "caches"] },
-  { k: "frozen_raider_cache", n: "frozen cache", al: ["frozen cache", "frozen raider cache", "frozen caches"] },
+  { k: "frozen_raider_cache", n: "frozen cache", al: ["frozen cache", "frozen raider cache", "frozen caches"], maybe: true },  /* 13 per raid over ~98 spots: a spot, not a sure thing (9 Nov) */
   { k: "arc_probe", n: "ARC probe", al: ["arc probe", "arc probes", "probe", "probes", "crashed probe"] },
   { k: "arc_courier", n: "ARC courier", al: ["arc courier", "arc couriers", "courier", "couriers"] },
   { k: "rocketeer_husk", n: "rocketeer husk", al: ["rocketeer husk", "rocketeer husks"] },
