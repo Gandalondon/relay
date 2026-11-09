@@ -557,7 +557,8 @@ const has = (t, words) => words.some(w => t.includes(w));
 const norm = raw => " " + raw.toLowerCase().replace(/\b(hey|hi|ok|okay)?\s*(relay|really|re lay|spotter|spottr)\b[,]?/g, " ").replace(/[’]/g, "'").replace(/[^a-z0-9' ]/g, " ").replace(/\s+/g, " ") + " ";
 function findPlace(t) {
   let best = null, len = 0;
-  for (const p of PLACES) for (const a of p.al) if (a.length > len && t.includes(" " + a + " ")) { best = p; len = a.length; }
+  /* longest name wins, not counting a leading "the": "the beach bar" is the Beach Bar, not "the beach" (Azzurro Beach, 9 Nov) */
+  for (const p of PLACES) for (const a of p.al) { const l = a.replace(/^the /, "").length; if (l > len && t.includes(" " + a + " ")) { best = p; len = l; } }
   if (best) return best;
   for (const p of PLACES) for (const a of p.al) if (a.length >= 6 && fuzzyHas(t, a)) return p;  /* misheard: "pilgrams peak" */
   return null;
@@ -675,7 +676,11 @@ function fuzzyHas(t, alias) {
   }
   return false;
 }
-function findQuest(t) { return QUESTS.find(q => q.al.some(a => t.includes(a))) || QUESTS.find(q => q.al.some(a => fuzzyHas(t, a))); }
+/* a quest alias that is also a place on this map ("emperor" on Pendola Pass) only means the quest when the player says quest
+   or step: "I'm at the Emperor, nearest Bastion" is a place and an ask, not Belly of the Beast (Tony's raid, 9 Nov) */
+const placeWord = a => PLACES.some(p => (p.al || []).some(x => x === a || x.includes(a)));  /* "emperor" is part of "fallen emperor"; "building a library" is a quest, not the Library */
+const questOk = (t, a) => !placeWord(a) || /\b(quest|step|mission)\b/.test(t);
+function findQuest(t) { return QUESTS.find(q => q.al.some(a => t.includes(a) && questOk(t, a))) || QUESTS.find(q => q.al.some(a => fuzzyHas(t, a) && questOk(t, a))); }
 const placeAge = () => S.placeAt ? (Date.now() - S.placeAt) / 60000 : Infinity;
 function posState() { if (!S.place) return "none"; const a = placeAge(); return a < 2 ? "fresh" : a <= 10 ? "stale" : "none"; }
 /* raid memory: where you probably are, when you haven't said. Confirmed beats guessed; a guess is always said out loud as a guess.
@@ -691,7 +696,7 @@ function likelyPos() {
   return cands[0] || null;
 }
 /* ARC by name on any map (6 Nov): which maps have each one, misheard names, and the small ARC Relay deliberately doesn't track */
-const ARC_AL = { "rocket ear": "rocketeer", "rocket ears": "rocketeer", "rocketeers": "rocketeer", "bombadier": "bombardier", "bombadiers": "bombardier", "vaporiser": "vaporizer", "vaporisers": "vaporizer", "leapers": "leaper", "skulkers": "skulker", "bullies": "bully", "hydras": "hydra", "matriarchs": "matriarch", "queens": "queen", "comets": "comet", "turbines": "turbine", "bisons": "bison", "shredders": "shredder", "bastions": "bastion", "sentinels": "sentinel" };
+const ARC_AL = { "bastian": "bastion", "bastien": "bastion", "baston": "bastion", "bastions": "bastion", "bastyon": "bastion", "bastien's": "bastion", "rocket ear": "rocketeer", "rocket ears": "rocketeer", "rocketeers": "rocketeer", "bombadier": "bombardier", "bombadiers": "bombardier", "vaporiser": "vaporizer", "vaporisers": "vaporizer", "leapers": "leaper", "skulkers": "skulker", "bullies": "bully", "hydras": "hydra", "matriarchs": "matriarch", "queens": "queen", "comets": "comet", "turbines": "turbine", "bisons": "bison", "shredders": "shredder", "bastions": "bastion", "sentinels": "sentinel" };
 const SMALL_ARC = { wasp: "Wasps", hornet: "Hornets", tick: "Ticks", pop: "Pops", snitch: "Snitches", turret: "Turrets", rollbot: "Rollbots", fireball: "Fireballs", firefly: "Fireflies", fireflies: "Fireflies", snitches: "Snitches" };
 /* misheard and plural ARC names to the singular the map data uses: "rocket ears", "bombardiers" */
 const arcIn = t => { const known = new Set(ALL_ARC()); return t.replace(/\brocket ears?\b/g, "rocketeer").replace(/\b\w+\b/g, w => ARC_AL[w] || (/s$/.test(w) && known.has(w.slice(0, -1)) ? w.slice(0, -1) : w)); };
@@ -984,8 +989,10 @@ function answerOn(raw, opts) {
   }
   /* "can't go that way", "too many enemies", "another one": the last exit (and that direction) is out, give the next best */
   const OTHER = ["another", "different", "other one", "next one", "next nearest", "next closest", "second nearest", "second closest", "other way", "something else", "somewhere else", "alternative", "can't go", "cant go", "can not go", "cannot go", "too many", "blocked", "not that one", "not that way", "too dangerous", "too hot", "swarming", "camped", "no good", "next closest", "next nearest", "second closest", "plan b", "backup", "closed", "shut", "locked", "not open", "isn't open", "isnt open", "not working"];
-  const wantsOther = has(t, OTHER) && (has(t, ["exit", "extract", "evac", "airshaft", "way out", "way", "one", "point"]) || (S.exitSaid && Date.now() - S.exitSaid.at < 10 * 60000));
   const saidDir = findCompass(t);
+  /* "I can't go south-east" said on its own, with nothing else on the go, is an exit ask: the nearest way out not that way (9 Nov) */
+  const cantDir = !!saidDir && has(t, ["can't go", "cant go", "can not go", "cannot go"]) && !S.want;
+  const wantsOther = cantDir || has(t, OTHER) && (has(t, ["exit", "extract", "evac", "airshaft", "way out", "way", "one", "point"]) || (S.exitSaid && Date.now() - S.exitSaid.at < 10 * 60000));
   if (wantsOther && S.exitSaid) {
     S.avoid = Array.from(new Set((S.avoid || []).concat([S.exitSaid.n]))); save();
   }
@@ -996,7 +1003,7 @@ function answerOn(raw, opts) {
   const EXIT_WORDS = ["extract", "exit", "way out", "get out", "get me out", "out of here", "outta here", "leave", "airshaft", "evac", "escape", "way home", "go home", "head home", "get home", "home time", " bail", "bug out", "get away"];  /* 6 Nov: "quickest way home", "need to bail" */
   const help = /^\s*(help|help me|help help|mayday|sos)\s*$/.test(t);  /* a lone "help" mid-raid means get me out */
   const tx = t.replace(/\bhome to r\w+/g, " ");  /* "go home to roost" is the quest, not the way home (6 Nov) */
-  const wantsExit = (help || has(tx, EXIT_WORDS) || (wantsOther && S.exitSaid)) && !has(t, [" step "]);
+  const wantsExit = (help || cantDir || has(tx, EXIT_WORDS) || (wantsOther && S.exitSaid)) && !has(t, [" step "]);
   const stepRes = wantsExit || dirQ ? null : stepIntent(t);
   if (stepRes) return stepRes;
 
@@ -1277,7 +1284,7 @@ function setVoiceState(s) {
 function endFollow() { followMode = false; document.body.classList.remove("follow"); setVoiceState("idle"); }
 function keepConversation() { convoUntil = 0; endFollow(); }  /* the one follow-up listen has ended: back to standby */
 let cancelledAt = 0;  /* after X while listening, ignore whatever the recogniser still sends back */
-function heard(text) { if (Date.now() - cancelledAt < 3000) { micOn(false); return; } micOn(false); fastFails = 0; handle(text); }
+function heard(text, alts) { if (Date.now() - cancelledAt < 3000) { micOn(false); return; } micOn(false); fastFails = 0; handle(text, alts); }
 function nothingHeard(startedAt, err) {
   micOn(false);
   if (Date.now() - cancelledAt < 3000) return;
@@ -1302,9 +1309,9 @@ async function listen(opts) {
   if (RS) {
     micOn(true); startListeningUI(auto);
     let r = {};
-    try { r = await RS.listen({ lang: "en-GB" }); } catch (e) { r = { text: "", error: String(e && e.message || e) }; }
+    try { r = await RS.listen({ lang: "en-GB", bias: biasWords() }); } catch (e) { r = { text: "", error: String(e && e.message || e) }; }
     speechMode = r.mode || speechMode;
-    if (r.text) heard(r.text); else nothingHeard(startedAt, r.error === "network" ? "network" : r.error === "permission" ? "permission" : "");
+    if (r.text) heard(r.text, r.alts); else nothingHeard(startedAt, r.error === "network" ? "network" : r.error === "permission" ? "permission" : "");
     return;
   }
   if (CAP && CAP.SpeechRecognition) {
@@ -1663,8 +1670,23 @@ function deliver(q, a) {
   renderAnswer(q, a);
   speak(a.say, go);
 }
-async function handle(q) {
+/* one try at understanding q, as handle does (no Nano) */
+const attempt = q => (S.pending ? resolvePending(q) : null) || answer(q);
+const missed = a => !a || a.fallback || a.unplaced;
+async function handle(q, alts) {
   q = (q || "").trim(); if (!q) return;
+  const first = q;
+  /* the phone's other guesses (9 Nov): if its best guess makes no sense ("nearest bastian"), try the next ones in order and
+     go with the first Relay understands. Each try starts from the same state, so a miss leaves nothing behind. */
+  if (alts && alts.length > 1) {
+    const snap = JSON.stringify(S), back = () => { S = Object.assign({}, EMPTY, JSON.parse(snap)); syncMap(); };
+    if (missed(attempt(q))) {
+      let won = null;
+      for (const alt of alts.slice(1)) { const t = String(alt || "").trim(); if (!t || t === q) continue; back(); if (!missed(attempt(t))) { won = t; break; } }
+      if (won) q = won;
+    }
+    back();
+  }
   let a = S.pending ? resolvePending(q) : null;
   if (a && a.unplaced) {  /* Relay didn't recognise the place: ask Nano before asking the player again */
     const pend = S.pending;
@@ -1678,8 +1700,17 @@ async function handle(q) {
   if (a.keepLast && S.last) { renderAnswer(S.last.q, S.last.a); speak(a.say, go); return; }
   remember(q, a);
   renderAnswer(q, a);
-  if (TEST_BUILD) { $("heard").hidden = false; $("heard").textContent = "Heard: \u201c" + q + "\u201d"; }
+  if (TEST_BUILD) { $("heard").hidden = false; $("heard").textContent = "Heard: \u201c" + first + "\u201d" + (q !== first ? ", went with \u201c" + q + "\u201d" : ""); }  /* shows when a later guess won */
   speak(a.say, go);
+}
+/* words Relay expects on this map, sent to Android's recogniser as hints (Android 13+, 9 Nov): places, exits, ARC on this map,
+   loot, quests and the map names. The phone leans towards them when game audio muddies what it hears. */
+function biasWords() {
+  const cap = w => w.replace(/\b\w/g, c => c.toUpperCase());
+  const arc = [...new Set(R.filter(r => r.k === "a").map(r => cap(r.c)))];
+  const w = ["Hey Relay", "nearest exit", "not that one", "never mind", ...Object.values(MAP_NAMES), ...PLACES.map(p => p.n), ...EXITS.map(e => e.n), ...arc,
+    ...LOOT.map(l => l.pl || l.n), ...QUESTS.map(q => q.n)];
+  return [...new Set(w.filter(Boolean))].slice(0, 200);
 }
 /* the mic is the button, and so is the screen (except the map). Tap while listening to stop. */
 $("mic").addEventListener("click", e => { e.stopPropagation(); listen(); });

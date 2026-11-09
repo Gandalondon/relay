@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
@@ -95,19 +96,25 @@ public class RelaySpeechPlugin extends Plugin {
         start(call, onDeviceAvailable());
     }
 
+    /** words Relay expects on this map (places, exits, ARC), sent as recognition hints on Android 13+ (9 Nov) */
+    private ArrayList<String> bias = new ArrayList<>();
+
     private Intent intent(String lang, boolean onDevice) {
         Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         i.putExtra(RecognizerIntent.EXTRA_LANGUAGE, lang);
-        i.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+        i.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5);  /* up to five guesses: the app tries them in order (9 Nov) */
         i.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, false);
         i.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getContext().getPackageName());
         if (onDevice) i.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true);
+        if (Build.VERSION.SDK_INT >= 33 && !bias.isEmpty()) i.putStringArrayListExtra(RecognizerIntent.EXTRA_BIASING_STRINGS, bias);
         return i;
     }
 
     private void start(PluginCall call, boolean onDevice) {
         final String lang = call.getString("lang", "en-GB");
+        bias = new ArrayList<>();
+        try { JSArray b = call.getArray("bias"); if (b != null) for (Object o : b.toList()) if (o instanceof String && bias.size() < 200) bias.add((String) o); } catch (Throwable ignored) {}
         getActivity().runOnUiThread(() -> {
             finish(null);
             pending = call;
@@ -122,6 +129,7 @@ public class RelaySpeechPlugin extends Plugin {
                 @Override public void onResults(Bundle b) {
                     ArrayList<String> m = b.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
                     JSObject r = new JSObject(); r.put("text", m != null && !m.isEmpty() ? m.get(0) : ""); r.put("mode", mode);
+                    JSArray alts = new JSArray(); if (m != null) for (String x : m) alts.put(x); r.put("alts", alts);
                     lastMode = mode; finish(r);
                 }
                 @Override public void onError(int code) {

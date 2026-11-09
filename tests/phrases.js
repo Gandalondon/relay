@@ -235,5 +235,14 @@ module.exports = [
   { set: { map: "blue-gate" }, say: ["I'm on Blue Gate at the hospital", "nearest sentinel"], want: { show: "Nearest Sentinel: south-west" } },
   { set: { map: "blue-gate" }, say: "low level enemies", want: { show: "Small ARC: not tracked" } },
   { set: { map: "blue-gate", place: "Village" }, say: "nearest enemy spawn point", want: { show: "Nearest ARC:" } },
-  { set: { map: "blue-gate" }, say: ["show me the nearest high level enemy", "Village"], want: { show: "Nearest ARC:" } }
+  { set: { map: "blue-gate" }, say: ["show me the nearest high level enemy", "Village"], want: { show: "Nearest ARC:" } },
+  /* 9 Nov: Tony's Pendola raid (the Emperor read as Belly of the Beast), Beach Bar, a lone "can't go", misheard Bastion */
+  { set: { map: "pendola-pass" }, say: "I'm at the fallen emperor, show me the nearest bastion", want: { show: "Nearest Bastion:" } },
+  { set: { map: "pendola-pass" }, say: "I'm near the crashed emperor, show me the nearest bastion", want: { show: "Nearest Bastion:" } },
+  { set: { map: "pendola-pass" }, say: "I'm by the crashed arc", want: { place: "Fallen Emperor" } },
+  { set: { map: "pendola-pass" }, say: "I'm on belly of the beast step 2", want: { quest: "Belly of the Beast", step: 2 } },
+  { set: { map: "pendola-pass", place: "Fallen Emperor" }, say: "nearest bastian", want: { show: "Nearest Bastion:" } },
+  { set: { map: "riven-tides" }, say: "I'm at the beach bar", want: { place: "Beach Bar" } },
+  { set: { map: "riven-tides" }, say: "I'm at the beach", want: { place: "Azzurro Beach" } },
+  { set: { map: "blue-gate", place: "Village" }, say: "I can't go south east", want: { exit: true } }
 ];
