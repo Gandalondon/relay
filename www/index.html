@@ -450,8 +450,8 @@ function lootAnswer(L, raw, psNow) {
   if (psNow !== "fresh") { const q = askWhere(raw); q.show = N + ": where are you?"; q.say = "I know " + pts.length + " " + (L.pl || L.n) + " spots on " + MAP.name + ". Where are you? I'll find the nearest."; return q; }
   const open = pts.filter(p => !p.lock), b = near(S.place, open.length ? open : pts), dir = compass(S.place, b);
   const lockTip = b.lock ? " It's behind a locked door." : "";
-  if (L.maybe) return { show: "Possible " + L.n + ": " + headWhere(S.place, b) + ".", say: "Nearest possible " + L.n + " spot: " + whereIs(S.place, b) + ". They move each raid, so it may be empty." + lockTip, ctx: metresLine(S.place, b), map: { you: S.place, stars: [b] } };
-  return { show: "Nearest " + L.n + ": " + headWhere(S.place, b) + ".", say: "Nearest " + L.n + ": " + whereIs(S.place, b) + "." + lockTip, ctx: metresLine(S.place, b), map: { you: S.place, stars: [b] } };
+  if (L.maybe) return Object.assign(headAns("Possible " + L.n, S.place, b), { say: "Nearest possible " + L.n + " spot: " + whereIs(S.place, b) + ". They move each raid, so it may be empty." + lockTip, map: { you: S.place, stars: [b] } });
+  return Object.assign(headAns("Nearest " + L.n, S.place, b), { say: "Nearest " + L.n + ": " + whereIs(S.place, b) + "." + lockTip, map: { you: S.place, stars: [b] } });
 }
 function itemAnswer(it) {
   if (MAP.id !== "blue-gate" && (it.spots || it.areas)) return { show: it.n + ": Blue Gate spots only.", say: it.n + ". I only have spots for it on Blue Gate so far." + (it.loose ? " It's a search, so try houses and crates." : ""), ctx: "Soul's Offering item" };
@@ -655,6 +655,9 @@ function whereIs(from, b) {
 }
 /* the headline: the landmark when there is one ("by The Forest"), else the direction */
 const headWhere = (from, b) => { const lm = landmark(b, from); return lm ? lm.how + " " + lm.n : compass(from, b); };
+/* 10 Nov (Tony): headlines short enough for 48 px in three lines. The headline is where ("By Dried Riverbed."),
+   the small line says what ("Nearest apricot tree. South."). The voice still says the full sentence. */
+const headAns = (label, from, b) => ({ show: cap1(headWhere(from, b)) + ".", ctx: label + ". " + metresLine(from, b) });
 /* the small line under the headline: direction and metres, to check against the game's waypoint distance */
 /* Metres on screen only in test builds, to check against the game's waypoint; never spoken (Tony, 10 Nov). */
 let SHOW_METRES = TEST_BUILD;
@@ -1090,7 +1093,7 @@ function answerOn(raw, opts) {
     if (wantsNearest && psNow === "stale") return askStill(raw);
     if (wantsNearest && psNow === "none") return askWhere(raw);
     const E = enemy.charAt(0).toUpperCase() + enemy.slice(1);
-    if (psNow === "fresh") { const b = near(S.place, pts); const dir = compass(S.place, b); return { show: "Nearest " + E + ": " + headWhere(S.place, b) + ".", say: "Nearest " + E + ": " + whereIs(S.place, b) + ".", ctx: metresLine(S.place, b), map: { you: S.place, stars: [b] } }; }
+    if (psNow === "fresh") { const b = near(S.place, pts); const dir = compass(S.place, b); return Object.assign(headAns("Nearest " + E, S.place, b), { say: "Nearest " + E + ": " + whereIs(S.place, b) + ".", map: { you: S.place, stars: [b] } }); }
     /* lots of spawns and no location: ask first rather than fill the map with markers (5 Nov) */
     if (pts.length > 8 && psNow !== "fresh" && !has(t, ["show", "location", " all ", " every", "spawns", "where are the", " list", "mark"])) { const q = askWhere(raw); q.show = pts.length + " " + E + " spawns. Where are you?"; q.say = "There are " + pts.length + " " + enemy + " spawn points on " + MAP.name + ". Where are you? I'll find the nearest."; return q; }
     return { show: pts.length + " " + E + " spawns, marked.", say: "There are " + pts.length + " " + enemy + " spawn points on " + MAP.name + ". They're marked on the map. Tell me where you are and I'll find the nearest.", map: { you: null, stars: pts } };
@@ -1405,7 +1408,7 @@ function fitGreet(w) {
   const st = $("stage"), cx = $("ctx"), cxH = cx && cx.textContent.trim() ? cx.getBoundingClientRect().height + 16 : 0;
   const room = pk ? st.getBoundingClientRect().bottom - pk.getBoundingClientRect().height - 24 - 24 - cxH - w.getBoundingClientRect().top - 8 : Math.max(240, st.getBoundingClientRect().bottom - w.getBoundingClientRect().top - 24);
   const top = baseSize(w);
-  for (const s of [64, 56, 52, 48, 44, 40].filter(x => x <= top)) {  /* the same size on every screen without a map; smaller only if a word won't fit */ const lh = Math.round(s * 1.0); w.style.fontSize = s + "px"; w.style.lineHeight = lh + "px"; if (w.scrollWidth <= w.clientWidth + 1 && w.scrollHeight <= room) return; }
+  for (const s of [64, 56, 52, 48, 44, 40].filter(x => x <= (w.classList.contains("greet") ? top : HEAD))) {  /* 10 Nov (Tony): one standard size, 48, on every answer screen; only the home greeting is bigger */  /* the same size on every screen without a map; smaller only if a word won't fit */ const lh = Math.round(s * 1.0); w.style.fontSize = s + "px"; w.style.lineHeight = lh + "px"; if (w.scrollWidth <= w.clientWidth + 1 && w.scrollHeight <= room) return; }
 }
 function setSub() {}
 function setCtx(t) { $("ctx").textContent = t || ""; }

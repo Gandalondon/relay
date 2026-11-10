@@ -46,6 +46,8 @@ const SCENES = require(process.env.SCENES ? require('path').resolve(process.env.
     rects[s.id] = await p.evaluate(() => { const m = document.querySelector('.mapwrap'); if (!m) return null; const r = m.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height }; });
     await p.waitForTimeout(400);
     await p.screenshot({ path: path.join(HERE, 'out', s.id + '.png') });
+    const fs_ = await p.evaluate(() => { const w = document.getElementById('word'); return w && !w.classList.contains('greet') && !w.hidden ? parseFloat(getComputedStyle(w).fontSize) : null; });
+    if (fs_ !== null && fs_ !== 48) { console.log('  HEADLINE NOT 48 PX:', s.id, fs_); process.exitCode = 1; }  // one size on every answer screen (10 Nov)
     console.log(s.id, '|', await p.evaluate(() => (document.getElementById('word') || {}).textContent));
     await p.close();
   }
