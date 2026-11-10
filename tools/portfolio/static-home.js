@@ -30,6 +30,7 @@ await p.evaluate((imgs)=>{
  const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
  document.querySelectorAll('[data-greet]').forEach(g=>g.textContent='Evening,\nRaider.');
 },imgs);
+await p.evaluate(async()=>{document.querySelectorAll('img[loading=lazy]').forEach(i=>i.loading='eager');await Promise.all([...document.images].map(i=>i.complete?0:new Promise(r=>{i.onload=i.onerror=r;})));});  // 10 Nov: lazy images were blank in the full-page shot
 await p.waitForTimeout(1500);
 await p.screenshot({path:S+"relay_home.png",fullPage:true});
 console.log(await p.evaluate(()=>document.documentElement.scrollHeight),errs);await b.close();})();

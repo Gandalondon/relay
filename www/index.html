@@ -657,7 +657,8 @@ const headWhere = (from, b) => { const lm = landmark(b, from); return lm ? lm.ho
    the small line says what ("Nearest apricot tree. South."). The voice still says the full sentence. */
 /* when the headline already says the direction: the small line names the thing, plus metres in test builds only */
 const testM = (from, b) => SHOW_METRES ? " " + metresLine(from, b) : "";
-const headAns = (label, from, b) => ({ show: cap1(headWhere(from, b)) + ".", ctx: label + ". " + metresLine(from, b) });
+const headAns = (label, from, b) => { const lm = landmark(b, from);  /* no landmark: the headline is the direction, so the small line just names the thing (10 Nov) */
+  return { show: cap1(headWhere(from, b)) + ".", ctx: label + "." + (lm ? " " + metresLine(from, b) : testM(from, b)) }; };
 /* the small line under the headline: direction and metres, to check against the game's waypoint distance */
 /* Metres on screen only in test builds, to check against the game's waypoint; never spoken (Tony, 10 Nov). */
 let SHOW_METRES = TEST_BUILD;
@@ -1837,7 +1838,7 @@ async function ovRender() {
 }
 $("ovget").addEventListener("click", async () => { try { await OV.download(); } catch (e) {} ovRender(); });
 /* onboarding: first open only (relay-onb in storage). Screen 4 picks the voice; Download starts it, Skip keeps the phone's voice. */
-const OB_KEY = "relay-onb";
+const OB_KEY = "relay-onb2";  /* 10 Nov: bumped so existing test installs see the final onboarding once more */
 (function onboarding() {
   /* TEST BUILD ONLY (6 Nov): onboarding shows on every open so Tony can run the whole journey; restore the first-open check before release */
   const OB_EVERY_OPEN = false;  /* 10 Nov: testers see onboarding once per install */
