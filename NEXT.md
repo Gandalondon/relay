@@ -56,6 +56,7 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 - Why it slipped: the 8 Nov landmark check tested that headlines fit, not that they stayed at 48; the safety net shrank them.
 - Quest names: small words lower case (Snap and Salvage).
 - Recaptured with real tiles: /beta homepage phones (Dam Bastion, Buried City exit, listening, Spaceport Power Out quest), onboarding maps (Riven Tides Seabed apricots, exit), portfolio (relay_app.png, pairs, relay_home.png). Tiles fetched through Chrome as one JSON download to Tony's Downloads, then unpacked into tools/captures/tiles.
+- Vertical Short: 4K master too (10 Nov), youtube.com/shorts/Dz4ZTU_NR2A, unlisted; old Short deleted. marketing/trailer/relay-trailer-9x16-4k.mp4.
 - Trailer: 4K master (DSF=2 frames, SCALE=2 CRF=14 in make_b.py) uploaded unlisted: youtu.be/qFNLQxrB0Qw; old 1080p upload deleted. Share page points at it. The 9:16 Short is unchanged.
 - Play releases (Tony, 10 Nov): release name is version, then build in brackets, as Sniff: 1.0 (130). Signed bundle: build N's relay-N-unsigned.aab from the play-bundle GitHub release, signed on Tony's Mac with android-release/signing/relay-upload.jks (alias relay-upload, password in relay-upload-key.txt, never in git) using ~/jdk17 jarsigner in the Mac shell, saved as android-release/builds/relay-1.0.N.aab. Tony drags it into Play Console (Chrome's upload tool caps at 10 MB). Open testing track targets all 178 countries.
 - API 36 (10 Nov): Play now requires targetSdk 36. Moved to Sniff's toolchain (AGP 8.13.0, Gradle 8.14.3) on Capacitor 6, with Sniff's edge-to-edge handling: content padded clear of the bars, the window colour behind them set by SystemBarsPlugin. Check the bars on the Pixel (charcoal, amber while listening).
@@ -104,7 +105,7 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 - Next: Relay YouTube brand channel under Tony's Google account (alongside Get Sniff), upload the trailer.
 
 ## 8 Nov evening: YouTube and Share page (pushed)
-- Relay YouTube channel (@getarcrelay): banner removed (picture and name only, like Sniff; art kept in marketing/youtube). Both trailers unlisted: 16:9 "Relay: Arc Raiders Voice Guide (Trailer)" youtu.be/qFNLQxrB0Qw, Short "Ask. Find. Get out. Relay for Arc Raiders #Shorts" youtube.com/shorts/HdJfW9Q3bIM.
+- Relay YouTube channel (@getarcrelay): banner removed (picture and name only, like Sniff; art kept in marketing/youtube). Both trailers unlisted: 16:9 "Relay: Arc Raiders Voice Guide (Trailer)" youtu.be/qFNLQxrB0Qw, Short "Ask. Find. Get out. Relay for Arc Raiders #Shorts" youtube.com/shorts/Dz4ZTU_NR2A.
 - 16:9 end card: the Play badge's bottom edge sits on the legal line's baseline (type.html does it for future builds).
 - /beta/share: no YouTube embeds (Sniff's pattern, 8 Nov 21:22): one still of the 16:9 trailer (`media/relay-trailer-cover.jpg`, the Ask. Find. Get out. frame at 8.5 s) with a hairline and a centred amber play button that opens youtu.be/qFNLQxrB0Qw in a new tab. Both downloads sit in the caption under it. Nothing loads from YouTube, so the privacy YouTube line is gone and the policy is back to 4 Nov. Linked from every /beta footer.
 
