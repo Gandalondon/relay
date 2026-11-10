@@ -22,7 +22,8 @@ R = os.path.dirname(os.path.abspath(__file__)); FR = os.path.join(R, "frames"); 
 GAME = os.environ.get("GAME", os.path.join(R, "game", "test-buried-city.mp4"))
 CUTS = {"game": (1.05, 5.0)}  # test clip: map from ~1 s, cursor pans, waypoint drops ~3.1 s, running from 3.75 s; the ending carries on
 TL = json.load(open(os.path.join(FR, "type-timeline.json")))
-ENC = ["-r", "30", "-c:v", "libx264", "-crf", "18", "-preset", "veryfast", "-pix_fmt", "yuv420p"]
+ENC = ["-r", "30", "-c:v", "libx264", "-crf", os.environ.get("CRF", "18"),  # YouTube master (10 Nov): DSF=2 frames, SCALE=2, CRF=14
+       "-preset", "veryfast", "-pix_fmt", "yuv420p"]
 def run(a): subprocess.run(["ffmpeg", "-y", "-loglevel", "error"] + a, check=True)
 # music at 12% (Tony, 8 Nov evening: was 18%, voices hard to hear)
 MUSIC, MDROP = "music-jonasblakewood-synthwave-retro-wave-618632.mp3", 7.93
@@ -83,4 +84,4 @@ def build(VER, f, name, W, H):
 
 for VER in os.environ.get("VER", "b1,b2").split(","):
     for f, name, (W, H) in [x for x in (("h", "16x9", (1920, 1080)), ("v", "9x16", (1080, 1920))) if x[0] in os.environ.get("FMT", "h,v")]:
-        build(VER, f, name, W, H)
+        k = int(os.environ.get("SCALE", "1")); build(VER, f, name + ("-4k" if k == 2 else ""), W * k, H * k)

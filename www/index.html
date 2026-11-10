@@ -524,7 +524,7 @@ function craftAnswer(it, raw, psNow) {
   }
   const b = near(S.place, pts), dir = compass(S.place, b), close = dist(S.place, b) < 80 && !S.place.rough;
   if (close) return { show: low1 + ": search here.", say: "You're right by " + b.n + ". It's " + kinds + " loot, so search there for " + lowN + "." + arcTip, map: { you: S.place, stars: [b] } };
-  return { show: low1 + ": " + (b.spot ? b.n.replace(/^a /, "") : b.n) + ", " + dir + ".", say: low1 + turn + kinds + " loot. Nearest is " + b.n + ", " + whereIs(S.place, b) + "." + arcTip, ctx: metresLine(S.place, b), map: { you: S.place, stars: [b] } };
+  return { show: low1 + ": " + (b.spot ? b.n.replace(/^a /, "") : b.n) + ", " + dir + ".", say: low1 + turn + kinds + " loot. Nearest is " + b.n + ", " + whereIs(S.place, b) + "." + arcTip, ctx: testM(S.place, b).trim(), map: { you: S.place, stars: [b] } };
 }
 
 /* =================== state =================== */
@@ -657,6 +657,8 @@ function whereIs(from, b) {
 const headWhere = (from, b) => { const lm = landmark(b, from); return lm ? lm.how + " " + lm.n : compass(from, b); };
 /* 10 Nov (Tony): headlines short enough for 48 px in three lines. The headline is where ("By Dried Riverbed."),
    the small line says what ("Nearest apricot tree. South."). The voice still says the full sentence. */
+/* when the headline already says the direction: the small line names the thing, plus metres in test builds only */
+const testM = (from, b) => SHOW_METRES ? " " + metresLine(from, b) : "";
 const headAns = (label, from, b) => ({ show: cap1(headWhere(from, b)) + ".", ctx: label + ". " + metresLine(from, b) });
 /* the small line under the headline: direction and metres, to check against the game's waypoint distance */
 /* Metres on screen only in test builds, to check against the game's waypoint; never spoken (Tony, 10 Nov). */
@@ -1022,7 +1024,7 @@ function answerOn(raw, opts) {
     if (wantsExit || has(t, ["exit", "airshaft", "way out", "extract", "evac"])) {
       if (!exits.length) { const e = near(lp.p, EXITS); return { show: "No exit " + dq + ".", say: "No " + WAYS.exits.one + " to the " + dq + " of you. Nearest is " + e.n + ", " + compass(lp.p, e) + ".", map: { you: lp.p, stars: [e] } }; }
       const e = exits[0]; S.exitSaid = { n: e.n, at: Date.now() }; save();
-      return { show: e.n + ", " + compass(lp.p, e) + ".", say: e.n + ", " + compass(lp.p, e) + (lp.p.rough || !METRES ? "" : ", " + roughly(lp.p, e)) + ".", ctx: metresLine(lp.p, e), map: { you: lp.p, stars: [e] } };
+      return { show: e.n + ", " + compass(lp.p, e) + ".", say: e.n + ", " + compass(lp.p, e) + (lp.p.rough || !METRES ? "" : ", " + roughly(lp.p, e)) + ".", ctx: "Nearest exit." + testM(lp.p, e), map: { you: lp.p, stars: [e] } };
     }
     if (!areas.length && !exits.length) {
       const e = near(lp.p, EXITS);
@@ -1063,7 +1065,7 @@ function answerOn(raw, opts) {
     if (hatchTip) { S.hatchTold = true; save(); }
     const lead = lp.p.rough ? vary(["Your best bet is ", "Head for ", "From " + lp.p.n + ", try "]) : "";
     const how = lp.p.rough ? ". Head " + dir + "." : ", " + dir + (METRES ? ", " + roughly(lp.p, best) : "") + ".";
-    return { show: (rush ? "Move. " : "") + best.n + ", " + dir + ".", say: rush + (alt ? alt + best.n : lead ? lead + best.n : best.n) + how + hatchTip, ctx: metresLine(lp.p, best), map: { you: lp.p.rough ? Object.assign({ guess: true }, lp.p) : lp.p, stars: hatchTip ? [best, hb] : [best] } };
+    return { show: (rush ? "Move. " : "") + best.n + ", " + dir + ".", say: rush + (alt ? alt + best.n : lead ? lead + best.n : best.n) + how + hatchTip, ctx: (hatchTip ? "Nearest way out." : "Nearest exit.") + testM(lp.p, best), map: { you: lp.p.rough ? Object.assign({ guess: true }, lp.p) : lp.p, stars: hatchTip ? [best, hb] : [best] } };
   }
   if (has(t, ["hatch"]) && !HATCHES.length) return { show: "No hatches here.", say: MAP.name + " has no Raider Hatches. Nearest way out is " + (likelyPos() ? near(likelyPos().p, EXITS).n + ", " + compass(likelyPos().p, near(likelyPos().p, EXITS)) + "." : "one of the " + WAYS.exits.count + " " + WAYS.exits.many + ", marked."), map: { you: likelyPos() ? likelyPos().p : null, stars: likelyPos() ? [near(likelyPos().p, EXITS)] : EXITS } };
   if (has(t, ["hatch"])) {
@@ -1108,7 +1110,7 @@ function answerOn(raw, opts) {
     const P1 = placeMention.n.charAt(0).toUpperCase() + placeMention.n.slice(1);
     const dir = psNow === "fresh" ? compass(S.place, placeMention) : "";
     const away = dir && !S.place.rough && METRES ? ", " + roughly(S.place, placeMention) : "";
-    return { show: P1 + (dir ? ", " + dir + "." : "."), ctx: dir ? metresLine(S.place, placeMention) : "", say: P1 + (dir ? " is " + dir + away + "." : " is marked on the map." + (placeMention.pos ? " It's in the " + placeMention.pos + " of the map." : "")), map: { you: psNow === "fresh" ? S.place : null, stars: [placeMention] } };
+    return { show: P1 + (dir ? ", " + dir + "." : "."), ctx: dir ? testM(S.place, placeMention).trim() : "", say: P1 + (dir ? " is " + dir + away + "." : " is marked on the map." + (placeMention.pos ? " It's in the " + placeMention.pos + " of the map." : "")), map: { you: psNow === "fresh" ? S.place : null, stars: [placeMention] } };
   }
   /* enemies in general (8 Nov, Tony's raid): small ones aren't tracked; "nearest enemy" means the nearest big ARC of any kind */
   if (/\b(low level|low-level|lower level|small|smaller|little|weak|weaker|tiny|easy)\b.*\b(enem(y|ies)|arcs?|bots?|robots?)\b/.test(t))
@@ -1120,7 +1122,7 @@ function answerOn(raw, opts) {
       if (psNow !== "fresh") return askWhere(raw);
       let best = null; for (const [k, pts] of all) { const b = near(S.place, pts), d = dist(S.place, b); if (!best || d < best.d) best = { k, b, d }; }
       const dir = compass(S.place, best.b);
-      return { show: "Nearest ARC: " + cap1(best.k) + ", " + dir + ".", say: "Nearest big ARC: a " + best.k + ", " + whereIs(S.place, best.b) + ".", ctx: metresLine(S.place, best.b), map: { you: S.place, stars: [best.b] } };
+      return { show: "Nearest ARC: " + cap1(best.k) + ", " + dir + ".", say: "Nearest big ARC: a " + best.k + ", " + whereIs(S.place, best.b) + ".", ctx: "Nearest big ARC." + testM(S.place, best.b), map: { you: S.place, stars: [best.b] } };
     }
   }
 

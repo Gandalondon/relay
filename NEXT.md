@@ -52,7 +52,7 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 - Coverage per map is from MetaForge's data, not from which map came first: Stella Montis (underground) has no raider caches, probes or couriers; Pendola Pass has no hatches and mostly frozen caches; Riven Tides is the smallest (18 places, 2 exits).
 
 ## Share Relay page: complete (9 Nov, Tony: no changes needed)
-- `site/beta/share.html`: intro, Watch it (one still of the 16:9 trailer, `media/relay-trailer-cover.jpg`, with an amber play button that opens youtu.be/EQyYAiuklks in a new tab; no YouTube embed, nothing loads from YouTube), both MP4 downloads in the caption, Ways to help. Linked from every /beta footer. Copy Doc matches it.
+- `site/beta/share.html`: intro, Watch it (one still of the 16:9 trailer, `media/relay-trailer-cover.jpg`, with an amber play button that opens youtu.be/qFNLQxrB0Qw in a new tab; no YouTube embed, nothing loads from YouTube), both MP4 downloads in the caption, Ways to help. Linked from every /beta footer. Copy Doc matches it.
 - Trailers: final 16:9 and 9:16 in `marketing/trailer/`, both unlisted on the Relay YouTube channel (@getarcrelay, no banner). Source: `tools/trailer/` (see the promo-video skill).
 - Reddit rules for r/ArcRaiders / r/ARC_Raiders still to read through Chrome before posting (Reddit is blocked from the workspace).
 
@@ -93,9 +93,9 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 - Next: Relay YouTube brand channel under Tony's Google account (alongside Get Sniff), upload the trailer.
 
 ## 8 Nov evening: YouTube and Share page (pushed)
-- Relay YouTube channel (@getarcrelay): banner removed (picture and name only, like Sniff; art kept in marketing/youtube). Both trailers unlisted: 16:9 "Relay: Arc Raiders Voice Guide (Trailer)" youtu.be/EQyYAiuklks, Short "Ask. Find. Get out. Relay for Arc Raiders #Shorts" youtube.com/shorts/HdJfW9Q3bIM.
+- Relay YouTube channel (@getarcrelay): banner removed (picture and name only, like Sniff; art kept in marketing/youtube). Both trailers unlisted: 16:9 "Relay: Arc Raiders Voice Guide (Trailer)" youtu.be/qFNLQxrB0Qw, Short "Ask. Find. Get out. Relay for Arc Raiders #Shorts" youtube.com/shorts/HdJfW9Q3bIM.
 - 16:9 end card: the Play badge's bottom edge sits on the legal line's baseline (type.html does it for future builds).
-- /beta/share: no YouTube embeds (Sniff's pattern, 8 Nov 21:22): one still of the 16:9 trailer (`media/relay-trailer-cover.jpg`, the Ask. Find. Get out. frame at 8.5 s) with a hairline and a centred amber play button that opens youtu.be/EQyYAiuklks in a new tab. Both downloads sit in the caption under it. Nothing loads from YouTube, so the privacy YouTube line is gone and the policy is back to 4 Nov. Linked from every /beta footer.
+- /beta/share: no YouTube embeds (Sniff's pattern, 8 Nov 21:22): one still of the 16:9 trailer (`media/relay-trailer-cover.jpg`, the Ask. Find. Get out. frame at 8.5 s) with a hairline and a centred amber play button that opens youtu.be/qFNLQxrB0Qw in a new tab. Both downloads sit in the caption under it. Nothing loads from YouTube, so the privacy YouTube line is gone and the policy is back to 4 Nov. Linked from every /beta footer.
 
 ## Next (pick one)
 1. Tony on the Pixel: map buttons, location-only reply, About links open the browser, "show me the Dam map", Hey Relay with game audio.
