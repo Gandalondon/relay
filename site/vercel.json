@@ -3,6 +3,16 @@
   "cleanUrls": true,
   "redirects": [
     {
+      "source": "/privacy.html",
+      "destination": "/beta/privacy",
+      "permanent": false
+    },
+    {
+      "source": "/privacy",
+      "destination": "/beta/privacy",
+      "permanent": false
+    },
+    {
       "source": "/beta/index",
       "destination": "/beta/",
       "permanent": true
