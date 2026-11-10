@@ -1,5 +1,5 @@
-arcrelay-play-screenshot-1-evac.png: "Need a quick evac?" above Relay's answer on a phone: "Cliffside Airshaft, south-east." with the map below showing you, a dashed line and the exit marker.
+arcrelay-play-screenshot-1-evac.png: "Need a quick evac?" above Relay's answer on a phone: "Eastern Station, north-west." Nearest exit, with the Buried City map below showing you, a dashed line and the exit.
 arcrelay-play-screenshot-2-ask.png: "Say Hey Relay, hear the answer." above Relay listening on a phone: the screen says "Go ahead." and the yellow microphone glows.
-arcrelay-play-screenshot-3-find.png: "Find what you need." above Relay's answer on a phone: "Nearest Bastion: south-east." with the map showing you, a dashed line and a yellow dot on the Bastion.
-arcrelay-play-screenshot-4-quests.png: "Get help on quests." above Relay's quest step on a phone: "Stabilise the observation deck." A First Foothold, step 2 of 4, with the spot on the map.
-arcrelay-play-feature-graphic.png: "Ask. Find. Get out." in large cream type beside a phone, turned at an angle, showing Relay's answer "Cliffside Airshaft, south-east." over the map.
+arcrelay-play-screenshot-3-find.png: "Find what you need." above Relay's answer on a phone: "By Small Creek." Nearest Bastion, north-east, with the Dam map showing you, a dashed line and a yellow dot on the Bastion.
+arcrelay-play-screenshot-4-quests.png: "Get help on quests." above Relay's quest step on a phone: "Substation near the checkpoint." Power Out, step 1 of 4, with the spot on the Spaceport map.
+arcrelay-play-feature-graphic.png: "Ask. Find. Get out." in large cream type beside a phone, turned at an angle, showing Relay's answer "Eastern Station, north-west." over the map.
