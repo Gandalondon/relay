@@ -51,6 +51,14 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 - Packaged for Tony to test in his browser: one self-contained file (relay-test-9nov.html, built from www/index.html with every data file, font and image inlined). Not pushed: Tony said leave it there for now.
 - Coverage per map is from MetaForge's data, not from which map came first: Stella Montis (underground) has no raider caches, probes or couriers; Pendola Pass has no hatches and mostly frozen caches; Riven Tides is the smallest (18 places, 2 exits).
 
+## 10 Nov evening: screens, one headline size, 4K trailer (pushed)
+- Headlines (Tony): one size, 48 px, on every answer screen; only the home greeting is bigger. Map answers lead with where ("By Dried Riverbed."), the small line says what ("Nearest apricot tree. South."); exits say "Nearest exit." The voice still says the full sentence. Metres on screen only in test builds (SHOW_METRES = TEST_BUILD). capture.js fails if an answer headline isn't 48 px.
+- Why it slipped: the 8 Nov landmark check tested that headlines fit, not that they stayed at 48; the safety net shrank them.
+- Quest names: small words lower case (Snap and Salvage).
+- Recaptured with real tiles: /beta homepage phones (Dam Bastion, Buried City exit, listening, Spaceport Power Out quest), onboarding maps (Riven Tides Seabed apricots, exit), portfolio (relay_app.png, pairs, relay_home.png). Tiles fetched through Chrome as one JSON download to Tony's Downloads, then unpacked into tools/captures/tiles.
+- Trailer: 4K master (DSF=2 frames, SCALE=2 CRF=14 in make_b.py) uploaded unlisted: youtu.be/qFNLQxrB0Qw; old 1080p upload deleted. Share page points at it. The 9:16 Short is unchanged.
+- Next: open testing. Tester-mode build (OB_EVERY_OPEN and #obskip off; keep Heard line and misses), site Test the app plus one testing line (copy through the Doc), signed AAB, Play Console admin (all countries), then share /beta with MetaForge.
+
 ## Share Relay page: complete (9 Nov, Tony: no changes needed)
 - `site/beta/share.html`: intro, Watch it (one still of the 16:9 trailer, `media/relay-trailer-cover.jpg`, with an amber play button that opens youtu.be/qFNLQxrB0Qw in a new tab; no YouTube embed, nothing loads from YouTube), both MP4 downloads in the caption, Ways to help. Linked from every /beta footer. Copy Doc matches it.
 - Trailers: final 16:9 and 9:16 in `marketing/trailer/`, both unlisted on the Relay YouTube channel (@getarcrelay, no banner). Source: `tools/trailer/` (see the promo-video skill).
