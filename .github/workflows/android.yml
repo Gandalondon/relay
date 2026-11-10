@@ -36,11 +36,21 @@ jobs:
         run: mkdir -p android/app/libs && curl -sSL --fail -o android/app/libs/sherpa-onnx-2.0.1.aar https://github.com/k2-fsa/sherpa-onnx/releases/download/v2.0.1/sherpa-onnx-2.0.1.aar
       - run: |
           set -o pipefail
-          chmod +x android/gradlew && cd android && ./gradlew assembleDebug --no-daemon 2>&1 | tee ../build.log
+          chmod +x android/gradlew && cd android && ./gradlew assembleDebug bundleRelease --no-daemon 2>&1 | tee ../build.log
         env:
           BUILD_NUMBER: ${{ github.run_number }}
           RELAY_KEY_PASS: ${{ secrets.RELAY_KEY_PASS }}
       - run: cp android/app/build/outputs/apk/debug/app-debug.apk relay.apk
+      # the Play bundle, unsigned (10 Nov): signed on Tony's Mac with the upload key, as for Sniff
+      - run: cp android/app/build/outputs/bundle/release/app-release.aab relay-${{ github.run_number }}-unsigned.aab
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: play-bundle
+          name: Play bundle (unsigned)
+          body: Latest unsigned Play bundle. Sign with the upload key on Tony's Mac before uploading to Play Console.
+          files: relay-${{ github.run_number }}-unsigned.aab
+          prerelease: true
+          make_latest: false
       - uses: actions/upload-artifact@v4
         with:
           name: relay-apk
