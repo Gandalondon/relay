@@ -6,10 +6,10 @@ module.exports = [
   { id: 'listening', listen: true },
   { id: 'find', map: 'dam', place: 'Scrap Yard', ask: 'nearest Bastion' },
   { id: 'exit', map: 'buried-city', place: 'Church Ruins', ask: "I'm under fire, where's the nearest exit" },
-  { id: 'loot', map: 'riven-tides', place: 'Wharf', ask: 'any apricots near me' },
-  { id: 'whole', map: 'riven-tides', place: 'Wharf', ask: 'any apricots near me', click: '#full' },  // portfolio: the whole map
+  { id: 'loot', map: 'riven-tides', place: 'Seabed', ask: 'any apricots near me' }  /* 10 Nov: Seabed, one yellow zone */,
+  { id: 'whole', map: 'riven-tides', place: 'Seabed', ask: 'any apricots near me', click: '#full' },  // portfolio: the whole map
 ];
-module.exports.push({ id: 'quest', map: 'stella-montis', place: 'Lobby', ask: "I'm on Snap and Salvage, step 2" });  // homepage: Get help on quests
+module.exports.push({ id: 'quest', map: 'spaceport', place: 'Control Tower', ask: "I'm on Power Out, step 1" });  // homepage: Get help on quests (10 Nov: Spaceport, Stella Montis showed off-map black)
 module.exports.push({ id: 'moss', map: 'pendola-pass', place: 'Old Town', ask: 'find me some moss' });  // portfolio pair: ask for anything
 module.exports.push({ id: 'cache', map: 'spaceport', place: 'Car Park', ask: "where's the nearest raider cache" });
 module.exports.push({ id: 'clip', map: 'blue-gate', place: 'Village', ask: "where's the nearest Rocketeer" });  // trailer: the answer screen

@@ -5,7 +5,7 @@
 const path = require('path'), fs = require('fs');
 const { chromium } = require(require.resolve('playwright', { paths: [process.env.PW || process.cwd()] }));
 const HERE = __dirname, APP = 'file://' + path.resolve(HERE, '../../www/index.html');
-const SCENES = require('./scenes.js');
+const SCENES = require(process.env.SCENES ? require('path').resolve(process.env.SCENES) : './scenes.js');
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.CHROME || undefined });
   const ctx = await b.newContext({ viewport: { width: 375, height: 812 }, deviceScaleFactor: 3, timezoneId: 'Europe/London' });
@@ -26,6 +26,7 @@ const SCENES = require('./scenes.js');
     await p.goto(APP); await p.waitForTimeout(1500); await p.evaluate(() => { Math.random = window.__r; });
     await p.evaluate(() => { try { window.OB_EVERY_OPEN = false; } catch (e) {} document.querySelectorAll('#sppack,#ob,.ob').forEach(el => el.hidden = true); });
     await p.evaluate(async (s) => {
+      try { SHOW_METRES = false; } catch (e) {}  // marketing screens never show metres (10 Nov)
       speak = (t, cb) => { if (cb) setTimeout(cb, 0); }; listen = () => {};
       S = Object.assign({}, EMPTY); S.voiceV = 2;
       if (s.map) { if (S.map !== s.map) switchMap(s.map); }
@@ -37,7 +38,7 @@ const SCENES = require('./scenes.js');
     await p.evaluate((s) => {
       document.body.classList.remove('speaking');
       const w = document.getElementById('word'); if (s.word && w) w.textContent = s.word;
-      document.querySelectorAll('#sppack').forEach(el => el.hidden = true);
+      document.querySelectorAll('#sppack,#heard').forEach(el => el.hidden = true);  // no test-build Heard line in marketing screens (10 Nov)
     }, s);
     if (s.click) { await p.click(s.click); await p.waitForTimeout(2500); }
     if (s.text) await p.evaluate((t) => { const w = document.querySelector('.greet,#word'); if (w) w.textContent = t; }, s.text);

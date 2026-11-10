@@ -13,10 +13,10 @@ shot = lambda s: Image.open(os.path.join(OUT, s + ".png")).convert("RGB")
 
 # 1. site: homepage phones, 2x (750 wide)
 SITE = {  # placeholder text on the page -> scene, alt text
-    "Answer: nearest Bastion, about 90 m east. One dot on the map.": ("find", "Relay answers: Nearest Bastion, north-east. The Dam map shows you at the Scrap Yard and one dot on the nearest Bastion."),
+    "Answer: nearest Bastion, about 90 m east. One dot on the map.": ("find", "Relay answers: Nearest Bastion, by Small Creek. The Dam map shows you at the Scrap Yard and one dot on the nearest Bastion."),
     "Answer: nearest exit, which way and how far.": ("exit", "Relay answers: Eastern Station, north-west. On the Buried City map, a dashed line runs from you to the exit."),
     "Listening: Hey Relay, go ahead.": ("listening", "Relay listening: Go ahead."),
-    "Answer: quest step, with the spot on the map.": ("quest", "Relay answers: Security office desk papers. Snap and Salvage, step 2, with the spot on the Stella Montis map."),
+    "Answer: quest step, with the spot on the map.": ("quest", "Relay answers: Substation near the checkpoint. Power Out, step 1, with the spot on the Spaceport map."),
 }
 sd = os.path.join(R, "site/beta/screens"); os.makedirs(sd, exist_ok=True)
 for ph, (s, alt) in SITE.items():
@@ -36,7 +36,7 @@ def mapcrop(s, size=(684, 962)):
     sc = max(tw / m.width, th / m.height); m = m.resize((round(m.width * sc), round(m.height * sc)), Image.LANCZOS)
     l, t = (m.width - tw) // 2, 0
     return m.crop((l, t, l + tw, t + th))
-ONB = {"onboard-find": ("loot", "The map: you at the Wharf, one dot on the nearest apricot tree"),
+ONB = {"onboard-find": ("loot", "The map: you at the Seabed, one dot on the nearest apricot tree"),
        "onboard-exit": ("exit", "The map: a dashed line from you to the nearest exit")}
 p = os.path.join(R, "www/index.html"); h = open(p).read()
 for f, (s, alt) in ONB.items():

@@ -656,7 +656,9 @@ function whereIs(from, b) {
 /* the headline: the landmark when there is one ("by The Forest"), else the direction */
 const headWhere = (from, b) => { const lm = landmark(b, from); return lm ? lm.how + " " + lm.n : compass(from, b); };
 /* the small line under the headline: direction and metres, to check against the game's waypoint distance */
-const metresLine = (from, b) => { const d = compass(from, b); return cap1(d) + (METRES && !from.rough ? ", about " + metres(from, b) + " m" : "") + "."; };
+/* Metres on screen only in test builds, to check against the game's waypoint; never spoken (Tony, 10 Nov). */
+let SHOW_METRES = TEST_BUILD;
+const metresLine = (from, b) => { const d = compass(from, b); return cap1(d) + (SHOW_METRES && METRES && !from.rough ? ", about " + metres(from, b) + " m" : "") + "."; };
 const nearestAreas = (p, n) => AREAS.slice().sort((a, b) => dist(p, a) - dist(p, b)).slice(0, n);
 /* quest names, forgiving of mishearing: exact words first, then near matches ("home to boost" = Home to Roost).
    A name of several words may be 2 letters off in total; a single long word 1; short single words must be exact. */
