@@ -1433,7 +1433,7 @@ function renderReady() {
   document.body.classList.remove("listening", "session", "follow"); $("close").hidden = true;
   const hr = new Date().getHours();
   const part = hr >= 5 && hr < 12 ? "Morning" : hr >= 12 && hr < 18 ? "Afternoon" : "Evening";
-  const w = $("word"); w.hidden = false; w.classList.remove("instr"); w.classList.add("greet"); w.style.height = ""; w.style.overflowWrap = ""; w.dataset.map = "";  /* drop the answer headline's fixed box (5 Nov) */ w.innerHTML = esc(part + ", Raider.") + '<span class="gl">' + esc(LINE) + "</span>";
+  const w = $("word"); w.hidden = false; w.classList.remove("instr"); w.classList.add("greet"); w.style.height = ""; w.style.overflowWrap = ""; w.dataset.map = "";  /* drop the answer headline's fixed box (5 Nov) */ $("heard").hidden = true;  /* 10 Nov: no stale Heard line on the home screen */ w.innerHTML = esc(part + ", Raider.") + '<span class="gl">' + esc(LINE) + "</span>";
   setCtx("");  /* no "Say Hey Relay, or tap" hint any more (6 Nov): onboarding teaches it, the home screen stays quiet */
   $("stage").innerHTML = mapPicker(null, true);  /* no "Which map?" heading on the home screen (6 Nov): the list speaks for itself */
   fitGreet(w);
