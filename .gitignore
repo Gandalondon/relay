@@ -10,3 +10,8 @@ android/app/libs/*.aar
 tools/trailer/frames/
 tools/trailer/out/
 tools/trailer/game/
+
+# Play upload key: only on Tony's Mac, never in git (10 Nov)
+android-release/signing/
+*.jks
+android-release/builds/
