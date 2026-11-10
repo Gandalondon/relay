@@ -36,9 +36,9 @@ def mapcrop(s, size=(684, 962)):
     box = [round(v * k) for v in (r["x"], r["y"], r["x"] + r["w"], r["y"] + r["h"])]
     m = im.crop(box); tw, th = size
     sc = max(tw / m.width, th / m.height); m = m.resize((round(m.width * sc), round(m.height * sc)), Image.LANCZOS)
-    l, t = (m.width - tw) // 2, 0
+    l, t = (m.width - tw) // 2, max(0, (m.height - th) // 2)  # 10 Nov: centred, so both dots stay in (top-aligned cut off the target)
     return m.crop((l, t, l + tw, t + th))
-ONB = {"onboard-find": ("loot", "The map: you at the Seabed, one dot on the nearest apricot tree"),
+ONB = {"onboard-find": ("find", "The map: you at the Scrap Yard, one dot on the nearest Bastion"),  # 10 Nov: the sharp Dam screen (Riven Tides tiles are low zoom)
        "onboard-exit": ("exit", "The map: a dashed line from you to the nearest exit")}
 p = os.path.join(R, "www/index.html"); h = open(p).read()
 for f, (s, alt) in ONB.items():
