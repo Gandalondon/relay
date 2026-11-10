@@ -25,6 +25,8 @@ p = os.path.join(R, "site/beta/index.html"); h = open(p).read()
 for ph, (s, alt) in SITE.items():
     h = h.replace('<div class="ph"><span>' + ph + '</span></div>',
                   '<img src="screens/relay-' + s + '.webp" alt="' + alt + '" loading="lazy" decoding="async">')
+for ph, (s, alt) in SITE.items():  # 10 Nov: keep alt texts in step once the placeholders are gone
+    h = re.sub(r'(<img src="screens/relay-' + s + r'\.webp" alt=")[^"]*"', lambda m: m.group(1) + alt + '"', h)
 open(p, "w").write(h)
 print("site: placeholders left", h.count('class="ph"'))
 
@@ -43,6 +45,8 @@ for f, (s, alt) in ONB.items():
     mapcrop(s).save(os.path.join(R, "www", f + ".webp"), quality=86, method=6)
 h = re.sub(r'<div class="obph">Image: the map, you at the Village[^<]*</div>', '<img src="onboard-find.webp" alt="' + ONB["onboard-find"][1] + '">', h)
 h = re.sub(r'<div class="obph">Image: the map, you under fire[^<]*</div>', '<img src="onboard-exit.webp" alt="' + ONB["onboard-exit"][1] + '">', h)
+for f, (s, alt) in ONB.items():
+    h = re.sub(r'(<img src="' + f + r'\.webp" alt=")[^"]*"', lambda m: m.group(1) + alt + '"', h)
 open(p, "w").write(h)
 print("onboarding: placeholders left", h.count('class="obph"'))
 
