@@ -13,3 +13,4 @@ module.exports.push({ id: 'quest', map: 'spaceport', place: 'Control Tower', ask
 module.exports.push({ id: 'moss', map: 'pendola-pass', place: 'Old Town', ask: 'find me some moss' });  // portfolio pair: ask for anything
 module.exports.push({ id: 'cache', map: 'spaceport', place: 'Car Park', ask: "where's the nearest raider cache" });
 module.exports.push({ id: 'clip', map: 'blue-gate', place: 'Village', ask: "where's the nearest Rocketeer" });  // trailer: the answer screen
+module.exports.push({ id: 'questob', map: 'spaceport', place: 'Staff Parking', ask: "I'm on Power Out, step 1" });  // onboarding screen 4 (10 Nov): shorter route, both dots in the crop

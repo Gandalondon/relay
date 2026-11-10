@@ -22,7 +22,7 @@ const SCENES = require(process.env.SCENES ? require('path').resolve(process.env.
       if (m) missing.add(u);
       r.abort();
     });
-    await p.addInitScript(() => { try { localStorage.setItem('relay-onb', '1'); localStorage.setItem('relay-onb2', '1'); localStorage.setItem('relay-line', '1'); } catch (e) {} window.__r = Math.random; Math.random = () => 0; });  // greeting: always "Let's get you home in one piece."
+    await p.addInitScript(() => { try { localStorage.setItem('relay-onb', '1'); localStorage.setItem('relay-onb2', '1'); localStorage.setItem('relay-onb3', '1'); localStorage.setItem('relay-line', '1'); } catch (e) {} window.__r = Math.random; Math.random = () => 0; });  // greeting: always "Let's get you home in one piece."
     await p.goto(APP); await p.waitForTimeout(1500); await p.evaluate(() => { Math.random = window.__r; });
     await p.evaluate(() => { try { window.OB_EVERY_OPEN = false; } catch (e) {} document.querySelectorAll('#sppack,#ob,.ob').forEach(el => el.hidden = true); });
     await p.evaluate(async (s) => {
