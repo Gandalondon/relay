@@ -28,6 +28,7 @@ public class SystemBarsPlugin extends Plugin {
     public void ready(PluginCall call) { MainActivity.appReady = true; call.resolve(); }
 
     static void apply(Window w, int color, boolean lightBackground) {
+        w.getDecorView().setBackgroundColor(color);  // 10 Nov: what shows behind the bars on Android 15+ (edge to edge)
         w.setStatusBarColor(color);
         w.setNavigationBarColor(color);
         if (Build.VERSION.SDK_INT >= 28) w.setNavigationBarDividerColor(color);

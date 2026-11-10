@@ -36,6 +36,7 @@ android {
             if (relayKey.exists()) signingConfig signingConfigs.relayTest
         }
         release {
+            ndk { debugSymbolLevel 'SYMBOL_TABLE' }  // 10 Nov: Play's native debug symbols warning
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

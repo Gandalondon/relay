@@ -2,7 +2,12 @@ package app.getarcrelay;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.view.WindowManager;
+import androidx.activity.EdgeToEdge;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.core.splashscreen.SplashScreen;
 import com.getcapacitor.BridgeActivity;
 
@@ -27,6 +32,16 @@ public class MainActivity extends BridgeActivity {
         super.onCreate(savedInstanceState);
         // Keep the screen on while Spottr is open beside the game.
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        // 10 Nov, API 36: Android 15+ always draws apps edge to edge and ignores bar colours. As in Sniff, the content is padded
+        // clear of the bars and the window behind them takes the screen's colour (SystemBarsPlugin sets it), so it looks as before.
+        EdgeToEdge.enable(this);
+        View content = findViewById(android.R.id.content);
+        ViewCompat.setOnApplyWindowInsetsListener(content, (v, insets) -> {
+            Insets sys = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+            v.setPadding(sys.left, sys.top, sys.right, sys.bottom);
+            return WindowInsetsCompat.CONSUMED;
+        });
+        ViewCompat.requestApplyInsets(content);
         // No grey bar: system bars start navy, then follow the screen.
         SystemBarsPlugin.apply(getWindow(), Color.parseColor("#1C1E22"), false);
     }
