@@ -11,6 +11,7 @@
   --tr-h3:.01em;        /* small headings */
   --tr-text:.02em;      /* body, buttons, nav */
   --tr-caps:.04em;      /* RELAY wordmark */
+  --tr-nav:.04em;       /* header nav and header button: cream semibold on charcoal reads tighter than the same type on amber (Tony, 10 Nov) */
   --bg:#1C1E22;        /* charcoal base: hero, footer, pages */
   --panel:#26282D;     /* raised surface: form fields */
   --map:#26282D;       /* map surface in the mockups: neutral, no blue */
@@ -53,7 +54,7 @@ p{margin:0;text-wrap:pretty}
 
 /* header: a solid charcoal bar fixed to the top on every page, the full lockup (mark and RELAY, back 8 Nov). It never changes colour. */
 .hdr{position:fixed;inset:0 0 auto;z-index:20;background:var(--bg);padding-top:env(safe-area-inset-top,0px)}
-.hdr .btn.sm{height:40px;padding:0 20px;font-size:16px}
+.hdr .btn.sm{height:40px;padding:0 20px;font-size:16px;letter-spacing:var(--tr-nav)}
 @media (max-width:600px){ .hdr .btn.sm{height:36px;padding:0 16px} }
 /* the header runs to the page's outer margins, wider than the content column: logo far left, Get the app far right */
 .hdr .wrap{max-width:none;height:88px;display:flex;align-items:center;justify-content:space-between;gap:16px}
@@ -209,7 +210,7 @@ canvas.topo{display:none}
 
 /* how it works (5 Nov): Sniff's pattern. Section title on the left, icon rows on the right; one column on phones. */
 .hright{display:flex;align-items:center;gap:32px}
-.topnav{font:600 18px/1 var(--font);letter-spacing:var(--tr-text);color:var(--text-hi);white-space:nowrap;transition:color .25s ease}
+.topnav{font:600 18px/1 var(--font);letter-spacing:var(--tr-nav);color:var(--text-hi);white-space:nowrap;transition:color .25s ease}
 .topnav:hover,.topnav[aria-current="page"]{color:var(--amber)}
 @media (max-width:520px){ .hright{gap:20px} .topnav{font-size:16px} }
 .hsec{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px 64px;margin-top:120px}  /* two equal halves: section title on the left, content from the middle to the right gutter (5 Nov, Tony's reference) */
