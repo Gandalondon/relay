@@ -1,4 +1,4 @@
-# Relay: where we are (Sunday 8 November 2026, evening)
+# Relay: where we are (Sunday 15 November 2026)
 
 Start a new conversation by reading this file, then the style guide.
 
@@ -50,6 +50,13 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 - Frozen caches (Pendola only in our data): kept separate from raider caches (normal ones are fixed; 13 frozen caches move each raid over ~98 spots, better loot, breach to open). Frozen answers now say "Nearest possible frozen cache spot ... They move each raid, so it may be empty." Later, if testers want it: the player says "Cold Snap" and Relay adds that condition's frozen caches on the other maps for that raid (needs the spots; check MetaForge first, ArcTracker lists 47 Dam, 34 Buried City, 32 Spaceport, 24 Blue Gate). Relay can't see the map condition itself.
 - Packaged for Tony to test in his browser: one self-contained file (relay-test-9nov.html, built from www/index.html with every data file, font and image inlined). Not pushed: Tony said leave it there for now.
 - Coverage per map is from MetaForge's data, not from which map came first: Stella Montis (underground) has no raider caches, probes or couriers; Pendola Pass has no hatches and mostly frozen caches; Riven Tides is the smallest (18 places, 2 exits).
+
+## 12 to 15 Nov: waiting on Play, holding page, LinkedIn
+- Play: open testing track was paused (nothing in production). Resumed 12 Nov 16:50, which Google treats as a change: "Changes in review" since then, policy status clean. Production stays empty for now; the next build (with the onboarding voice fix) goes to production later. Developer account already shows as Ganda London.
+- Go-live site is ready on branch go-live (full site moved from /beta to the root, /beta/* redirects, noindex off, sitemap, every link checked locally). Push it when the Play link works: https://play.google.com/store/apps/details?id=app.getarcrelay
+- Holding page (live 15 Nov): headline all cream, "Want to test it on Android? Email hello@getarcrelay.app" (bold link, subject Relay testing), Arc Raiders in sentence case, 40px under the footer. Copy Doc's holding page section still to update.
+- LinkedIn (scheduled by Tony): Mon 16 Nov 9:15, Relay intro with the 16:9 trailer (marketing/trailer/relay-trailer-16x9.mp4); Wed 18 Nov 9:15, the voice story with marketing/linkedin/relay-linkedin-voices.png (Ten voices. Zero cost.). Both link to getarcrelay.app. If Play approves before Wednesday, change Wednesday's last line to the Play link. Then pause the series until GTA 6 calms down; launch post closes it.
+- Still to do: onboarding voice screen offers Download even when a voice is installed (show Voice ready and Start); check the bars on the Pixel with 131; install from Play and run the full flow; share with MetaForge.
 
 ## 10 Nov evening: screens, one headline size, 4K trailer (pushed)
 - Headlines (Tony): one size, 48 px, on every answer screen; only the home greeting is bigger. Map answers lead with where ("By Dried Riverbed."), the small line says what ("Nearest apricot tree. South."); exits say "Nearest exit." The voice still says the full sentence. Metres on screen only in test builds (SHOW_METRES = TEST_BUILD). capture.js fails if an answer headline isn't 48 px.
