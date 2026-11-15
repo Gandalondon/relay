@@ -1,0 +1,1 @@
+LinkedIn images. relay-linkedin-voices.png (15 Nov 2026): 1200 x 627 at 2x, the Play feature graphic layout. cap.js captures the onboarding voice screen from www/index.html (run from the repo root, saves ob-voice.png next to it); render.js renders post.html. Font: copy inter-tight-700.woff2 from android-release/play-listing/source.
