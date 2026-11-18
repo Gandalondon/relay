@@ -1816,7 +1816,7 @@ async function ovRender() {
   if (r.state === "downloading") st.textContent = "Downloading the voice: " + r.progress + "%. Keep Relay open.";
   else if (r.state === "unpacking") st.textContent = "Unpacking the voice: " + (r.progress || 0) + "%. Nearly there.";
   else if (/^failed/.test(r.state || "")) { st.textContent = "Download failed. Try again on Wi-Fi."; get.hidden = false; box.hidden = false; }
-  else if (!ovInstalled) st.textContent = "Download the voice once, on Wi-Fi. After that it works without internet.";
+  else if (!ovInstalled) st.textContent = "Download once on Wi-Fi. Then it works offline.";
   else if (CFG.off) st.textContent = "The voice closed Relay last time, so Relay is using the phone's voice. Tap a voice to try again.";
   clearTimeout(ovPoll);
   if (busy && !$("vlist").hidden) ovPoll = setTimeout(ovRender, 1000);
