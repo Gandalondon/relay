@@ -1,4 +1,4 @@
-# Relay: where we are (Sunday 15 November 2026)
+# Relay: where we are (Wednesday 18 November 2026)
 
 Start a new conversation by reading this file, then the style guide.
 
@@ -50,6 +50,12 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 - Frozen caches (Pendola only in our data): kept separate from raider caches (normal ones are fixed; 13 frozen caches move each raid over ~98 spots, better loot, breach to open). Frozen answers now say "Nearest possible frozen cache spot ... They move each raid, so it may be empty." Later, if testers want it: the player says "Cold Snap" and Relay adds that condition's frozen caches on the other maps for that raid (needs the spots; check MetaForge first, ArcTracker lists 47 Dam, 34 Buried City, 32 Spaceport, 24 Blue Gate). Relay can't see the map condition itself.
 - Packaged for Tony to test in his browser: one self-contained file (relay-test-9nov.html, built from www/index.html with every data file, font and image inlined). Not pushed: Tony said leave it there for now.
 - Coverage per map is from MetaForge's data, not from which map came first: Stella Montis (underground) has no raider caches, probes or couriers; Pendola Pass has no hatches and mostly frozen caches; Riven Tides is the smallest (18 places, 2 exits).
+
+## 18 Nov: live
+- Play approved and published 18 Nov (open testing, early access, all 178 countries, developer Ganda London). Listing: https://play.google.com/store/apps/details?id=app.getarcrelay
+- Site went live from /beta to the root the same evening; /beta/* redirects to the same page at the root. Holding page kept in tools/hero/holding-page-12nov.html.
+- Tony is holding off telling anyone for 2 to 3 weeks because GTA 6 just came out. Wednesday's LinkedIn post linked to getarcrelay.app, which now shows the full site.
+- Next build: onboarding voice screen fix (Voice ready + Start when a voice is installed); then production.
 
 ## 12 to 15 Nov: waiting on Play, holding page, LinkedIn
 - Play: open testing track was paused (nothing in production). Resumed 12 Nov 16:50, which Google treats as a change: "Changes in review" since then, policy status clean. Production stays empty for now; the next build (with the onboarding voice fix) goes to production later. Developer account already shows as Ganda London.
