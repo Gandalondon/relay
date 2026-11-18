@@ -36,7 +36,12 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 @CapacitorPlugin(name = "RelayOfflineVoice")
 public class RelayOfflineVoicePlugin extends Plugin {
     private static final String NAME = "sherpa-onnx-supertonic-3-tts-int8-2026-05-11";
-    private static final String URL_MODEL = "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/" + NAME + ".tar.bz2";
+    // Relay's own copy first (the voice-models release on Gandalondon/relay, made by .github/workflows/mirror-voice.yml),
+    // then the sherpa-onnx project's original. Rule (18 Nov 2026): every runtime download has a copy we host.
+    private static final String[] URL_MODELS = {
+        "https://github.com/Gandalondon/relay/releases/download/voice-models/" + NAME + ".tar.bz2",
+        "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/" + NAME + ".tar.bz2",
+    };
     private static final long APPROX_BYTES = 128774318L;
 
     private final ExecutorService work = Executors.newSingleThreadExecutor();   // loading and speaking
@@ -105,13 +110,24 @@ public class RelayOfflineVoicePlugin extends Plugin {
         fetch.execute(() -> {
             File tmp = new File(getContext().getFilesDir(), NAME + ".part");
             try {
-                HttpURLConnection c = (HttpURLConnection) new URL(URL_MODEL).openConnection();
-                c.setInstanceFollowRedirects(true);
-                c.setConnectTimeout(15000); c.setReadTimeout(30000);
-                try (InputStream in = new BufferedInputStream(c.getInputStream()); OutputStream out = new FileOutputStream(tmp)) {
-                    byte[] b = new byte[1 << 16]; int n;
-                    while ((n = in.read(b)) > 0) { out.write(b, 0, n); got += n; }
+                Throwable last = null;
+                boolean ok = false;
+                for (String u : URL_MODELS) {  // our copy, then the original
+                    got = 0;
+                    try {
+                        HttpURLConnection c = (HttpURLConnection) new URL(u).openConnection();
+                        c.setInstanceFollowRedirects(true);
+                        c.setConnectTimeout(15000); c.setReadTimeout(30000);
+                        if (c.getResponseCode() != 200) throw new java.io.IOException("HTTP " + c.getResponseCode());
+                        try (InputStream in = new BufferedInputStream(c.getInputStream()); OutputStream out = new FileOutputStream(tmp)) {
+                            byte[] b = new byte[1 << 16]; int n;
+                            while ((n = in.read(b)) > 0) { out.write(b, 0, n); got += n; }
+                        }
+                        if (tmp.length() < APPROX_BYTES / 2) throw new java.io.IOException("short download");
+                        ok = true; break;
+                    } catch (Throwable e) { last = e; tmp.delete(); }
                 }
+                if (!ok) throw (last != null ? last : new java.io.IOException("no source"));
                 unpackRead = 0; unpackTotal = tmp.length(); state = "unpacking";
                 File base = getContext().getFilesDir();
                 try (TarArchiveInputStream tar = new TarArchiveInputStream(new BZip2CompressorInputStream(new BufferedInputStream(new java.io.FilterInputStream(new java.io.FileInputStream(tmp)) {

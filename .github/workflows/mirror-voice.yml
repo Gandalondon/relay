@@ -1,0 +1,27 @@
+name: Mirror voice files
+# Relay's own copy of every file the app downloads at runtime (18 Nov 2026), so Relay never depends on someone else's host.
+# Runs when this file changes. To add or update a file: add it to the list below, with its SHA-256, and push.
+on:
+  push:
+    paths: ['.github/workflows/mirror-voice.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download and check
+        run: |
+          set -e
+          f=sherpa-onnx-supertonic-3-tts-int8-2026-05-11.tar.bz2
+          curl -sSfL -o "$f" "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/$f"
+          echo "82fa96f91c4ef8abaae3a14a3f4153facf88bed821d1f7331cec2700f432c427  $f" | sha256sum -c -
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: voice-models
+          name: Relay voice files
+          body: Relay's own copy of the Supertonic voice (Supertonic 3 by Supertone, OpenRAIL-M; sherpa-onnx, Apache 2.0). The app downloads from here first and falls back to the sherpa-onnx release. Not an app build.
+          files: sherpa-onnx-supertonic-3-tts-int8-2026-05-11.tar.bz2
+          prerelease: true
+          make_latest: false
