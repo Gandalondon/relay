@@ -168,6 +168,7 @@ body.session .cog,body.listening .cog,body.speaking .cog,body.follow .cog{displa
 .obs[hidden]{display:none}
 .obs h1{margin:48px 0 0;font:700 56px/56px var(--display);letter-spacing:.01em;text-wrap:balance}
 .obs p{margin:16px 0 0;font-size:18px;line-height:27px;opacity:.75;text-wrap:pretty}
+#obvtxt{min-height:54px}  /* always two lines tall, so the bar never jumps as the text changes */
 .obvis{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;margin:28px 0}
 .obvis img{display:block;width:100%;height:100%;object-fit:cover;object-position:top;border-radius:24px}
 .obmic{width:96px;height:96px;border-radius:50%;background:var(--amber);color:var(--ink);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 22px rgba(242,179,61,.28),0 0 0 48px rgba(242,179,61,.12)}
@@ -240,7 +241,7 @@ body.session .cog,body.listening .cog,body.speaking .cog,body.follow .cog{displa
   <section class="obs" data-i="1" hidden><h1>Find anything.</h1><p>Say where you are and what you’re after: an enemy, a raider cache, a patch of moss. It shows the nearest.</p><div class="obvis"><img src="onboard-find.webp" alt="The map: you at the Scrap Yard, one dot on the nearest Bastion"></div></section>
   <section class="obs" data-i="2" hidden><h1>Need to get out quick?</h1><p>Ask for the nearest exit. One line, one direction.</p><div class="obvis"><img src="onboard-exit.webp" alt="The map: a dashed line from you to the nearest exit"></div></section>
   <section class="obs" data-i="3" hidden><h1>Help with quests.</h1><p>Tell it the quest and step. Quests are still in testing, so tell us when one goes wrong.</p><div class="obvis"><img src="onboard-quest.webp" alt="The map: Power Out, step 1, a short dashed line to the substation near the checkpoint on Spaceport"></div></section>
-  <section class="obs" data-i="4" hidden><h1>Pick Relay’s voice.</h1><p id="obvtxt">The natural voices are a one-off 130&nbsp;MB download. Until then, Relay uses your phone’s voice.</p><div class="obprog" id="obprog" hidden><i></i></div><div class="obvis"><ul class="obvoices" id="obvoices"></ul></div></section>
+  <section class="obs" data-i="4" hidden><h1>Pick Relay’s voice.</h1><p id="obvtxt">A one-off 130&nbsp;MB download. Until then, it’s your phone’s voice.</p><div class="obprog" id="obprog" hidden><i></i></div><div class="obvis"><ul class="obvoices" id="obvoices"></ul></div></section>
   <div class="obfoot"><div class="obdots" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i><i></i></div>
   <div class="obbtns" id="obbtns"><button class="obbtn" id="obnext" type="button">Next</button></div></div>
 </div>
@@ -1859,10 +1860,10 @@ const OB_KEY = "relay-onb3";  /* 10 Nov: bumped so existing test installs see th
   const track = async () => {
     let r = {}; try { r = await OV.status(); } catch (e) {}
     const txt = $("obvtxt"), bar = $("obprog");
-    if (r.installed) { clearTimeout(poll); ovInstalled = true; bar.hidden = false; bar.firstChild.style.width = "100%"; txt.textContent = "Voice ready. It works without a connection from now on."; setBtns(false, btn("Start", false, done)); try { OV.warm(); } catch (e) {} return; }
+    if (r.installed) { clearTimeout(poll); ovInstalled = true; bar.hidden = false; bar.firstChild.style.width = "100%"; txt.textContent = "Voice ready. It works offline from now on."; setBtns(false, btn("Start", false, done)); try { OV.warm(); } catch (e) {} return; }
     if (/^failed/.test(r.state || "")) { bar.hidden = true; txt.textContent = "Download failed. Check you're on Wi-Fi and try again."; setBtns(true, btn("Skip", true, done), btn("Try again", false, startDl)); return; }
     bar.hidden = false; bar.firstChild.style.width = (r.progress || 0) + "%";
-    txt.textContent = r.state === "unpacking" ? "Unpacking the voice: " + (r.progress || 0) + "%. Nearly there." : "Downloading the voice: " + (r.progress || 0) + "%. You can carry on; it keeps going.";
+    txt.textContent = r.state === "unpacking" ? "Unpacking the voice: " + (r.progress || 0) + "%. Nearly there." : "Downloading the voice: " + (r.progress || 0) + "%. You can carry on.";
     poll = setTimeout(track, 1000);
   };
   async function startDl() {
