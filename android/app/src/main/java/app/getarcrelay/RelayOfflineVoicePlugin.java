@@ -44,6 +44,7 @@ public class RelayOfflineVoicePlugin extends Plugin {
     private volatile OfflineTts tts;
     private volatile String state = "";        // "", downloading, unpacking, failed: ...
     private volatile long got = 0;
+    private volatile long unpackRead = 0, unpackTotal = 0;  // compressed bytes read while unpacking, for a real percentage
     private volatile int speakSeq = 0;
     private volatile AudioTrack track;
     private volatile long loadMs = -1;
@@ -91,7 +92,8 @@ public class RelayOfflineVoicePlugin extends Plugin {
         r.put("state", state);
         r.put("crashed", crashed());
         r.put("lastExit", lastExit());
-        r.put("progress", APPROX_BYTES > 0 ? Math.min(100, (int) (got * 100 / APPROX_BYTES)) : 0);
+        if (state.equals("unpacking")) r.put("progress", unpackTotal > 0 ? Math.min(99, (int) (unpackRead * 100 / unpackTotal)) : 0);
+        else r.put("progress", APPROX_BYTES > 0 ? Math.min(100, (int) (got * 100 / APPROX_BYTES)) : 0);
         call.resolve(r);
     }
 
@@ -110,9 +112,12 @@ public class RelayOfflineVoicePlugin extends Plugin {
                     byte[] b = new byte[1 << 16]; int n;
                     while ((n = in.read(b)) > 0) { out.write(b, 0, n); got += n; }
                 }
-                state = "unpacking";
+                unpackRead = 0; unpackTotal = tmp.length(); state = "unpacking";
                 File base = getContext().getFilesDir();
-                try (TarArchiveInputStream tar = new TarArchiveInputStream(new BZip2CompressorInputStream(new BufferedInputStream(new java.io.FileInputStream(tmp))))) {
+                try (TarArchiveInputStream tar = new TarArchiveInputStream(new BZip2CompressorInputStream(new BufferedInputStream(new java.io.FilterInputStream(new java.io.FileInputStream(tmp)) {
+                    @Override public int read() throws java.io.IOException { int c = super.read(); if (c >= 0) unpackRead++; return c; }
+                    @Override public int read(byte[] b, int o, int l) throws java.io.IOException { int n = super.read(b, o, l); if (n > 0) unpackRead += n; return n; }
+                })))) {
                     TarArchiveEntry e;
                     byte[] b = new byte[1 << 16];
                     while ((e = tar.getNextTarEntry()) != null) {

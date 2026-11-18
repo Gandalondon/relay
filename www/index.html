@@ -227,7 +227,7 @@ body.session .cog,body.listening .cog,body.speaking .cog,body.follow .cog{displa
 </div>
 <div class="vlist" id="vlist" hidden role="dialog" aria-label="Voice">
   <div class="vhead"><button class="back" id="vback" type="button" aria-label="Back"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="m274-450 227 227q9 9 9 21t-9 21q-9 9-21 9t-21-9L181-459q-5-5-7-10t-2-11q0-6 2-11t7-10l278-278q9-9 21-9t21 9q9 9 9 21t-9 21L274-510h496q13 0 21.5 8.5T800-480q0 13-8.5 21.5T770-450H274Z"/></svg></button><h2>Voice</h2></div>
-  <div class="gkey" id="ov"><p id="ovstat"></p><div class="gkrow"><button type="button" id="ovget">Download voice (130 MB)</button></div></div>
+  <div class="gkey" id="ov"><p id="ovstat"></p><div class="obprog" id="ovprog" hidden><i></i></div><div class="gkrow"><button type="button" id="ovget">Download voice (130 MB)</button></div></div>
   <ul id="ovitems"></ul>
 </div>
 <div class="vlist" id="maplist" hidden role="dialog" aria-label="Maps">
@@ -1811,8 +1811,9 @@ async function ovRender() {
   ovInstalled = !!r.installed;
   const busy = /^(downloading|unpacking)/.test(r.state || "");
   get.hidden = ovInstalled || busy; box.hidden = ovInstalled && !busy && !CFG.off;
-  if (r.state === "downloading") st.textContent = "Downloading: " + r.progress + "%. Keep Relay open.";
-  else if (r.state === "unpacking") st.textContent = "Nearly there: unpacking.";
+  const pb = $("ovprog"); pb.hidden = !busy; if (busy) pb.firstChild.style.width = (r.progress || 0) + "%";
+  if (r.state === "downloading") st.textContent = "Downloading the voice: " + r.progress + "%. Keep Relay open.";
+  else if (r.state === "unpacking") st.textContent = "Unpacking the voice: " + (r.progress || 0) + "%. Nearly there.";
   else if (/^failed/.test(r.state || "")) { st.textContent = "Download failed. Try again on Wi-Fi."; get.hidden = false; box.hidden = false; }
   else if (!ovInstalled) st.textContent = "Download the voice once, on Wi-Fi. After that it works without internet.";
   else if (CFG.off) st.textContent = "The voice closed Relay last time, so Relay is using the phone's voice. Tap a voice to try again.";
@@ -1859,8 +1860,8 @@ const OB_KEY = "relay-onb3";  /* 10 Nov: bumped so existing test installs see th
     const txt = $("obvtxt"), bar = $("obprog");
     if (r.installed) { clearTimeout(poll); ovInstalled = true; bar.hidden = false; bar.firstChild.style.width = "100%"; txt.textContent = "Voice ready. It works without a connection from now on."; setBtns(false, btn("Start", false, done)); try { OV.warm(); } catch (e) {} return; }
     if (/^failed/.test(r.state || "")) { bar.hidden = true; txt.textContent = "Download failed. Check you're on Wi-Fi and try again."; setBtns(true, btn("Skip", true, done), btn("Try again", false, startDl)); return; }
-    bar.hidden = false; bar.firstChild.style.width = (r.state === "unpacking" ? 100 : (r.progress || 0)) + "%";
-    txt.textContent = r.state === "unpacking" ? "Nearly there: unpacking the voice." : "Downloading the voice: " + (r.progress || 0) + "%. You can carry on; it keeps going.";
+    bar.hidden = false; bar.firstChild.style.width = (r.progress || 0) + "%";
+    txt.textContent = r.state === "unpacking" ? "Unpacking the voice: " + (r.progress || 0) + "%. Nearly there." : "Downloading the voice: " + (r.progress || 0) + "%. You can carry on; it keeps going.";
     poll = setTimeout(track, 1000);
   };
   async function startDl() {
@@ -1875,6 +1876,8 @@ const OB_KEY = "relay-onb3";  /* 10 Nov: bumped so existing test installs see th
     if (n < LAST) { btns.className = "obbtns"; btns.innerHTML = '<button class="obbtn" type="button">Next</button>'; btns.firstChild.addEventListener("click", () => show(n + 1)); }
     else {
       setBtns(true, btn("Skip", true, done), btn("Download", false, startDl));
+      /* 18 Nov: a voice already on the phone (an update, or a reinstall that kept it) shows Voice ready and Start, not Download */
+      if (OV) OV.status().then(r => { if (r && (r.installed || /^(downloading|unpacking)/.test(r.state || ""))) track(); }).catch(() => {});
     }
   };
   let x0 = null; ob.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; }, { passive: true });
