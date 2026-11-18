@@ -55,6 +55,9 @@ Relay (formerly ArcRelay) is Tony Goff-Yu's free, unofficial, voice-first Androi
 - Play approved and published 18 Nov (open testing, early access, all 178 countries, developer Ganda London). Listing: https://play.google.com/store/apps/details?id=app.getarcrelay
 - Site went live from /beta to the root the same evening; /beta/* redirects to the same page at the root. Holding page kept in tools/hero/holding-page-12nov.html.
 - Tony is holding off telling anyone for 2 to 3 weeks because GTA 6 just came out. Wednesday's LinkedIn post linked to getarcrelay.app, which now shows the full site.
+- Later on 18 Nov: 1.0 (134) sent to Play open testing review (voice progress bars, one-line copy, Voice ready when installed). Then a Play user's voice download failed (Download failed. Try again on Wi-Fi.); the sherpa-onnx file itself was fine. Fix: Relay's own copy of the voice on the voice-models release (made by .github/workflows/mirror-voice.yml, SHA-256 checked), tried first, sherpa-onnx second; rule 5 in CLAUDE.md. Build 135 has it and is on Obtainium.
+- TO DO when the Mac is back: sign build 135 (relay-135-unsigned.aab from the play-bundle release; JDK at ~/jdk17 inside the Mac shell, password is line 4 of relay-upload-key.txt) to android-release/builds/relay-1.0.135.aab, Tony drags it into a new open testing release that replaces 134 (name 1.0 (135), same notes as 134). Until 135 is on Play, Play users still download the voice only from sherpa-onnx.
+- Small follow-up: add Supertonic's OpenRAIL-M licence text to the voice-models release alongside the file.
 - Next build: onboarding voice screen fix (Voice ready + Start when a voice is installed); then production.
 
 ## 12 to 15 Nov: waiting on Play, holding page, LinkedIn
